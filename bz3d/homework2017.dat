@@ -1,0 +1,82 @@
+#****h* bz3d/bz3dbase.dat
+# NAME
+#   bz3dbase.dat
+# SOURCE
+
+GRID_FILE res/new014_grid.dat
+READ_GRID 0
+
+# Define model here. Valid values are: 
+# 1 = all x,y,z random
+# 2 = linear left to right
+# 3 = 1 for all x,y for z = 0,1 
+MODEL 3
+ITERATIONS 50000000
+SNAP 25
+SNAP_START 25
+PRINT_TIME 0
+UPDATE_GRAPHICS 0
+X_GLOBAL_MAX -1.0
+NX 32
+NY 32
+NZ 96
+# z-layer which is used for snapshots
+SNAPZ 3
+# dx = L/NPTS
+L 32
+NPTS 64
+A 0.95
+B 0.01
+EPS 0.02
+TIMESTEP_SAFETY 75
+DELTA 0.0001
+SPIRAL 0
+EXPLICIT 0
+# BOUNDARY: 0 = PBC, 1 = sink, 2 = no-flux
+BOUNDARY 2
+SPECIAL_BOUNDARIES 0
+R_BOUNDARIES 0
+R_NOISE 0.0
+D_r 1.0
+RANDOM_DENSITY 0.01   # Only with Barkley model (MODEL=0)
+RANDOMSEED 0 
+INCLUDE_R_IN_KINETICS 1
+SHOW_R_FIELD 0
+SPECIAL_IC 2
+# Tyson-Fife model parameters
+TF_F 1.25
+TF_Q 0.002
+TF_EPS 0.05
+# Diffusion point/spot density (use with SPECIAL_IC=2)
+# no spirals
+DIFFUSION_SPOT_DENSITY 0.395
+# new
+DIFFUSION_SPOT_DENSITY 0.13
+DIFFZMAXLEN 13
+PBC 1    # Periodic boundary conditions
+CALCULATE_MEAN_R 5000
+SCAL_MIN 0
+SCAL_MAX 1
+SAVE_RGB 0
+SAVE_PGM 0
+SAVE_JPG 0
+SAVE_GRID 1
+SAVE_R 0
+# JPEG compression level: 0-100
+JPEG_COMPRESSION 95
+OUTPUT_DIR res
+SIMULATION_NAME new001
+FLAG1D 0
+DOMAIN_R 0 	# if SPECIAL_IC = 2, NX=NY=2*DOMAIN_R
+SPECIAL_GRID 0  # Has to be 1 to enable DOMAIN_R
+XT_PLOT 0
+T_PLOT 0        # used with DOMAIN_R
+
+SAVE_DF3 1000000
+
+#*****
+
+SIMULATION_NAME homework2017
+OUTPUT_DIR ./homework2017
+#RANDOMSEED 1046844882
+RANDOMSEED 0

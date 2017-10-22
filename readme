@@ -1,0 +1,26 @@
+This collection of programs and libraries is called `bz.'
+
+Please send all comments and bug reports by using mail form at:
+
+    http://www.iki.fi/petterik/mail.php
+
+See page http://www.iki.fi/petterik/bz/ for updates.
+
+Bz is free software. It is distributed under the GNU General Public
+License.  See the file COPYING for copying conditions.
+
+With the exception of the files listed below, bz is covered under
+the following GNU General Public License Copyrights:
+
+    Copyright (C) 2004  Petteri Kettunen
+
+The exception files/modules are:
+
+    The file `COPYING' is copyrighted by the Free Software Foundation, Inc.
+
+    The module `ezscroll' is copyrighted by Dwight Barkley and covered 
+    under the GNU General Public License. It contains modifications which
+    allow compilation using OpenGL only, X11 is not needed at all.
+
+    The file `view3d/view3d.c' is in public domain.
+

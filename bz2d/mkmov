@@ -1,0 +1,14 @@
+set -e
+rm -fr .mkmovtmp
+mkdir .mkmovtmp
+I=1
+
+for i in `find $1 -name '*.jpg' | sort` ; do
+	cp -f $i .mkmovtmp/$I.jpg
+	I=$(($I + 1));
+done
+
+cd .mkmovtmp
+ffmpeg -y -i %d.jpg ../mov.mpg
+cd ..
+rm -fr .mkmovtmp

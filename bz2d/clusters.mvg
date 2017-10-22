@@ -1,0 +1,38 @@
+fill black
+rectangle 50,0 100,50
+rectangle 100,0 150,50
+rectangle 400,100 450,150
+rectangle 350,200 400,250
+rectangle 0,350 50,400
+rectangle 0,400 50,450
+rectangle 150,400 200,450
+rectangle 350,400 400,450
+fill white stroke red
+ellipse 25,75 25,25 0,360
+ellipse 325,275 25,25 0,360
+ellipse 325,25 25,25 0,360
+ellipse 425,25 25,25 0,360
+ellipse 325,125 25,25 0,360
+ellipse 425,175 25,25 0,360
+ellipse 75,375 25,25 0,360
+ellipse 225,375 25,25 0,360
+ellipse 425,425 25,25 0,360
+ellipse 25,25 25,25 0,360
+ellipse 175,25 25,25 0,360
+ellipse 225,25 25,25 0,360
+ellipse 275,25 25,25 0,360
+ellipse 475,125 25,25 0,360
+ellipse 325,225 25,25 0,360
+ellipse 475,275 25,25 0,360
+ellipse 475,325 25,25 0,360
+ellipse 175,375 25,25 0,360
+ellipse 475,375 25,25 0,360
+ellipse 325,425 25,25 0,360
+ellipse 25,475 25,25 0,360
+ellipse 75,475 25,25 0,360
+ellipse 125,475 25,25 0,360
+ellipse 175,475 25,25 0,360
+ellipse 225,475 25,25 0,360
+ellipse 275,475 25,25 0,360
+ellipse 325,475 25,25 0,360
+ellipse 375,475 25,25 0,360

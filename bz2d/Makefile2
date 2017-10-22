@@ -1,0 +1,10 @@
+CFLAGS = -O3 -Wall -std=c99 -I../include
+LDLIBS = -lm
+
+all: clusters
+
+.PHONY: run
+run: clusters
+	./clusters
+
+

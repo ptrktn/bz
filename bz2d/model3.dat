@@ -1,0 +1,70 @@
+#****h* bz2d/bz2dbase.dat
+# NAME
+#   bz2dbase.dat
+# SOURCE
+#
+
+
+# Define model here. Valid values are: 
+# 1 = all x,y random
+# 2 = linear left to right
+# 3 = plane and dot (use sink BC)
+MODEL 1
+
+DEMO 0
+ITERATIONS 10000
+SNAP 50
+SNAP_START 0
+PRINT_TIME 0
+UPDATE_GRAPHICS 0
+X_GLOBAL_MAX -1.0
+NX 128
+NY 128
+L 1
+NPTS 4
+A 0.95
+B 0.01
+EPS 0.02
+TIMESTEP_SAFETY 80
+DELTA 0.0001
+SPIRAL 0
+EXPLICIT 0
+# BOUNDARY: 0 = PBC, 1 = sink, 2 = no-flux
+BOUNDARY 0
+SPECIAL_BOUNDARIES 0
+R_BOUNDARIES 0
+R_NOISE 0.0
+D_r 1.0
+RANDOM_DENSITY 0.01   # Only with Barkley model (MODEL=0)
+SHOW_R_FIELD 0
+# Tyson-Fife model parameters
+TF_F 1.15
+TF_Q 0.002
+TF_EPS 0.05
+# Diffusion point/spot density (use with SPECIAL_IC=2)
+DIFFUSION_SPOT_DENSITY 0.05
+PBC 1    # Periodic boundary conditions
+CALCULATE_MEAN_R 5000
+SCAL_MIN 0
+SCAL_MAX 1
+SAVE_RGB 0
+SAVE_PGM 0
+SAVE_JPG 0
+SAVE_R 0
+JPEG_COMPRESSION 100
+OUTPUT_DIR res
+SIMULATION_NAME testsim
+FLAG1D 0
+XT_PLOT 0
+T_PLOT 0        # used with DOMAIN_R
+
+#*****
+MODEL 3
+BOUNDARY 2
+NX 256
+NY 256
+R 30
+ITERATIONS 200000
+SNAP 100
+SIMULATION_NAME m3
+OUTPUT_DIR model3/R_30

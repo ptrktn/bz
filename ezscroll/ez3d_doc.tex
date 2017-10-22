@@ -1,0 +1,223 @@
+%-----------------------------------------------------------------------------%
+% ez3d_doc.tex -- EZ-Scroll documentation                                     %
+%                                                                             %
+% $Revision: 1.1.1.1 $
+% $Date: 2003/07/05 15:08:18 $
+% 
+%-----------------------------------------------------------------------------%
+%-----------------------------------------------------------------------------%
+
+% This is a LaTex source file.
+
+\documentstyle[12pt]{article}
+\textheight 9in  \textwidth 6.5in
+\topmargin -.7in \oddsidemargin .0in
+
+\begin{document}
+\baselineskip = 20pt plus 1pt minus 1pt
+\parskip = 8pt
+\parindent=0pt
+
+\begin{center} 
+{\bf EZ-SCROLL DOCUMENTATION} 
+\end{center} 
+
+\bigskip
+{\bf I. General} 
+\smallskip
+
+This package uses OpenGL for 3D rendering and has been optimized for
+use on SGI workstations.  By using the Mesa library (public domain
+implementation of most OpenGL routines) it should be possible to run
+on virtually any machine supporting X.  I routinely run EZ-Scroll on
+my PC with the Linux operating system.  See
+http://www.ssec.wisc.edu/$\sim$brianp/Mesa.html 
+Note, you can run without graphics, but you must have OpenGL (or Mesa)
+header files and libraries to use the code.
+
+The EZ-Scroll package (in particular this document) is under
+development.  There are aspects of the code which I am not happy with,
+but to my knowledge everything works correctly.
+
+The philosophy is to keep programs as simple as possible and to
+provide documentation by way of comments within the code itself.  The
+user is expected to modify the programs according to his or her needs.
+The bulk of the package is devoted to graphics. Almost all of the
+execution time is spent in a loop in the routine {\sf Step()} in {\em
+ezstep3d.c}.
+
+The computational methods are described in more detail in the
+references at the end of this document.  Ref.~[5] describes the 3D
+implementation.  Ref.~[2] is the original source for the model.  If
+you generate publications from using EZ-Scroll, I ask that you cite
+these papers.
+
+
+\medskip
+{\bf II. Running EZ-Scroll} 
+\smallskip
+
+{\bf Files:} You should have the following files: \\ {\em ezscroll.c,
+ezstep3d.c, ezgraph3d.c, ezmarching.c, ezscroll.h, ezstep3d.h,
+ezgraph3d.h, ezmarching.h, task.dat}, and {\em Makefile}. \\ You will
+probably want to save copies of these files (in compressed tar
+format).
+
+{\bf make}: It is up to you to edit {\em Makefile} as necessary for
+your system. You can either compile using SGI C (cc) or else using GNU
+C (gcc).  You may, if you wish, specify NX etc.~at compile time.  Then
+these will be ignored in the task file.
+
+Note: On an SGI, using the SGI C compiler cc with -DNX etc gives the
+fastest execution.  Using the GNU C compiler gcc with -DNX is slightly
+slower and gcc without -DNX is slightly slower still.  Using cc
+without -DNX is terrible and should not be used, i.e.~if you want to
+specify the number of grid points through the {\em task.dat} file,
+then you should to use GNU compiler and not the SGI C compiler.  This
+is still being looked into.
+
+Make {\em ezscroll} by typing {\em make}. Then run by typing {\em
+ezscroll}. A window should open containing an initial condition for a
+scroll wave. The $u$-field is plotted.  Hitting the space bar will
+start the simulation. This is a coarse resolution run showing the
+speed possible with EZ-Scroll simulations.  With the pointer in the
+EZ-Scroll window, you can:
+
+\begin{list}{dummy}
+{\labelwidth=0.2in\labelsep=4pt\partopsep=-10pt\parsep=-10pt\itemsep=12pt}
+\item[(1)] Switch between $u$-field, $v$-field, and no field by typing
+{\em u}, {\em v}, or {\em n} respectively.
+
+\item[(2)] toggle filament plotting by typing {\em f}.  (The filament
+is just the intersection of 2 contours.)
+
+\item[(3)] Toggle the clipping plane by typing {\em c}.
+
+\item[(4)] Pause the simulation by typing {\em p}, and resume by
+typing a space.
+
+\item[(5)] Rotate the image by first pausing the simulation, then by
+holding down the left mouse button and moving the cursor.
+
+\item[(6)] The key {\em r} resets the view to the initial (start up)
+view, and {\em z} sets the view to looking down the $z$-axis with the
+$x$- and $y$-axes in the usual orientation.  This view is useful for
+moving the scroll.
+
+\item[(7)] The arrow keys move the scroll in the x-y directions. The
+$+$ key moves the scroll up the z-axis and the $-$ moves it
+down the z-axis.  Again, for moving the scroll it is best first to
+have set the view by typing {\em z}.
+
+\item[(8)] Stop the simulation by typing: \\
+{\em q} for soft termination with all files closed or  \\
+{\em ESC} for immediate termination without writing final
+conditions (equivalent to typing control-C from the shell). 
+
+\end{list}
+
+After a successful run, you will have a file {\em fc.dat} in your
+directory which contains the final conditions of the run. If you copy
+this file to {\em ic.dat}, then the next time you run {\em ezscroll},
+this file will be read and used as an initial condition.
+
+{\bf IV. Equations and Parameters} 
+
+The model reaction-diffusion equations are [1,2]:
+$$
+\frac{\partial u }{ \partial t} = \nabla^2 u + 
+	\epsilon^{-1} u(1-u)(u-u_{th}(v)), ~~~
+\frac{\partial v }{ \partial t} = D_v \nabla^2 v + g(u,v)
+$$
+The method employed in EZ-Scroll is (essentially) independent of the
+choice of the functions $u_{th}(v)$ and $g(u,v)$ and the user is free
+to set these to whatever is desired.  See {\em ezstep3d.h}.
+
+In the simplest case
+$$
+u_{th}(v) = {{v+b}\over{a}}, ~~~
+g(u,v) = u-v, 
+$$ 
+so that $a,b,$ and $\epsilon$ are parameters of the reaction kinetics.
+$D_v$ is the ratio of diffusion coefficients ($D_u \equiv 1$ by choice
+of length scales). In addition, there are lengths specifying the
+simulation volume: $L_x, L_y$, and $L_z$.  Of these I choose to
+specify only $L_x$ and let $L_y$ and $L_z$ be determined from the
+number of grid points (see below).  Thus the ``physical'' parameters
+in the simulation are: {\sf a, b, 1/epsilon, Lx} and {\sf Dv}.
+
+The ``numerical'' parameters for the simulation are: {\sf nx, ny, nz}
+= number of spatial grid points in each direction, {\sf ts} = time
+step as fraction of the diffusion stability limit, and {\sf delta} =
+small numerical parameter [1,2].  From {\sf nx} and {\sf Lx} the grid
+spacing is determined and from this and {\sf ny, nz} the lengths {\sf
+Ly, Lz} are determined.
+
+The other parameters set in
+{\em task.dat} are:
+
+\begin{list}{dummy}
+{\labelwidth=0.1in\labelsep=0pt\partopsep=-10pt\parsep=-10pt\itemsep=0pt}
+\item[~]{\sf Number of time steps to take} \\
+        {\sf Time steps per plot.} Also set the number of time
+        steps per filament computation. \\
+        {\sf write\_filament.} Flag for writing filament data \\
+        {\sf Time steps per write to history file} \\
+        $(i,j, k)$ {\sf history point} \\ 
+	\\
+	{\sf initial field} \\
+	{\sf initial condition type.}  \\
+	{\sf simulation and rotation resolutions} \\
+	{\sf output type} \\
+	\\
+	{\sf verbose} 
+\end{list}
+
+These are more or less self-explanatory.  
+If {\sf write\_filament} is non-zero then the filament will be
+computed every {\sf Time steps per plot} (whether or not there is any
+graphics) and the filament data will be written to a file ({\em
+filament.dat}).  Note: each line of filament data consists of the
+time and a pair a points defining a line segment on the filament. 
+
+If the $(i,j,k)$ point is in the domain, then a time series at the
+$(i,j,k)$ grid point will be saved every {\sf Time steps per write}
+assuming it is not zero.  
+
+I leave it to you to look at different initial condition types at 
+the end of {\em ezscroll.c}.
+
+If {\sf simulation resolution}=1, then all the points in the
+simulation grid are used for the iso-surface and filament computation.
+If {\sf simulation resolution}=2, then every other point in each
+direction is used, i.e.~1/8 as many points.  This results in faster
+graphics.  The same applies to the {\sf rotation resolution} for
+setting the resolution during rotations only.  Note: the {\sf
+simulation resolution} sets the resolution of filament computation
+even in the absence of any graphics, so for accurate filament data set
+{\sf simulation resolution} to~1.
+
+The other place to look for ``parameters'' is in the header files.
+The main compilation parameters are in {\em ezscroll.h}.  Note that
+{\sf SPLIT} is 1 in the distribution, but I think 0 is a better choice
+except at large time steps (See {\em ezstep3d.c}).  Many of the macro
+definitions in the other header files can be replaced with variables.
+
+\bigskip
+
+{\bf References} 
+
+[1] D. Barkley, M. Kness, and L.S. Tuckerman, Phys. Rev. A {\bf 42}, 2489 (1990).
+
+[2] D. Barkley, Physica {\bf 49D}, 61 (1991).
+
+[3] D. Barkley, Phys. Rev. Lett {\bf 68}, 2090 (1992).
+
+[4] D. Barkley, Phys. Rev. Lett. {\bf 72}, 164 (1994).
+
+[5] M. Dowle, R.M. Mantel, and D. Barkley, 
+Int.~J.~Bif.~Chaos {\bf 7}, 2529 (1997).
+
+Please send comments to barkley@maths.warwick.ac.uk
+
+\end{document} 

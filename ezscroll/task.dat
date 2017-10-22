@@ -1,0 +1,26 @@
+0.8		parameter a
+0.01		parameter b
+50.		parameter 1/epsilon  
+30.		parameter Lx  (Box length in x-direction)
+0. 		parameter Dv  (Ratio of diffusion coefficients)
+
+41,41,41   	nx,ny,nz (Number of gridpoints in each direction) 
+0.8		ts       (Timestep as fraction of diffusion stability limit)
+1.e-3		delta
+
+1000		number of time steps to take
+4		time steps per plot and computing filament
+0  		write_filament: if nonzero then write filament data
+0  		time steps per write to history file (0 = no write)
+20,20,20	(i,j,k) history point.   
+
+0   		field shown initially: 0 for u, 1 for v
+0		initial condition type (if ic.dat does not exist)
+1, 2            simulation resolution, rotation resolution
+0		output type: 0 for ascii, else binary
+
+1   		verbose: Level of diagnostics: 0 for none
+                                               1 for normal
+                                               2 for detailed
+                                               3 for all kinds of stuff
+

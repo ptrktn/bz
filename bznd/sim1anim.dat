@@ -1,0 +1,136 @@
+# -*-shell-script-*-
+#****h* bznd/bzndbase.dat
+# NAME
+#   bzndbase.dat
+#   $Id: sim1anim.dat,v 1.1 2005/08/26 11:48:53 petterik Exp $
+# SOURCE
+#
+
+# how are we called
+SIMULATION_NAME test000
+
+# directory to which results go
+OUTPUT_DIR res
+
+# Define model here.
+# 1:   Spatially homegeneous 3D system.
+MODEL 1
+# 2:   Dimensionless simulation.
+# MODEL 2
+# 3:   Closed system, diffusion source of a at z = 0, value of phi is used
+# MODEL 3
+# 4:   Closed 1D system, diffusion source of a at z = 0.
+#      In this case, NZ defines the system length
+# MODEL 4
+# 5:   FKN 1D system, diffusion source of a at z = 0.
+#      In this case, NZ defines the system length
+# MODEL 5
+
+# how far we go
+ITERATIONS 5000000
+
+# grid dimensions
+NX 12
+NY 12
+NZ 12
+
+# dx = L/NPTS
+L 1
+NPTS 4
+
+# since when we start collection snapshots
+SNAP_START 50
+
+# JPEG snapshot interval
+SNAP 1000
+
+# DF3 density file snapshot interval
+SNAP_DF3 0
+
+# z-layer which is used for snapshots
+SNAPZ 6
+
+# how convervative is the timestep
+TIMESTEP_SAFETY 1000
+
+# BOUNDARY: 1 = sink, 2 = no-flux
+BOUNDARY 2
+
+RANDOMSEED 0 
+
+# how large is the pacemaker at z=1, centered at (NX/2, NY/2)
+# set this to zero in order to disable it
+PACEMAKER_RADIUS 0
+
+# probability of diffusion sources, use with `MODEL 4'
+P_SRC 0.0
+
+# Define limits for variable x (the propagator).
+# These are used when converting concentrations into grayscales.
+# Variable a is scaled using its initial value.
+SCAL_MIN 0
+SCAL_MAX 0.25
+
+# collect space-time data alone z-axis (NX/2,NY/2)
+XT_PLOT 10
+
+# chemical parameters
+epsilon 0.12
+q 0.0008
+alpha 71.94
+f 0.8
+b 0.1
+phi  0          # "dark"
+phi2 0.0000015  # "illuminated" 
+
+# initial conditions
+x_ini 0.007979
+z_ini 0.002109
+a_ini 0.24914
+
+# threshold value for reactant concentration
+a_th 0.01
+
+# diffusion coefficient of reactants
+D_x 0.00015
+D_z 0    # catalyst is uniform in space and does not diffuse
+D_a 0.00014
+
+# FKN model
+
+x1_ini 0.33
+x2_ini 0.32
+x3_ini 0.0000005
+x4_ini 0.0001
+x5_ini 0.00003
+
+D_1 0.5    # reactant
+D_2 0.5    # reactant
+D_3 1      # activator
+D_4 0      # catalyst
+D_5 1.0    # Br
+D_6 1.0    # H
+
+# K1....K5 is calculated using H and kXc
+H 0.36
+
+k1c 2.0
+k2c 1000000
+k3c 40
+k4c 2000
+k5c 0.4
+
+# F = 2 h
+F 1.5
+
+#*****
+SIMULATION_NAME fkn
+MODEL 5
+NZ 1024
+SNAP_DF3 0
+SNAP 0
+TIMESTEP_SAFETY 50
+SCAL_MAX 0.0011
+OUTPUT_DIR sim1anim
+XT_PLOT 500
+ITERATIONS 7500000

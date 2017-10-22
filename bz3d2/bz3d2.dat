@@ -1,0 +1,107 @@
+#****h* bz3d2/bz3d2base.dat
+# NAME
+#   bz3d2base.dat
+#   $Id: bz3d2.dat,v 1.2 2004/01/11 07:36:22 petterik Exp $
+# SOURCE
+#
+
+# how are we called
+SIMULATION_NAME test000
+
+# directory to which results go
+OUTPUT_DIR res
+
+# Define model here.
+# isotropic medium
+# MODEL 1
+# sinks probability P_SINK for sites z > NZ/3
+# MODEL 2
+# speed bump
+MODEL 3
+# random diffusion sources
+# MODEL 4
+
+# how far we go
+ITERATIONS 3000
+
+# grid dimensions
+NX 32
+NY 48
+NZ 96
+
+# dx = L/NPTS
+L 1
+NPTS 3
+
+# since when we start collection snapshots
+SNAP_START 50
+
+# JPEG snapshot interval
+SNAP 50
+
+# DF3 density file snapshot interval
+SNAP_DF3 50
+
+# z-layer which is used for snapshots
+SNAPZ 90
+
+# how convervative is the timestep
+TIMESTEP_SAFETY 10
+
+# BOUNDARY: 1 = sink, 2 = no-flux
+BOUNDARY 1
+
+# diffusion coefficient of reactants
+D_r 1.0
+
+RANDOMSEED 0 
+
+# Tyson-Fife model parameters
+
+# keep these two constant (Field-Forsterling scaling)
+TF_Q 0.002
+TF_EPS 0.05
+
+# TF_F 0.75 nice oscillations
+# TF_F 1.25 oscillatory
+# TF_F 2.15 bulk oscillations seen
+# TF_F 2.25 excitable
+
+# excitable
+TF_F 2.5
+# ==> (77,119), (148,189), (216,261), (288,331), (359,403), (429,475)
+# ==> tau = 710 tu, lam = 43.5 su
+
+# how large is the pacemaker at z=1, centered at (NX/2, NY/2)
+# set this to zero in order to disable it
+PACEMAKER_RADIUS 2
+
+# probabilty of sinks/black holes
+#P_SINK 0.05 # go
+#P_SINK 0.10 # go
+#P_SINK 0.15 # go
+#P_SINK 0.175 # go (weak)
+P_SINK 0.185 # go (weak, weak, weak)
+#P_SINK 0.20 # no go
+#P_SINK 0.25 # no go
+#P_SINK 0.30 # no go
+#P_SINK 0.35 # no go
+
+# "demo" values
+# P_SINK 0.11
+# TF_F 2.20
+
+# size of lattice animals
+N_CLUSTER 2
+
+# probability of diffusion sources, use with `MODEL 4'
+P_SRC 0.0
+
+# u/v scaling limits
+SCAL_MIN 0
+SCAL_MAX 1
+
+# collect space-time data alone z-axis (NX/2,NY/2)
+XT_PLOT 10
+
+#*****

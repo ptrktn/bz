@@ -1,0 +1,42 @@
+# -*-octave-*-
+# $Id: point,v 1.2 2004/10/24 06:39:28 petterik Exp $
+
+function xdot = f (x, t)
+
+  xdot = zeros (3,1);
+
+  epsilon = 0.12;
+  q = 0.0008;
+  alpha = 71.94;
+  f = 0.8;
+  b = 0.1;
+  phi = 0;
+
+
+  xdot(1) = ( x(3) * x(1) - x(1) * x(1) \
+			 - (f * b * x(2) + phi) \
+			 * (x(1) - q * x(3))/(x(1) + q * x(3)) \
+			 )/epsilon;
+  xdot(2) = x(3) * x(1) - b * x(2);
+  xdot(3) = (0.5 * x(1) * x(1) - x(3) * x(1) \
+			 - (f * b * x(2) + phi) \
+			 * q * x(3) / (x(1) + q * x(3)) \
+			 )/alpha;
+
+endfunction
+
+xini = 0.007979;
+zini = 0.002109;
+aini = 0.24914;
+
+x0 = [ xini; zini;  aini ];
+
+t = linspace (0, 500, 1000);
+
+y = lsode ("f", x0, t);
+
+gset term jpeg;
+gset output "point.jpg";
+plot (t, y);
+
+quit(0);

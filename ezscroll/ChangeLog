@@ -1,0 +1,21 @@
+Sun Jul 21 12:20:32 JST 2002 Petteri Kettunen 
+
+	* Screenshot using glReadPixels. By default PGM file is
+	written. If cjpeg is installed, JPG file is conversion is 
+	carried out and the original PGM removed.
+	
+Mon Jul 15 19:51:41 JST 2002 Petteri Kettunen
+
+	* Changes based on ezscroll version 1.4. All modifications are
+	wrapped with -D_GLONLY macros which effectively make this program
+	compile without X. Features that are not implemented using GL
+	event model are mouse events and Mover(). Rotation control is
+	implemented using '"vi arrow keys" and myChangeView().
+
+	* Added ChangeLog and COPYING files.
+
+Local Variables:
+mode: indented-text
+left-margin: 8
+version-control: never
+End:
