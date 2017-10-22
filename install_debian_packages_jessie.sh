@@ -20,6 +20,6 @@ apt-get install libjpeg62-turbo libjpeg62-turbo-dev gnuplot gnuplot-doc \
 	indent indent-doc libfftw3-3 libfftw3-dev libfftw3-doc \
         imagemagick xine-ui \
 	octave octave-doc povray \
-	gsl-bin libgsl0ldbl libgsl0-dev
+	gsl-bin libgsl0ldbl libgsl0-dev git
 
 exit 0
