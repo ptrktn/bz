@@ -31,7 +31,7 @@ $(MODULELIBDIR)/bz3dbase.dat: bz3dbase.dat
 
 .PHONY: clean
 clean:
-	$(RM) $(BINFILE) $(BINFILE2) rtime *.o core *~ *.BAK *.jpg *.df3
+	$(RM) $(BINFILE) $(BINFILE2) rtime *.o core *~ *.BAK *.jpg *.df3 nohup.out
 	if [ -d ./res ] ; then $(RMDIR) ./res ; fi
 
 .PHONY: test
@@ -106,4 +106,6 @@ fingering: $(TARGETS)
 
 .PHONY: homework
 homework: $(BINFILE) homework2017.dat
-	./$(BINFILE) homework2017.dat
+	rm -fr nohup.out /var/tmp/homework2017
+	nohup ./$(BINFILE) homework2017.dat &
+

@@ -169,7 +169,7 @@ static void     my_check_parameters(void)
 	assert(tf_f != (float) 1);
 }
 
-static void random_cluster(unsigned char *grid, int x, int y, int z)
+static void random_cluster(char *grid, int x, int y, int z)
 {
 	int ntry = 0, i = x + y * NX + z * NXNY, filled = 1;
 	

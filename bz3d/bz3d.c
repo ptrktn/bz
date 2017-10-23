@@ -250,7 +250,7 @@ static void     my_init_grid(char *logfile)
 	}			/* end zi */
 }
 
-static void     my_write_grid(char *fname, unsigned char *buf, int nx, int ny)
+static void     my_write_grid(char *fname, char *buf, int nx, int ny)
 {
 	int             i, n;
 	unsigned char  *buf2;
@@ -371,10 +371,14 @@ int             main(int argc, char *argv[])
 			do_step(x2, y2, r2, x1, y_1, r1);
 
 		if (SNAP != 0 && t > SNAP_START && (t % SNAP) == 0) {
-			sprintf(fname, "%s/%s_%010d", OUTPUT_DIR, SIMULATION_NAME, t);
-			save_grid_image(fname, (x1 + (SNAPZ * NXNY)), NX, NY, SCAL_MIN, SCAL_MAX);
+			if (-1 == SNAPZ) {
+				sprintf(fname, "%s/%s_%010d", OUTPUT_DIR, SIMULATION_NAME, t);
+				save_grid_image(fname, x1, NX, NY*NZ, SCAL_MIN, SCAL_MAX);
+			} else {
+				sprintf(fname, "%s/%s_%010d", OUTPUT_DIR, SIMULATION_NAME, t);
+				save_grid_image(fname, (x1 + (SNAPZ * NXNY)), NX, NY, SCAL_MIN, SCAL_MAX);
 			// FIXME bzsimSaveData2(NX, NY, NZ, BZSIM_DATA_FLOAT, x1, SCAL_MIN, SCAL_MAX, "%s/%s_x1_%010d.dat", OUTPUT_DIR, SIMULATION_NAME, t);
-
+			}
 #if 0
 			/* 3D render hook */
 			system("./snap.sh");
