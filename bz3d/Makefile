@@ -105,7 +105,7 @@ fingering: $(TARGETS)
 #*****
 
 .PHONY: homework
-homework: $(BINFILE) homework2017.dat
+homework: $(BINFILE)
 	rm -fr nohup.out /var/tmp/homework2017
 	nohup ./$(BINFILE) homework2017.dat &
 

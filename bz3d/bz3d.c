@@ -428,6 +428,15 @@ int             main(int argc, char *argv[])
 	XFREE(r1);
 	XFREE(r2);
 
+	if (-1 == SNAPZ) {
+		char *cmd = XALLOC(8192, char);
+		
+		sprintf(cmd, "montage %s/%s_??????????.jpg -geometry +1+1 -tile 200 %s/%s_slices.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
+		system(cmd);
+		
+		XFREE(cmd);
+	}
+	
 	/* Timing info */
 	bzsimSetEndTime();
 	bzsimLogMsg(logfile, "elapsed time %d seconds\n", bzsimGetElapsedTime());
