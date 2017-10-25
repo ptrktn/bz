@@ -77,6 +77,7 @@ int             bzsimCopyFile(const char *file1, const char *file2);
 void            bzsimDbg(const char *fmt, ...);
 int             bzsimExec(char *fmt, ...);
 int             bzsimGetElapsedTime(void);
+void            bzsimLogElapsedTime(char *fname);
 int             bzsimGetPar(char *fname, char *par_name, int par_type, void *par_val);
 int			    bzsimGridSnap(void *ptr, int nx, int ny, int nz, int type, int dir, int layer, float scalmin, float scalmax, char *fmt, ...);
 void            bzsimInit(char *progname);

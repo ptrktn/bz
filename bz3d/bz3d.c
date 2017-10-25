@@ -372,8 +372,22 @@ int             main(int argc, char *argv[])
 
 		if (SNAP != 0 && t > SNAP_START && (t % SNAP) == 0) {
 			if (-1 == SNAPZ) {
+				float *tmp = XALLOC(N, float);
+				int xi, yi, zi, i;
+
+				memcpy(tmp, x1, N * sizeof(float));
+
+				for (yi = 0, zi = 0; zi < NZ; zi++) {
+					for (xi = 0; xi < NX; xi++) {
+						i = xi + yi * NX + zi * NXNY;
+						tmp[i] = SCAL_MAX;
+					}
+				}
+				
 				sprintf(fname, "%s/%s_%010d", OUTPUT_DIR, SIMULATION_NAME, t);
-				save_grid_image(fname, x1, NX, NY*NZ, SCAL_MIN, SCAL_MAX);
+				save_grid_image(fname, tmp, NX, NY*NZ, SCAL_MIN, SCAL_MAX);
+
+				XFREE(tmp);
 			} else {
 				sprintf(fname, "%s/%s_%010d", OUTPUT_DIR, SIMULATION_NAME, t);
 				save_grid_image(fname, (x1 + (SNAPZ * NXNY)), NX, NY, SCAL_MIN, SCAL_MAX);
@@ -439,7 +453,7 @@ int             main(int argc, char *argv[])
 	
 	/* Timing info */
 	bzsimSetEndTime();
-	bzsimLogMsg(logfile, "elapsed time %d seconds\n", bzsimGetElapsedTime());
+	bzsimLogElapsedTime(logfile);
 
 	return 0;
 }

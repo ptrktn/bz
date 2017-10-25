@@ -1240,6 +1240,35 @@ int bzsimGetElapsedTime(void)
 
 /************ bzsimGetElapsedTime */
 
+/****f* bzsim.c/bzsimGetElapsedTime
+ * NAME
+ *  bzsimGetElapsedTime
+ * SYNOPSIS
+ *  void bzsimLogElapsedTime(char *logfile)
+ * FUNCTION
+ *  Log the elapsed wall-clock time between calls to bzsimSetStartTime and 
+ *  bzsimSetEndTime.
+ * SEE ALSO
+ *  bzsimSetStartTime, bzsimSetEndTime
+ * SOURCE
+ */
+
+void bzsimLogElapsedTime(char *logfile)
+{
+	time_t t = difftime(g_end_time, g_start_time);
+	struct tm *info = gmtime(&t);
+
+	if (t < 86400) {
+		bzsimLogMsg(logfile, "elapsed wall-clock time %02d:%02d:%02d\n", info->tm_hour, info->tm_min, info->tm_sec);
+	} else {
+		int h = t / 86400;
+		
+		bzsimLogMsg(logfile, "elapsed wall-clock time %d:%02d:%02d\n", h, info->tm_min, info->tm_sec);
+	}
+
+}
+
+/************ bzsimLogElapsedTime */
 
 /****f* bzsim.c/bzsimReadData
  * NAME
