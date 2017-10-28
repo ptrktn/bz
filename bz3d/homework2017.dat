@@ -22,6 +22,7 @@ NY 32
 NZ 96
 # z-layer which is used for snapshots
 SNAPZ 3
+SNAPZ_AVG 0
 # dx = L/NPTS
 L 32
 NPTS 64
@@ -88,3 +89,6 @@ SNAP 10000
 #NZ 16
 #DIFFZMAXLEN 8
 
+# SNAPZ composite test
+SNAPZ_COMP 10000
+#ITERATIONS 50000

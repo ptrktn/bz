@@ -27,7 +27,7 @@
 int             N = 0, NX = 128, NY = 128, NZ = 16;
 int             NX1, NY1, NZ1, NXNY;
 int             SNAP, SNAPZ, PRINT_TIME, UPDATE_GRAPHICS, ITERATIONS, SPIRAL,
-                EXPLICIT, SPECIAL_BOUNDARIES, SAVE_DF3;
+	EXPLICIT, SPECIAL_BOUNDARIES, SAVE_DF3, SNAPZ_COMP;
 float           X_GLOBAL_MAX;
 float           L;
 float           TIMESTEP_SAFETY;
@@ -67,6 +67,7 @@ static void     my_get_parameters(char *fname)
 	GET_INT(fname, "MODEL", MODEL);
 	GET_INT(fname, "SNAP", SNAP);
 	GET_INT(fname, "SNAPZ", SNAPZ);
+	GET_INT(fname, "SNAPZ_COMP", SNAPZ_COMP);
 	GET_INT(fname, "ITERATIONS", ITERATIONS);
 	GET_STRING(fname, "OUTPUT_DIR", OUTPUT_DIR);
 	GET_STRING(fname, "SIMULATION_NAME", SIMULATION_NAME);
@@ -115,6 +116,7 @@ void            my_save_parameters(char *fname)
 	LOG_PAR(fname, "eps", eps);
 	LOG_PAR(fname, "snapshot", SNAP);
 	LOG_PAR(fname, "snapshot z-layer", SNAPZ);
+	LOG_PAR(fname, "snapshot z-layer composite", SNAPZ_COMP);
 	LOG_PAR(fname, "x_ss/y_ss", x_ss);
 	LOG_PAR(fname, "dt/dx2", dt_o_dx2);
 	LOG_PAR(fname, "BOUNDARY", BOUNDARY);
@@ -399,6 +401,36 @@ int             main(int argc, char *argv[])
 #endif
 		}
 
+		if (0 != SNAPZ_COMP && t > SNAP_START && 0 == (t % SNAPZ_COMP)) {
+			float *tmp = XALLOC(NX * NY, float);
+			int xi, yi, zi;
+			
+			memset(tmp, 0, NX * NY * sizeof(float));
+
+			for (yi = 0; yi < NY; yi++) {
+				for (xi = 0; xi < NX; xi++) {
+					tmp[xi + yi * NX] = 0;
+				}
+			}
+		   
+
+			for (yi = 0; yi < NY; yi++) {
+				for (xi = 0; xi < NX; xi++) {
+					for (zi = 0; zi < NZ; zi++) {
+						int i = xi + yi * NX + zi * NXNY;
+						int j = xi + yi * NX; 
+						//tmp[j] = x1[i] > tmp[j] ? x1[i] : tmp[j];
+						tmp[j] = x1[i] > 0.5 ? 1 : tmp[j];
+					}
+				}
+			}			
+
+			sprintf(fname, "%s/%s_%010d_z_comp", OUTPUT_DIR, SIMULATION_NAME, t);
+			save_grid_image(fname, tmp, NX, NY, SCAL_MIN, SCAL_MAX);
+			
+			XFREE(tmp);
+		}
+			
 		if (SAVE_DF3 && 0 == (t % SAVE_DF3)) {
 			/* save only r whose values are from 0 to 1 */
 			float *tmp = XALLOC(N, float);
@@ -445,7 +477,16 @@ int             main(int argc, char *argv[])
 	if (-1 == SNAPZ) {
 		char *cmd = XALLOC(8192, char);
 		
-		sprintf(cmd, "montage %s/%s_??????????.jpg -geometry +1+1 -tile 200 %s/%s_slices.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
+		sprintf(cmd, "montage %s/%s_??????????.jpg -geometry +1+1 %s/%s_slices.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
+		system(cmd);
+		
+		XFREE(cmd);
+	}
+
+	if (0 != SNAPZ_COMP) {
+		char *cmd = XALLOC(8192, char);
+		
+		sprintf(cmd, "montage %s/%s_??????????_z_comp.jpg -geometry +1+1 %s/%s_comp.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
 		system(cmd);
 		
 		XFREE(cmd);
