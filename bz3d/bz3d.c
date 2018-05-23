@@ -61,6 +61,8 @@ char            SIMULATION_NAME[MAX_PAR_LEN];
 int             RANDOMSEED = 0;
 int             READ_GRID = 0;
 char            GRID_FILE[1024];
+float          *imagezn;
+int             imagezn_n = 0, imagezn_samples = 10 /* 10 */;
 
 static void     my_get_parameters(char *fname)
 {
@@ -347,6 +349,18 @@ int             main(int argc, char *argv[])
 	y2 = XALLOC(N, float);
 	r1 = XALLOC(N, float);
 	r2 = XALLOC(N, float);
+
+	
+	/* analysis of core evolution */
+	if (0 != SNAPZ_COMP) {
+		int i;
+
+		imagezn = XALLOC(N, float);	 	
+
+		for (i = 0; i != N; i++)
+			imagezn[i] = 0;
+	}
+
 	diff_grid = XALLOC(N, char);
 	bzsimLogMsg(logfile, "float array bulk space: %d bytes\n", (int) (6 * N * sizeof(float)));
 	bzsimLogMsg(logfile, "char array bulk space: %d bytes\n", (int) (1 * N * sizeof(float)));
@@ -402,9 +416,11 @@ int             main(int argc, char *argv[])
 		}
 
 		if (0 != SNAPZ_COMP && t > SNAP_START && 0 == (t % SNAPZ_COMP)) {
-			float *tmp = XALLOC(NX * NY, float);
 			int xi, yi, zi;
-			
+
+			imagezn_n++;
+
+#if 0
 			memset(tmp, 0, NX * NY * sizeof(float));
 
 			for (yi = 0; yi < NY; yi++) {
@@ -412,23 +428,42 @@ int             main(int argc, char *argv[])
 					tmp[xi + yi * NX] = 0;
 				}
 			}
-		   
+#endif		   
 
-			for (yi = 0; yi < NY; yi++) {
-				for (xi = 0; xi < NX; xi++) {
-					for (zi = 0; zi < NZ; zi++) {
+			for (zi = 0; zi < NZ; zi++) {
+				for (yi = 0; yi < NY; yi++) {
+					for (xi = 0; xi < NX; xi++) {
 						int i = xi + yi * NX + zi * NXNY;
-						int j = xi + yi * NX; 
+						//int j = xi + yi * NX; 
 						//tmp[j] = x1[i] > tmp[j] ? x1[i] : tmp[j];
-						tmp[j] = x1[i] > 0.5 ? 1 : tmp[j];
+						//tmp[j] = x1[i] > 0.5 ? 1 : tmp[j];
+						//tmp[j] = x1[i] > 0.4 ? 1 : tmp[j];
+						// superimpose
+						// FIXME
+						//imagezn[i] = x1[i] > imagezn[i] ? x1[i] : imagezn[i];
+						// average
+						imagezn[i] += x1[i];
 					}
 				}
 			}			
 
-			sprintf(fname, "%s/%s_%010d_z_comp", OUTPUT_DIR, SIMULATION_NAME, t);
-			save_grid_image(fname, tmp, NX, NY, SCAL_MIN, SCAL_MAX);
-			
-			XFREE(tmp);
+			if (0 == (imagezn_n % imagezn_samples)) {
+				//float *tmp = XALLOC(NX * NY, float);
+
+#if 1
+				int i;
+
+				for (i = 0; i != N; i++)
+					imagezn[i] /= (float) imagezn_samples;
+#endif
+				
+				sprintf(fname, "%s/%s_%010d_z_comp", OUTPUT_DIR, SIMULATION_NAME, t);
+				save_grid_image(fname, imagezn, NX, NY*NZ, SCAL_MIN, SCAL_MAX);
+								
+				//save_grid_image(fname, tmp, NX, NY, SCAL_MIN, SCAL_MAX);
+				//XFREE(tmp);
+			}
+				
 		}
 			
 		if (SAVE_DF3 && 0 == (t % SAVE_DF3)) {
@@ -479,6 +514,8 @@ int             main(int argc, char *argv[])
 		
 		sprintf(cmd, "montage %s/%s_??????????.jpg -geometry +1+1 %s/%s_slices.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
 		system(cmd);
+
+		bzsimLogMsg(logfile, cmd);
 		
 		XFREE(cmd);
 	}
@@ -486,10 +523,13 @@ int             main(int argc, char *argv[])
 	if (0 != SNAPZ_COMP) {
 		char *cmd = XALLOC(8192, char);
 		
-		sprintf(cmd, "montage %s/%s_??????????_z_comp.jpg -geometry +1+1 %s/%s_comp.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
+		sprintf(cmd, "montage %s/%s_??????????_z_comp.jpg -tile x1 -geometry +1+1 %s/%s_comp.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
 		system(cmd);
-		
+
+		bzsimLogMsg(logfile, cmd);
+
 		XFREE(cmd);
+		XFREE(imagezn); 
 	}
 	
 	/* Timing info */
