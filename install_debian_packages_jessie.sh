@@ -22,4 +22,6 @@ apt-get install libjpeg62-turbo libjpeg62-turbo-dev gnuplot gnuplot-doc \
 	octave octave-doc povray \
 	gsl-bin libgsl0ldbl libgsl0-dev git
 
+#git config --global user.email "username@users.noreply.github.com"
+
 exit 0
