@@ -48,15 +48,15 @@ y = lsode ("f", x0, t);
 
 plot (t, y);
 
-xlabel("time");
+xlabel("\\tau");
 ylabel("concentration");
-title(cstrcat("SKG model: a=", num2str(galpha),
-			  " b=", num2str(gbeta),
-			  " g=", num2str(ggamma),
-			  " d=", num2str(gdelta),
+title(cstrcat("SKG model: \\alpha=", num2str(galpha),
+			  " \\beta=", num2str(gbeta),
+			  " \\gamma=", num2str(ggamma),
+			  " \\delta=", num2str(gdelta),
 			  " f=", num2str(gf))
 	  );
-legend("HBrO2", "Br-", "H2Q");
+legend("HBrO_2", "Br^-", "H_2Q");
 
 print -djpg skg.jpg
 
