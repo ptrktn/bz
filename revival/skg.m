@@ -29,7 +29,7 @@ function xdot = f (x, t)
   # delta = 2 * kc * k3 / realpow(kf, 2);
   # gamma = kd * realsqrt(ke) / realpow(kf, 3/2);
 
-  xdot(1) = x(2) * (gbeta - galpha * x(1)) + x(3) * (ggamma * realsqrt(x(1)) + 1.0) - gdelta * realpow(xdot(1), 2);
+  xdot(1) = x(2) * (gbeta - galpha * x(1)) + x(3) * (ggamma * realsqrt(x(1)) + 1.0) - gdelta * realpow(x(1), 2);
   xdot(2) = 1.0 - x(2) * (gbeta + galpha * x(1));
   xdot(3) = gf - x(3) * (ggamma * realsqrt(x(1)) + 1.0); 
 
