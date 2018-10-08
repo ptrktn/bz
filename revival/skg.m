@@ -1,3 +1,4 @@
+#! /usr/bin/octave -qf
 # -*-octave-*-
 # SKG model DOI: 10.1021/jp9832721
 # Eqs E6-E8
@@ -8,6 +9,11 @@ global gbeta = 77.4;
 global ggamma = 1102;
 global gdelta = 2719;
 global gf = 0.776;
+
+if (1 == nargin)
+  arg_list = argv();
+  gf = str2num(arg_list{1});
+endif
 
 function xdot = f (x, t)
   global galpha;
