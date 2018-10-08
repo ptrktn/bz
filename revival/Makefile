@@ -12,7 +12,8 @@ BINFILE     = $(MODULE)
 BINFILE2    = fkn
 TARGETS     = $(BINFILE)
 BINOBJECTS  = pointskg.o
-BINOBJECTS2 = fkn.o
+BINOBJECTS2 = 
+BINFILE2    = pointskg
 
 # link to bzsim library
 USEBZSIM=1
@@ -51,6 +52,12 @@ plot:
 	time octave skg.m
 	(killall gpicview > /dev/null 2>&1) || true
 	xdg-open skg.jpg
+
+.PHONY: rk4plot
+rk4plot: pointskg
+	./pointskg > pointrk4.dat
+	(echo 'set terminal png'; echo 'set output "pointrk4.png"'; echo 'plot "pointrk4.dat" using 1:2 with lines, "pointrk4.dat" using 1:3 with lines, "pointrk4.dat" using 1:4 with lines') | gnuplot
+	rm -f pointrk4.dat
 
 # internal test
 .PHONY: xtest
