@@ -30,7 +30,7 @@ install:: $(BINDIR)/skg.m
 
 .PHONY: clean
 clean:
-	$(RM) $(BINFILE) $(BINFILE2) $(BINOBJECTS) $(BINOBJECTS) \
+	$(RM) $(BINFILE) $(BINFILE2) $(BINOBJECTS) $(BINOBJECTS2) \
           core *~ *.BAK *.jpg *.png \
           plot.mat nohup.out
 	if [ -d ./res ] ; then $(RMDIR) ./res ; fi
