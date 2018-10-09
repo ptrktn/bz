@@ -19,7 +19,7 @@ apt-get upgrade
 apt-get install libjpeg62-turbo libjpeg62-turbo-dev gnuplot gnuplot-doc \
 	indent indent-doc libfftw3-3 libfftw3-dev libfftw3-doc \
         imagemagick xine-ui \
-	octave octave-doc povray \
+	octave octave-doc povray epstool pstoedit transfig \
 	gsl-bin libgsl0ldbl libgsl0-dev git
 
 #git config --global user.email "username@users.noreply.github.com"
