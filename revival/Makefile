@@ -46,12 +46,29 @@ fplot:
 		mv skg.jpg $(XDATE)_skg_f_$$i.jpg ; \
 	done
 
+.PHONY: BrO30plot
+BrO30plot:
+	rm -f skg2.jpg plot.mat
+	chmod 755 skg2.m
+	for i in $(shell seq 0.010 0.010 0.300) ; do \
+		rm -f $(XDATE)_skg_BrO30_$$i.jpg ; \
+		./skg2.m $$i ; \
+		mv skg2.jpg $(XDATE)_skg_BrO30_$$i.jpg ; \
+	done
+
 .PHONY: plot
 plot:
 	rm -f skg.jpg
 	time octave skg.m
 	(killall gpicview > /dev/null 2>&1) || true
 	xdg-open skg.jpg
+
+.PHONY: plot2
+plot2:
+	rm -f skg2.jpg
+	time octave skg2.m
+	(killall gpicview > /dev/null 2>&1) || true
+	xdg-open skg2.jpg
 
 .PHONY: rk4plot
 rk4plot: pointskg
