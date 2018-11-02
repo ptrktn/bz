@@ -32,7 +32,7 @@ install:: $(BINDIR)/skg.m
 clean:
 	$(RM) $(BINFILE) $(BINFILE2) $(BINOBJECTS) $(BINOBJECTS2) \
           core *~ *.BAK *.jpg *.png \
-          plot.mat nohup.out
+          plot.mat nohup.out octave-core
 	if [ -d ./res ] ; then $(RMDIR) ./res ; fi
 	if [ -d ./index ] ; then $(RMDIR) ./index ; fi
 
@@ -55,6 +55,17 @@ BrO30plot:
 		./skg2.m $$i ; \
 		mv skg2.jpg $(XDATE)_skg_BrO30_$$i.jpg ; \
 	done
+
+.PHONY: BrO30plotpp
+BrO30plotpp:
+	rm -f skg2pp.jpg plot.mat
+	chmod 755 skg2pp.m
+	for i in $(shell seq 0.010 0.010 0.300) ; do \
+		rm -f skg2pp.jpg plot.mat $(XDATE)_skg_BrO30_$$i.jpg ; \
+		./skg2pp.m $$i || exit 1 ; \
+		mv skg2pp.jpg $(XDATE)_skg_BrO30_$${i}_pp.jpg ; \
+	done
+
 
 .PHONY: plot
 plot:
