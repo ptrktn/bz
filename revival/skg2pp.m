@@ -21,6 +21,7 @@ global k4 = 2000000;
 global k4r = 100000000; # k_{-4}
 global H = 1.29;
 
+# The first command-line argument, if given, is initial [BrO3-]
 if (1 == nargin)
   arg_list = argv();
   BrO30 = str2num(arg_list{1});
@@ -58,67 +59,18 @@ function xdot = f (x, t)
   # printf("g = %f\n", ggamma);
   # printf("d = %f\n", gdelta);
 
-  # quit();
-
   xdot(1) = x(2) * (gbeta - galpha * x(1)) + x(3) * (ggamma * realsqrt(x(1)) + 1.0) - gdelta * x(1) * x(1);
   xdot(2) = 1.0 - x(2) * (gbeta + galpha * x(1));
   xdot(3) = gf - x(3) * (ggamma * realsqrt(x(1)) + 1.0); 
 
 endfunction
 
-function xp = ff (x)
-  global galpha;
-  global gbeta;
-  global ggamma;
-  global gdelta;
-  global gf;
-  global k2;
-  global k14;
-  global k17;
-  global kdp;
-  global k5;
-  global k4;
-  global k4r;
-  global BrCHD;
-  global T;
-  global BrO30
-  global H;
-
-  #BrO3 = BrO30 - T * t; # FIXME check BrO3 > 0
-  BrO3 = BrO30;
-
-  xdot = zeros (3, 1);
-
-  galpha = k2 * k14 * BrCHD / (k17 * k17 * BrO3 * BrO3);
-  # beta has no dependency on [BrO3-]
-  ggamma = kdp * realsqrt(k14) * realsqrt(BrCHD) / (realpow(k17, 3/2) * realsqrt(H) * BrO3);
-  gdelta = 2 * k5 * k4 * k14 * BrCHD / (k4r * k17 * k17 * BrO3 * BrO3);
-
-  # printf("a = %f\n", galpha);
-  # printf("b = %f\n", gbeta);
-  # printf("g = %f\n", ggamma);
-  # printf("d = %f\n", gdelta);
-
-  # quit();
-
-  xdot(1) = x(2) * (gbeta - galpha * x(1)) + x(3) * (ggamma * realsqrt(x(1)) + 1.0) - gdelta * x(1) * x(1);
-  xdot(2) = 1.0 - x(2) * (gbeta + galpha * x(1));
-  xdot(3) = gf - x(3) * (ggamma * realsqrt(x(1)) + 1.0); 
-
-endfunction
-
-
-
-
+# Initial conditions
 #1 HBrO2
-x1 = 0.01;
-#2 Br-
-x2 = 0;
-#3 H2Q
-x3 = 0.01;
-
 x1 = 0.0007245927973977255 ;
+#2 Br-
 x2 = 0.001422769822454512 ;
+#3 H2Q
 x3 = 0.03193424249332828 ;
 
 x0 = [x1; x2; x3];
@@ -190,6 +142,7 @@ plot(y(:,1),y(:,3), "color", "black");
 plot(xxi, null_x, "color", "blue");
 plot(xxi, null_z, "color", "red");
 
+xlim([0, 0.015]);
 ylim([0, 0.04]);
 
 title(cstrcat("SKG2 model: ",
@@ -202,9 +155,7 @@ legend("x-y", "a(x,z)", "b(x,z)");
 
 print -djpg skg2pp.jpg
 
-
-
-#quit(0);
+quit(0);
 
 
 
