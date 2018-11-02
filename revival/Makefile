@@ -61,11 +61,14 @@ BrO30plotpp:
 	rm -f skg2pp.jpg plot.mat
 	chmod 755 skg2pp.m
 	for i in $(shell seq 0.010 0.010 0.300) ; do \
-		rm -f skg2pp.jpg plot.mat $(XDATE)_skg_BrO30_$$i.jpg ; \
+		rm -f skg2pp.jpg plot.mat $(XDATE)_skg2_pp_BrO30_$$i.jpg $(XDATE)_skg2_BrO30_$$i.jpg ; \
 		./skg2pp.m $$i || exit 1 ; \
-		mv skg2pp.jpg $(XDATE)_skg_BrO30_$${i}_pp.jpg ; \
+		mv skg2pp.jpg $(XDATE)_skg2_pp_BrO30_$${i}.jpg ; \
+        mv skg2.jpg $(XDATE)_skg2_BrO30_$$i.jpg ; \
 	done
-
+	rm -f plot.mat $(XDATE)_skg2_BrO30.jpg $(XDATE)_skg2_BrO30_pp.jpg
+	montage $(XDATE)_skg2_pp_BrO30_*.jpg -geometry +1+1 $(XDATE)_skg2_pp_BrO30.jpg 
+	montage $(XDATE)_skg2_BrO30_*.jpg -geometry +1+1 $(XDATE)_skg2_BrO30.jpg 
 
 .PHONY: plot
 plot:
