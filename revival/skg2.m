@@ -1,8 +1,7 @@
 #! /usr/bin/octave -qf
 # -*-octave-*-
 # SKG model DOI: 10.1021/jp9832721
-# Eqs E6-E8 modified to simulation the consumption of substrate BrO3-
-
+# Based on Eqs E6-E8 and simulate the dynamics by varying initial BrO3-
 
 global galpha = 1000000;
 global gbeta = 77.4;

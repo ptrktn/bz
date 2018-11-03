@@ -1,8 +1,10 @@
 #! /usr/bin/octave -qf
 # -*-octave-*-
 # SKG model DOI: 10.1021/jp9832721
-# Eqs E6-E8 modified to simulation the consumption of substrate BrO3-
-
+# Based on Eqs E6-E8 and simulate the dynamics by varying initial [BrO3-]
+#
+# Additionally this implementation includes linear decay of [BrO3-].
+# [BrO3-] = [BrO3-]_0 - T * t;
 
 global galpha = 1000000;
 global gbeta = 77.4;
@@ -10,6 +12,7 @@ global ggamma = 1102;
 global gdelta = 2719;
 global gf = 0.776;
 global BrO30 = 0.08;
+# T = 0 simulates [Br03-] is not consumed
 global T = 0;
 global k2 =  2500000;
 global k14 =  5.0000e-05;
@@ -27,6 +30,7 @@ if (1 == nargin)
   BrO30 = str2num(arg_list{1});
 endif
 
+# Eqs E6-E8
 function xdot = f (x, t)
   global galpha;
   global gbeta;
