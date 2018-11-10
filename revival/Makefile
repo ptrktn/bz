@@ -70,6 +70,21 @@ BrO30plotpp:
 	montage $(XDATE)_skg2_pp_BrO30_*.jpg -geometry +1+1 $(XDATE)_skg2_pp_BrO30.jpg 
 	montage $(XDATE)_skg2_BrO30_*.jpg -geometry +1+1 $(XDATE)_skg2_BrO30.jpg 
 
+.PHONY: BrCHDplotpp
+BrCHDplotpp:
+	rm -f skg3pp.jpg plot.mat skg3.jpg
+	chmod 755 skg3pp.m
+	for i in $(shell seq 0.002 0.002 0.01) $(shell seq 0.01 0.005 0.05); do \
+		rm -f skg3.jpg skg3pp.jpg plot.mat $(XDATE)_skg3_pp_BrCHD0_$$i.jpg $(XDATE)_skg3_BrCHD0_$$i.jpg ; \
+		./skg3pp.m $$i || exit 1 ; \
+		mv skg3pp.jpg $(XDATE)_skg3_pp_BrCHD0_$${i}.jpg ; \
+        mv skg3.jpg $(XDATE)_skg3_BrCHD0_$$i.jpg ; \
+	done
+	rm -f plot.mat $(XDATE)_skg3_BrCHD0.jpg $(XDATE)_skg3_BrCHD0_pp.jpg
+	montage $(XDATE)_skg3_pp_BrCHD0_*.jpg -geometry +1+1 $(XDATE)_skg3_pp_BrCHD0.jpg 
+	montage $(XDATE)_skg3_BrCHD0_*.jpg -geometry +1+1 $(XDATE)_skg3_BrCHD0.jpg 
+
+
 .PHONY: plot
 plot:
 	rm -f skg.jpg
