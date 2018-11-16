@@ -155,7 +155,7 @@ title(cstrcat("SKG2 model: ",
 	  );
 xlabel("x");
 ylabel("z");
-legend("x-y", "a(x,z)", "b(x,z)");
+legend("x-z", "a(x,z)", "b(x,z)");
 
 print -djpg skg2pp.jpg
 
