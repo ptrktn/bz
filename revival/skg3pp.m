@@ -4,7 +4,7 @@
 # Based on Eqs E6-E8 and simulate the dynamics by varying initial [BrO3-]
 #
 # SKG3 model:
-# [BrCHD]_0, 
+# [BrCHD]_0 
 # 0.002-0.01, step 0.002
 # 0.01-0.05; step 0.005
 # 
@@ -31,10 +31,17 @@ global k4 = 2000000;
 global k4r = 100000000; # k_{-4}
 global H = 1.29;
 
+arg_list = argv();
+
 # The first command-line argument, if given, is initial [BrCHD]
 if (1 == nargin)
-  arg_list = argv();
   BrCHD = str2num(arg_list{1});
+endif
+
+# The second command-line argument, if given, is initial [BrO3-]
+if (2 == nargin)
+  BrCHD = str2num(arg_list{1});
+  BrO30 = str2num(arg_list{2});
 endif
 
 # Eqs E6-E8
@@ -96,9 +103,12 @@ plot (t, y);
 
 xlabel("\\tau");
 ylabel("concentration");
-title(cstrcat("SKG3 model: ",
-			  " f=", num2str(gf), 
-			  " [BrCHD]_0=", num2str(BrCHD))
+title(cstrcat(
+			  "SKG3 model: ",
+			  " f=", num2str(gf),
+			  " [BrO_3^-]_0=", num2str(BrO30),
+			  " [BrCHD]_0=", num2str(BrCHD)
+			  )
 #			  " T=", num2str(T))
 	  );
 legend("HBrO_2", "Br^-", "H_2Q");
@@ -156,13 +166,17 @@ plot(xxi, null_z, "color", "red");
 xlim([0, 0.015]);
 ylim([0, 0.04]);
 
-title(cstrcat("SKG3 model: ",
-			  " f=", num2str(gf), 
-			  " [BrCHD]_0=", num2str(BrCHD))
+title(cstrcat(
+			  "SKG3 model: ",
+			  " f=", num2str(gf),
+			  " [BrO_3^-]_0=", num2str(BrO30),
+			  " [BrCHD]_0=", num2str(BrCHD)
+			  )
+#			  " T=", num2str(T))
 	  );
 xlabel("x");
 ylabel("z");
-legend("x-y", "a(x,z)", "b(x,z)");
+legend("x-z", "a(x,z)", "b(x,z)");
 
 print -djpg skg3pp.jpg
 

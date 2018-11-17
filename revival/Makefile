@@ -85,6 +85,33 @@ BrCHDplotpp:
 	montage $(XDATE)_skg3_BrCHD0_*.jpg -geometry +1+1 $(XDATE)_skg3_BrCHD0.jpg 
 
 
+# [BrO3^-]_0: 0.01-0.30, step 0.01
+# [BrCHD]_0: 0.001-0.030, step 0.001
+.PHONY: BrO3BrCHDplotpp
+BrO3BrCHDplotpp:
+	rm -f skg3pp.jpg plot.mat skg3.jpg
+	chmod 755 skg3pp.m
+	for BrCHD in $(shell seq 0.001 0.001 0.030) ; do \
+	for BrO3 in $(shell seq 0.01 0.01 0.30) ; do \
+        XSIM=BrO30_$${BrO3}_BrCHD0_$${BrCHD} ; \
+		rm -f skg3.jpg skg3pp.jpg plot.mat $(XDATE)_*$${XSIM}.jpg ; \
+		./skg3pp.m $$BrCHD $$BrO3 || exit 1 ; \
+		mv skg3pp.jpg $(XDATE)_skg3_pp_$${XSIM}.jpg ; \
+		mv skg3.jpg $(XDATE)_skg3_$${XSIM}.jpg ; \
+	done ; done
+	rm -f plot.mat $(XDATE)_skg3_BrO30_BrCHD0.jpg $(XDATE)_skg3_BrO30_BrCHD0_pp.jpg
+	montage $(XDATE)_skg3_pp_BrO30_*_BrCHD0_*.jpg -geometry +1+1 -tile 30 $(XDATE)_skg3_pp_BrO30_BrCHD0.jpg 
+	montage $(XDATE)_skg3_BrO30_*_BrCHD0_*.jpg -geometry +1+1 -tile 30 $(XDATE)_skg3_BrO30_BrCHD0.jpg 
+
+.PHONY: BrO3BrCHDsplitplot
+BrO3BrCHDsplitplot:
+	rm -f $(XDATE)_plot_BrCHD0_*.jpg $(XDATE)_pp_BrCHD0_*.jpg 
+	for BrCHD in $(shell seq 0.001 0.001 0.030) ; do \
+		montage *_skg3_pp_BrO30_*_BrCHD0_$${BrCHD}.jpg -geometry +1+1 -tile 30 $(XDATE)_pp_BrCHD0_$${BrCHD}.jpg ; \
+		montage *_skg3_BrO30_*_BrCHD0_$${BrCHD}.jpg -geometry +1+1 -tile 30 $(XDATE)_plot_BrCHD0_$${BrCHD}.jpg ; \
+	done 
+
+
 .PHONY: plot
 plot:
 	rm -f skg.jpg
