@@ -112,6 +112,27 @@ BrO3BrCHDsplitplot:
 	done 
 
 
+.PHONY: skg4plot
+skg4plot:
+	rm -f plot.map skg4.jpg
+	for i in $(shell seq 50 50 1000); do \
+		for j in $(shell seq 50 50 1000); do \
+			k1=`echo "((0.2 - 0.001)/2.5)" | bc -l` ; \
+			k2=`echo "((0.022 - 0.001)/2.5)" | bc -l` ; \
+			k1=`echo "($$k1 * $$i)/1000" | bc -l` ; \
+			k2=`echo "($$k2 * $$j)/1000" | bc -l` ; \
+			echo $$k1 $$k2 ; \
+			rm -f skg4.jpg skg4x.jpg ; \
+			./skg4.m 0.2 0.022 $$k1 $$k2 ; \
+			ix=`printf "%05d" $$i` ; \
+			ij=`printf "%05d" $$j` ; \
+			montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_skg4_$${ix}_$${ij}.jpg ; \
+		done ; \
+	done
+	echo	./skg4.m 0.2 0.022 0.0796 0.0084
+	echo ./skg4.m 0.2 0.022 0.0796 0.0084
+	echo xdg-open skg4.jpg &
+
 .PHONY: plot
 plot:
 	rm -f skg.jpg
