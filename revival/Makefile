@@ -127,11 +127,12 @@ skg4plot:
 			ix=`printf "%05d" $$i` ; \
 			ij=`printf "%05d" $$j` ; \
 			montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_skg4_$${ix}_$${ij}.jpg ; \
+			rm -f skg4.jpg skg4x.jpg ; \
 		done ; \
 	done
-	echo	./skg4.m 0.2 0.022 0.0796 0.0084
-	echo ./skg4.m 0.2 0.022 0.0796 0.0084
-	echo xdg-open skg4.jpg &
+#	echo	./skg4.m 0.2 0.022 0.0796 0.0084
+#	echo ./skg4.m 0.2 0.022 0.0796 0.0084
+#	echo xdg-open skg4.jpg &
 
 .PHONY: plot
 plot:
