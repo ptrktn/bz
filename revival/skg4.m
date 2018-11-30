@@ -63,16 +63,8 @@ function xdot = f (x, t)
   global kBrCHD;
   global H;
 
-  BrO3 = BrO30 - kBrO3 * t;
-  BrCHD = BrCHD0 - kBrCHD * t;
-
-  if BrO3 < 0.001
-	BrO3 = 0.001;
-  endif
-
-  if BrCHD < 0.001
-	BrCHD = 0.001;
-  endif
+  BrO3 = axz(t); #BrO30 - kBrO3 * t;
+  BrCHD = bxz(t); #BrCHD0 - kBrCHD * t;
 
   xdot = zeros(3, 1);
 
@@ -95,21 +87,52 @@ endfunction
 function r = axz(x)
   global BrO30 kBrO3;
 
-  r = BrO30 - kBrO3 * x;
+  #r = BrO30 - kBrO3 * x;
 
-  if r < 0.001
-	r = 0.001;
-  endif
+  #if r < 0.04
+	#r = 0.04;
+  #endif
+
+  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
+  # exponentially: C(t) =C(0)*EXP(-0.2*t).
+
+  #r = 0.001 + BrO30 * exp(-0.2 * x);
+  r = 0.001 + BrO30 * exp(-kBrO3 * x);
+  #r = 0.04;
 endfunction
 
 function r = bxz(x)
   global BrCHD0 kBrCHD;
 
-  r = BrCHD0 - kBrCHD * x; 
+  #r = BrCHD0 - kBrCHD * x; 
 
-  if r < 0.001
-	r = 0.001;
-  endif
+   #if r < 0.001
+   #	r = 0.001;
+   #endif
+
+  #  (a) [BrCHD] = 0.022 (constant)
+  # r = 0.022;
+  # (b) [BrCHD] = 0 
+  # r = 0.001;
+  # (c) (or constant to be 0.0022).
+  # r = 0.0022;
+
+  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
+  # exponentially: C(t) =C(0)*EXP(-0.2*t).
+
+  #r = 0.001 + BrCHD0 * exp(-0.6 * x);
+  r = 0.001 + BrCHD0 * exp(-kBrCHD * x);
+
+# 3) Same as 2) but [BrCHD] is set constant as 1). 
+
+  #  (a) [BrCHD] = 0.022 (constant)
+  #r = 0.022;
+  # (b) [BrCHD] = 0 
+  #r = 0.001;
+  # (c) (or constant to be 0.0022).
+  #r = 0.0022;
+
+
 endfunction
 
 
@@ -126,27 +149,12 @@ x0 = [x1; x2; x3];
 # time = kf*t
 #t = linspace (0, 1, 10000);
 #t = linspace (0, 5, 10000);
-t = linspace (0, 15, 15000);
+t = linspace (0, 25, 10000);
 #t = linspace (0, 1, 1000);
 
 y = lsode ("f", x0, t);
 
-xsteps = 15000;
-#xsteps = 1000;
-xmax = 15;
-#xmax = 1;
-xh = xmax/xsteps;
-xi = 1;
-
-for i=1:xsteps
-  xx = xh * i;
-  xxi(xi) = xx;
-  null_x(xi) = axz(xx);
-  null_z(xi) = bxz(xx);
-  xi = xi + 1;
-end
-
-
+#plot (t, axz(t));
 plot (t, y);
 
 xlabel("\\tau");
@@ -163,36 +171,14 @@ title(cstrcat(
 legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
 
 print -djpg skg4.jpg
-
-# E9
-function r = axz(x)
-  global BrO30 kBrO3;
-
-  r = BrO30 - kBrO3 * x;
-
-  if r < 0.001
-	r = 0.001;
-  endif
-endfunction
-
-function r = bxz(x)
-  global BrCHD0 kBrCHD;
-
-  r = BrCHD0 - kBrCHD * x; 
-
-  if r < 0.001
-	r = 0.001;
-  endif
-endfunction
-
-
+#quit();
 
 newplot();
 
 hold on;
 #plot(y(:,1),y(:,3), "color", "black");
-plot(xxi, null_x, "color", "blue");
-plot(xxi, null_z, "color", "red");
+plot(t, axz(t), "color", "blue");
+plot(t, bxz(t), "color", "red");
 
 #xlim([0, 0.015]);
 #ylim([0, 0.04]);
@@ -213,9 +199,9 @@ legend("[BrO_3^-]", "[BrCHD]");
 
 print -djpg skg4x.jpg
 
-d = [rot90(t, -1), y, rot90(null_x, -1), rot90(null_z, -1)];
+#d = [rot90(t, -1), y, rot90(null_x, -1), rot90(null_z, -1)];
 
-save plot.mat d;
+#save plot.mat d;
 
 
 quit(0);
