@@ -117,7 +117,7 @@ BrO3BrCHDsplitplot:
 .PHONY: skg4plot
 skg4plot:
 	rm -f plot.map skg4.jpg
-	for i in $(shell seq seq  0.18 0.02 0.4); do \
+	for i in $(shell seq 0.18 0.02 0.4); do \
 		for j in $(shell seq  0.02 0.002 0.04); do \
 			k1=`echo "((0.2 - 0.001)/2.5)" | bc -l` ; \
 			k2=`echo "((0.022 - 0.001)/2.5)" | bc -l` ; \
