@@ -16,7 +16,7 @@ proc batcher_init {} {
 	global cfg
 
 	set cfg(inifile) {~/.batcherrc}
-
+	set cfg(prompt) {[>$] }
 	if {[file exists $cfg(inifile)]} {
 		global cfg
 		source $cfg(inifile)
@@ -25,6 +25,55 @@ proc batcher_init {} {
 	}
 
 	dbg [array names cfg]
+}
+
+proc batcher_shell {args} {
+	global cfg
+
+	if {[llength $args] < 1} {
+		err "shell: missing argument list"
+	}
+
+	foreach i $args {
+		dbg "shell: $i"
+	}
+
+	set dst $cfg(dst)
+
+	if {[info exists cfg($dst,gate)]} {
+		set serv1 $cfg($dst,gate)
+		set pass1 $cfg($dst,gate-passwd)
+		set serv2 $cfg($dst,dst)
+		set pass2 $cfg($dst,passwd)
+	} else {
+		set serv1 $dst
+		set pass1 $cfg($dst,passwd)
+	}
+
+	spawn ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv1
+	expect {password: }
+	send "$pass1\r"
+	expect $cfg(prompt)
+
+	if {[info exists cfg($dst,gate)]} {
+		send "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv2\r"
+		expect {password: }
+		send "$pass2\r"
+		expect $cfg(prompt)
+	}
+
+	foreach i $args {
+		send "$i\r"
+		expect $cfg(prompt)
+	}
+
+	if {[info exists cfg($dst,gate)]} {
+		send "exit\r"
+	}
+
+	send "exit\r"
+
+	dbg "\nshell: completed"
 }
 
 proc batcher_cp {args} {
