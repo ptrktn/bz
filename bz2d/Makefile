@@ -45,6 +45,8 @@ clean:
 test: $(TARGETS)
 	if [ -d ./res ] ; then $(RMDIR) ./res ; fi
 	./$(BINFILE) bz2dbase.dat
+	rm -f testsim.zip
+	zip -rq testsim.zip res
 
 .PHONY: demo
 demo: $(TARGETS)
