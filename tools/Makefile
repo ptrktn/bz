@@ -22,12 +22,15 @@ include ../Makefile
 # additional compiler flags
 CFLAGS += 
 
-install: $(BINDIR)/plot.sh $(BINDIR)/viewimg.sh
+install: $(BINDIR)/plot.sh $(BINDIR)/viewimg.sh $(BINDIR)/batcher
 
 $(BINDIR)/plot.sh: plot.sh
 	install -m 755 $< $@
 
 $(BINDIR)/viewimg.sh: viewimg.sh
+	install -m 755 $< $@
+
+$(BINDIR)/batcher: batcher
 	install -m 755 $< $@
 
 .PHONY: test
