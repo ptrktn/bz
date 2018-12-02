@@ -46,7 +46,7 @@ proc batcher_shell {args} {
 		set serv2 $cfg($dst,dst)
 		set pass2 $cfg($dst,passwd)
 	} else {
-		set serv1 $dst
+		set serv1 $cfg($dst,dst)
 		set pass1 $cfg($dst,passwd)
 	}
 
@@ -104,7 +104,6 @@ proc batcher_cp {args} {
 
 		# copy to remote server or to gate server
 		spawn scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $i $serv:
-		
 		expect {password: }
 		send "$pass\r"
 
