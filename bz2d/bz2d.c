@@ -553,15 +553,17 @@ static void     my_write_grid(char *fname, char *buf, int nx, int ny)
 	fwrite(buf2, nx * ny * sizeof(unsigned char), 1, fp);
 	fclose(fp);
 
+#if 0
 	/* convert to pgm ignoring errors */
 	cmd = XALLOC((64 + 2 * n), char);
 	sprintf(cmd, "convert -depth 8 -size %dx%d gray:%s %s.png > /dev/null 2>&1",
 			nx, ny, fname, fname);
 	printf("%s\n", cmd);
 	system(cmd);
+	XFREE(cmd);
+#endif
 
 	XFREE(buf2);
-	XFREE(cmd);
 }
 
 /************ my_write_grid */
