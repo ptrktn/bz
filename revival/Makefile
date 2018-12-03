@@ -136,6 +136,10 @@ skg4plot:
 #	echo ./skg4.m 0.2 0.022 0.0796 0.0084
 #	echo xdg-open skg4.jpg &
 
+.PHONY: skg5plot
+skg5plot:
+	./skg5.m 0.2 0.02 0.1 0.3
+
 .PHONY: plot
 plot:
 	rm -f skg.jpg
