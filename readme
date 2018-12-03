@@ -1,10 +1,8 @@
-This collection of programs and libraries is called `bz.'
+This collection of programs, libraries and tools is called `bz.'
 
-Please send all comments and bug reports by using mail form at:
+Please send all comments and bug reports by using github.
 
-    http://www.iki.fi/petterik/mail.php
-
-See page http://www.iki.fi/petterik/bz/ for updates.
+    https://github.com/ptrktn/bz
 
 Bz is free software. It is distributed under the GNU General Public
 License.  See the file COPYING for copying conditions.
@@ -12,7 +10,8 @@ License.  See the file COPYING for copying conditions.
 With the exception of the files listed below, bz is covered under
 the following GNU General Public License Copyrights:
 
-    Copyright (C) 2004  Petteri Kettunen
+    Copyright (C) 2004-2017  Petteri Kettunen
+    Copyright (C) 2018  Petteri Kettunen and Joāo M. da Silva
 
 The exception files/modules are:
 
