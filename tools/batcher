@@ -76,24 +76,21 @@ proc batcher_shell {args} {
 	dbg "\nshell: completed"
 }
 
-proc batcher_cp {args} {
+
+proc batcher_put {args} {
 	global cfg
 	
 	if {[llength $args] < 1} {
-		err "cp: missing argument list"
+		err "put: missing argument list"
 	}
 
 	set dst $cfg(dst)
 
 	foreach i $args {
-		dbg "cp: $i -> $dst"
-
 		if {![file exists $i]} {
-			err "cp: file $i not found"
+			err "put: file $i not found"
 		}
-
 		lappend fnames [file tail $i]
-
 	}
 
 	if {[info exists cfg($dst,gate)]} {
@@ -113,7 +110,7 @@ proc batcher_cp {args} {
 	# copy to final destination if gate server is used
 	if {[info exists cfg($dst,gate)]} {
 
-		dbg "\ncp: [join $fnames] transfer to gate server completed"
+		dbg "\nput: [join $fnames] transfer to gate server completed"
 
 		set serv1 $cfg($dst,gate)
 		set pass1 $cfg($dst,gate-passwd)
@@ -133,7 +130,7 @@ proc batcher_cp {args} {
 		send "exit\r"
 	}
 
-	dbg "\ncp: $i transfer completed"
+	dbg "\nput: $i transfer completed"
 }
 
 proc batcher_main {} {
