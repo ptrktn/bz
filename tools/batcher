@@ -86,10 +86,74 @@ proc batcher_get {args} {
 
 	set dst $cfg(dst)
 
-	err "not implemented yet"
+	# copy via gate server if used
+	if {[info exists cfg($dst,gate)]} {
+		set serv1 $cfg($dst,gate)
+		set pass1 $cfg($dst,gate-passwd)
+		set serv2 $cfg($dst,dst)
+		set pass2 $cfg($dst,passwd)
+
+		spawn ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv1
+		expect {password: }
+		send "$pass1\r"
+		expect {$ }
+
+		# FIXME use sftp
+		foreach i $args {
+			set fname [file tail $i]
+		
+			send "scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv2:$i .\r"
+			expect {password: }
+			send "$pass2\r"
+			expect {$ }
+			
+			dbg "get: $i transfer to gate server completed"
+		}
+
+		send "exit\r"
+		expect eof
+
+		dbg "get: transfer of all files to gate server completed"
+	}
+
+	# copy from server or from gate server
+
+	if {[info exists cfg($dst,gate)]} {
+		set serv $cfg($dst,gate)
+		set pass $cfg($dst,gate-passwd)		
+	} else {
+		set serv $cfg($dst,dst)
+		set pass $cfg($dst,passwd)
+	}
+		
+	spawn sftp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv
+	expect {password: }
+	send "$pass\r"
+	expect {sftp> }
+
+	foreach i $args {
+		if {[info exists cfg($dst,gate)]} {
+			set fname [file tail $i]
+		} else {
+			set fname $i
+		}
+
+		send "get $fname\r"
+		expect {sftp> }
+
+		if {[info exists cfg($dst,gate)]} {
+			send "rm $fname\r"
+			expect {sftp> }
+		}
+	}
+
+	send "quit\r"
+	expect eof
+
+	dbg "\nget: transfer completed"
 }
 
-
+# FIXME use sftp
 proc batcher_put {args} {
 	global cfg
 	
@@ -143,7 +207,7 @@ proc batcher_put {args} {
 		send "exit\r"
 	}
 
-	dbg "\nput: $i transfer completed"
+	dbg "\nput: transfer completed"
 }
 
 proc batcher_main {} {
