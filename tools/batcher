@@ -77,6 +77,19 @@ proc batcher_shell {args} {
 }
 
 
+proc batcher_get {args} {
+	global cfg
+	
+	if {[llength $args] < 1} {
+		err "get: missing argument list"
+	}
+
+	set dst $cfg(dst)
+
+	err "not implemented yet"
+}
+
+
 proc batcher_put {args} {
 	global cfg
 	
