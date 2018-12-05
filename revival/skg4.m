@@ -154,7 +154,6 @@ t = linspace (0, 25, 10000);
 
 y = lsode ("f", x0, t);
 
-#plot (t, axz(t));
 plot (t, y);
 
 xlabel("\\tau");
@@ -181,7 +180,7 @@ plot(t, axz(t), "color", "blue");
 plot(t, bxz(t), "color", "red");
 
 #xlim([0, 0.015]);
-#ylim([0, 0.04]);
+ylim([0, 0.25]);
 
 xlabel("\\tau");
 ylabel("concentration");
