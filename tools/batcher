@@ -99,7 +99,7 @@ proc batcher_get {args} {
 		spawn ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv1
 		expect {password: }
 		send "$pass1\r"
-		expect {$ }
+		expect $cfg(prompt)
 
 		# FIXME use sftp
 		foreach i $args {
@@ -108,7 +108,7 @@ proc batcher_get {args} {
 			send "scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv2:$i .\r"
 			expect {password: }
 			send "$pass2\r"
-			expect {$ }
+			expect $cfg(prompt)
 			
 			dbg "get: $i transfer to gate server completed"
 		}
@@ -200,13 +200,13 @@ proc batcher_put {args} {
 		spawn ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv1
 		expect {password: }
 		send "$pass1\r"
-		expect {$ }
+		expect $cfg(prompt)
 		send "scp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no [join $fnames] $serv2:\r"
 		expect {password: }
 		send "$pass2\r"
-		expect {$ }
+		expect $cfg(prompt)
 		send "rm -f [join $fnames]\r"
-		expect {$ }
+		expect $cfg(prompt)
 		send "exit\r"
 	}
 
