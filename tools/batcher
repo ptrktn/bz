@@ -25,6 +25,8 @@ proc batcher_init {} {
 	}
 
 	dbg [array names cfg]
+
+	# FIXME check gate-srv completeness
 }
 
 proc batcher_shell {args} {
@@ -38,16 +40,16 @@ proc batcher_shell {args} {
 		dbg "shell: $i"
 	}
 
-	set dst $cfg(dst)
+	set srv $cfg(srv)
 
-	if {[info exists cfg($dst,gate)]} {
-		set serv1 $cfg($dst,gate)
-		set pass1 $cfg($dst,gate-passwd)
-		set serv2 $cfg($dst,dst)
-		set pass2 $cfg($dst,passwd)
+	if {[info exists cfg($srv,gate)]} {
+		set serv1 $cfg($cfg($srv,gate),srv)
+		set pass1 $cfg($cfg($srv,gate),passwd)
+		set serv2 $cfg($srv,srv)
+		set pass2 $cfg($srv,passwd)
 	} else {
-		set serv1 $cfg($dst,dst)
-		set pass1 $cfg($dst,passwd)
+		set serv1 $cfg($srv,srv)
+		set pass1 $cfg($srv,passwd)
 	}
 
 	spawn ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv1
@@ -55,7 +57,7 @@ proc batcher_shell {args} {
 	send "$pass1\r"
 	expect $cfg(prompt)
 
-	if {[info exists cfg($dst,gate)]} {
+	if {[info exists cfg($srv,gate)]} {
 		send "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv2\r"
 		expect {password: }
 		send "$pass2\r"
@@ -67,7 +69,7 @@ proc batcher_shell {args} {
 		expect $cfg(prompt)
 	}
 
-	if {[info exists cfg($dst,gate)]} {
+	if {[info exists cfg($srv,gate)]} {
 		send "exit\r"
 	}
 
@@ -84,14 +86,14 @@ proc batcher_get {args} {
 		err "get: missing argument list"
 	}
 
-	set dst $cfg(dst)
+	set srv $cfg(srv)
 
 	# copy via gate server if used
-	if {[info exists cfg($dst,gate)]} {
-		set serv1 $cfg($dst,gate)
-		set pass1 $cfg($dst,gate-passwd)
-		set serv2 $cfg($dst,dst)
-		set pass2 $cfg($dst,passwd)
+	if {[info exists cfg($srv,gate)]} {
+		set serv1 $cfg($cfg($srv,gate),srv)
+		set pass1 $cfg($cfg($srv,gate),passwd)
+		set serv2 $cfg($srv,srv)
+		set pass2 $cfg($srv,passwd)
 
 		spawn ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv1
 		expect {password: }
@@ -118,12 +120,12 @@ proc batcher_get {args} {
 
 	# copy from server or from gate server
 
-	if {[info exists cfg($dst,gate)]} {
-		set serv $cfg($dst,gate)
-		set pass $cfg($dst,gate-passwd)		
+	if {[info exists cfg($srv,gate)]} {
+		set serv $cfg($cfg($srv,gate),srv)
+		set pass $cfg($cfg($srv,gate),passwd)
 	} else {
-		set serv $cfg($dst,dst)
-		set pass $cfg($dst,passwd)
+		set serv $cfg($srv,srv)
+		set pass $cfg($srv,passwd)
 	}
 		
 	spawn sftp -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv
@@ -132,7 +134,7 @@ proc batcher_get {args} {
 	expect {sftp> }
 
 	foreach i $args {
-		if {[info exists cfg($dst,gate)]} {
+		if {[info exists cfg($srv,gate)]} {
 			set fname [file tail $i]
 		} else {
 			set fname $i
@@ -141,7 +143,7 @@ proc batcher_get {args} {
 		send "get $fname\r"
 		expect {sftp> }
 
-		if {[info exists cfg($dst,gate)]} {
+		if {[info exists cfg($srv,gate)]} {
 			send "rm $fname\r"
 			expect {sftp> }
 		}
@@ -161,7 +163,7 @@ proc batcher_put {args} {
 		err "put: missing argument list"
 	}
 
-	set dst $cfg(dst)
+	set srv $cfg(srv)
 
 	foreach i $args {
 		if {![file exists $i]} {
@@ -170,12 +172,12 @@ proc batcher_put {args} {
 		lappend fnames [file tail $i]
 	}
 
-	if {[info exists cfg($dst,gate)]} {
-		set serv $cfg($dst,gate)
-		set pass $cfg($dst,gate-passwd)
+	if {[info exists cfg($srv,gate)]} {
+		set serv $cfg($cfg($srv,gate),srv)
+		set pass $cfg($cfg($srv,gate),passwd)
 	} else {
-		set serv $cfg($dst,dst)
-		set pass $cfg($dst,passwd)
+		set serv $cfg($srv,srv)
+		set pass $cfg($srv,passwd)
 	}
 
 	# copy to remote server or to gate server - mind the {*}
@@ -185,14 +187,14 @@ proc batcher_put {args} {
 	send "$pass\r"
 
 	# copy to final destination if gate server is used
-	if {[info exists cfg($dst,gate)]} {
+	if {[info exists cfg($srv,gate)]} {
 
 		dbg "\nput: [join $fnames] transfer to gate server completed"
 
-		set serv1 $cfg($dst,gate)
-		set pass1 $cfg($dst,gate-passwd)
-		set serv2 $cfg($dst,dst)
-		set pass2 $cfg($dst,passwd)
+		set serv1 $cfg($cfg($srv,gate),srv)
+		set pass1 $cfg($cfg($srv,gate),passwd)
+		set serv2 $cfg($srv,srv)
+		set pass2 $cfg($srv,passwd)
 
 		spawn ssh -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $serv1
 		expect {password: }
@@ -210,6 +212,7 @@ proc batcher_put {args} {
 	dbg "\nput: transfer completed"
 }
 
+
 proc batcher_main {} {
     global argv
     global env
@@ -221,20 +224,20 @@ proc batcher_main {} {
 		dbg "ARGV $i"
     }
 
-	set dst [lindex $argv 0]
+	set srv [lindex $argv 0]
 	set cmd [lindex $argv 1]
 
-	dbg "dst $dst cmd $cmd"
+	dbg "srvt $srv cmd $cmd"
 
-	if {![info exists cfg($dst,dst)]} {
-		err "$dst undefined"
+	if {![info exists cfg($srv,srv)]} {
+		err "server $srv undefined"
 	}
 
 	if {[string compare [info procs "batcher_$cmd"] "batcher_$cmd"]} {
-		err "$cmd undefined"
+		err "command $cmd undefined"
 	}
 
-	set cfg(dst) $dst
+	set cfg(srv) $srv
 
 	eval batcher_$cmd [lrange $argv 2 end]
 }
