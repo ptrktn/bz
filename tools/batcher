@@ -16,7 +16,8 @@ proc batcher_init {} {
 	global cfg
 
 	set cfg(inifile) {~/.batcherrc}
-	set cfg(prompt) {[>$] }
+	set cfg(prompt) "\[#>\$\] "
+
 	if {[file exists $cfg(inifile)]} {
 		global cfg
 		source $cfg(inifile)
