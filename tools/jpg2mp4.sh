@@ -16,14 +16,14 @@ for i in $(find . -type f -name '*.jpg' | sort | head -500) ; do
 	j=$(($j + 1))
 done
 
-ffmpeg -framerate 25 -i $X%015d.jpg -c:v libx264 -profile:v high -crf 20 -pix_fmt yuv420p output.mp4
-
-mv output.mp4 ../
+# -c:v libx264
+ffmpeg -framerate 25 -i $X%015d.jpg -profile:v high -crf 20 -pix_fmt yuv420p output.mp4
 
 #ffmpeg -framerate 25 -i $X%015d.jpg  -profile:v high -crf 20 output.swf
 #mv output.swf ../
 
-ffmpeg -framerate 25 -i $X%015d.jpg output.mpg
+#ffmpeg -framerate 25 -i $X%015d.jpg output.mpg
+#mv output.mpg ../
 
-mv output.mpg ../
+exit 0
 
