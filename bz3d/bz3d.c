@@ -512,10 +512,10 @@ int             main(int argc, char *argv[])
 	if (-1 == SNAPZ) {
 		char *cmd = XALLOC(8192, char);
 		
-		sprintf(cmd, "montage %s/%s_??????????.jpg -geometry +1+1 %s/%s_slices.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
+		sprintf(cmd, "command -v montage && montage %s/%s_??????????.jpg -geometry +1+1 %s/%s_slices.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
 		system(cmd);
 
-		bzsimLogMsg(logfile, cmd);
+		bzsimLogMsg(logfile, "%s%s", cmd, "\n");
 		
 		XFREE(cmd);
 	}
@@ -523,10 +523,10 @@ int             main(int argc, char *argv[])
 	if (0 != SNAPZ_COMP) {
 		char *cmd = XALLOC(8192, char);
 		
-		sprintf(cmd, "montage %s/%s_??????????_z_comp.jpg -tile x1 -geometry +1+1 %s/%s_comp.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
+		sprintf(cmd, "command -v montage && montage %s/%s_??????????_z_comp.jpg -tile x1 -geometry +1+1 %s/%s_comp.jpg", OUTPUT_DIR, SIMULATION_NAME, OUTPUT_DIR, SIMULATION_NAME);
 		system(cmd);
 
-		bzsimLogMsg(logfile, cmd);
+		bzsimLogMsg(logfile, "%s%s", cmd, "\n");
 
 		XFREE(cmd);
 		XFREE(imagezn); 
