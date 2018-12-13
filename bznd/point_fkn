@@ -51,11 +51,11 @@ t = linspace (0, 5000, 10000);
 
 y = lsode ("f", x0, t);
 
-gset term jpeg;
-gset output "point_fkn.jpg";
 title("FKN Model Breaks Down \n1 = A (Br03-), 2 = B (bromoMA), 3 = U (HBr02), 4 = V (Ce), 5 = W (Br-)");
-gset xlabel "time";
-gset ylabel "concentration";
+xlabel "time";
+ylabel "concentration";
 plot (t, y);
+
+print -djpg point_fkn.jpg;
 
 quit(0);
