@@ -144,6 +144,7 @@ void            my_save_parameters(char *fname)
 	LOG_PAR(fname, "JPEG_COMPRESSION", JPEG_COMPRESSION);
 	LOG_PAR(fname, "SCAL_MIN", SCAL_MIN);
 	LOG_PAR(fname, "SCAL_MAX", SCAL_MAX);
+	LOG_PAR(fname, "ITERATIONS", ITERATIONS);
 	LOG_PAR(fname, "SNAP_START", SNAP_START);
 }
 
