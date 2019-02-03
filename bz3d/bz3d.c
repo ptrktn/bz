@@ -503,6 +503,7 @@ int             main(int argc, char *argv[])
 	}			/* end TIME LOOP */
 
 	bzsimSaveData2(NX, NY, NZ, BZSIM_DATA_FLOAT, x1, SCAL_MIN, SCAL_MAX, "%s/%s_x1_final.dat", OUTPUT_DIR, SIMULATION_NAME);
+	bzsimSaveData2(NX, NY, NZ, BZSIM_DATA_FLOAT, y_1, SCAL_MIN, SCAL_MAX, "%s/%s_y1_final.dat", OUTPUT_DIR, SIMULATION_NAME);
 	bzsimSaveData(NX, NY, NZ, BZSIM_DATA_FLOAT, r1, SCAL_MIN, SCAL_MAX, "%s/%s_r1_final.dat", OUTPUT_DIR, SIMULATION_NAME);
 
 	/* Free the allocated memory. */
