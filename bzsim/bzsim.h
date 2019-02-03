@@ -107,6 +107,7 @@ void            bzsimSinkBC3D(int nx, int ny, int nz, int nvar, ...);
 int             bzsimTruncateFile(char *fmt, ...);
 int             bzsimWriteJPEG(char *fname, unsigned char *pix_data, int nx, int ny, int depth, int quality);
 int             bzsimWritePGM(char *fname, unsigned char *buf, int nx, int ny);
+float         * bzsimReadFloatGrid(char *path, int *x, int *y, int *z, float *vmin, float *vmax);
 
 /****v* bzsim.h/BZSIM_X
  *  NAME

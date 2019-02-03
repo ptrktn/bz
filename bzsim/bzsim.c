@@ -1487,6 +1487,7 @@ int bzsimSaveData2(int nx, int ny, int nz, int type, void *ptr, double minval, d
 			fprintf(fp, " %g", *(((float *) ptr) + i));
 			break;
 		case BZSIM_DATA_BYTE:
+			/* FIXME */
 			break;
 		default:
 			break;
@@ -1799,3 +1800,41 @@ int                bzsimExec(char *fmt, ...)
 }
 
 /*******/
+
+
+float * bzsimReadFloatGrid(char *path, int *x, int *y, int *z, float *vmin, float *vmax)
+{
+	FILE *fp;
+	int i, n;
+	float *res, fMin = 1.0e22, fMax = -1.0e22;
+
+	if (!(fp = fopen(path, "rb")))
+		bzsimPanic("opening '%s' failed", path);
+
+	if (3 != fscanf(fp, "%d%d%d", x, y, z))
+		bzsimPanic("data header read error");
+
+	n = *x * *y * *z;
+	res = XALLOC(n, float);
+
+	for (i = 0; i != n; i++) {
+		float f;
+
+		if (fscanf(fp, "%f", &f) != 1)
+			bzsimPanic("data read error (%d)", i);		
+		res[i] = f;
+		if (f < fMin) fMin = f;
+		if (f > fMax) fMax = f;
+	}
+
+	fclose(fp);
+	
+	*vmax = fMax;
+	*vmin = fMin;
+
+#if _DEBUG_
+	fprintf(stderr, "%s: min = %f max = %f\n", path, fMin, fMax);
+#endif /* _DEBUG_ */
+
+	return res;
+}
