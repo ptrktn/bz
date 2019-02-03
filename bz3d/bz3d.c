@@ -372,11 +372,9 @@ int             main(int argc, char *argv[])
 	sprintf(fname, "%s/%s_grid.jpg", OUTPUT_DIR, SIMULATION_NAME);
 	my_write_grid(fname, diff_grid, NX, NY);
 
-	// FIXME count spots
-
 	bzsimLogMsg(logfile, "SPOTS %d / GRID POINTS %d = ACTUAL DENSITY %f\n", spot_cnt, N, ((float) spot_cnt) / (N));
 
-	if (0 == spot_cnt) {
+	if (0 != READ_GRID && 0 == spot_cnt) {
 		fprintf(stderr, "ERROR: no spots\n");
 		exit(1);
 	}
