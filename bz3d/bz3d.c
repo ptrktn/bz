@@ -233,9 +233,11 @@ static void     my_init_grid(char *logfile)
 			}	/* end yi */
 		}		/* end zi */
 	}			/* !READ_GRID */
+
 	if (SAVE_GRID) {
 		bzsimSaveData(NX, NY, NZ, BZSIM_DATA_BYTE, diff_grid, 0, 0, "%s/%s_grid.dat", OUTPUT_DIR, SIMULATION_NAME);
 	}
+
 	/* other variables */
 	for (zi = 0; zi != NZ; zi++) {
 		for (yi = 0; yi != NY; yi++) {
@@ -369,6 +371,9 @@ int             main(int argc, char *argv[])
 	my_check_parameters();
 	sprintf(fname, "%s/%s_grid.jpg", OUTPUT_DIR, SIMULATION_NAME);
 	my_write_grid(fname, diff_grid, NX, NY);
+
+	// FIXME count spots
+
 	bzsimLogMsg(logfile, "SPOTS %d / GRID POINTS %d = ACTUAL DENSITY %f\n", spot_cnt, N, ((float) spot_cnt) / (N));
 
 	if (0 == spot_cnt) {
@@ -499,7 +504,7 @@ int             main(int argc, char *argv[])
 
 	}			/* end TIME LOOP */
 
-	bzsimSaveData(NX, NY, NZ, BZSIM_DATA_FLOAT, x1, SCAL_MIN, SCAL_MAX, "%s/%s_x1_final.dat", OUTPUT_DIR, SIMULATION_NAME);
+	bzsimSaveData2(NX, NY, NZ, BZSIM_DATA_FLOAT, x1, SCAL_MIN, SCAL_MAX, "%s/%s_x1_final.dat", OUTPUT_DIR, SIMULATION_NAME);
 	bzsimSaveData(NX, NY, NZ, BZSIM_DATA_FLOAT, r1, SCAL_MIN, SCAL_MAX, "%s/%s_r1_final.dat", OUTPUT_DIR, SIMULATION_NAME);
 
 	/* Free the allocated memory. */
