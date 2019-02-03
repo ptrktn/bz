@@ -374,7 +374,7 @@ int             main(int argc, char *argv[])
 
 	bzsimLogMsg(logfile, "SPOTS %d / GRID POINTS %d = ACTUAL DENSITY %f\n", spot_cnt, N, ((float) spot_cnt) / (N));
 
-	if (0 != READ_GRID && 0 == spot_cnt) {
+	if (0 == READ_GRID && 0 == spot_cnt) {
 		fprintf(stderr, "ERROR: no spots\n");
 		exit(1);
 	}
