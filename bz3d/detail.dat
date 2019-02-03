@@ -1,4 +1,4 @@
-#****h* bz3d/detail.dat
+#
 # NAME
 #   detail.dat
 # DESCRIPTION
@@ -113,3 +113,5 @@ L 64
 NPTS 256
 TIMESTEP_SAFETY 16
 SAVE_DF3 0
+DIFFUSION_SPOT_DENSITY 0.04
+
