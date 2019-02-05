@@ -113,98 +113,110 @@ function xdot = f (x, t)
   fkinet(18) = kf(18) * x(11) * x(2);
   fkinet(19) = kf(19) * x(14) * x(7) * x(3); 
   
-  xdot = zeros(17, 1);
+  xdot = NaN(17, 1);
 
-  # FIXME rate equations
-# x(1): Br-
-
-# x(2): HOBr
-# x(3): H+
-# x(4): Br2
-# x(5): H2O
-# x(6): HBrO2
-# x(7): BrO3-
-# x(8): H2BrO2+
-# x(9): Br2O4
-# x(10): BrO2*
-# x(11): H2Q
-# x(12): HQ*
-# x(13): Q
-# x(14): CHD
-# x(15): CHDE
-# x(16): BrCHD
-# x(17): CHED
-
+  # Table 3
+  # x(1): Br-
+  xdot(1) = - fkinet(1) + rkinet(1)          # R1
+            - fkinet(2) + rkinet(2)          # R2
+            - fkinet(3) + rkinet(3)          # R3
+            + fkinet(12)                     # R12
+            + fkinet(14)                     # R14
+            + 2 *  fkinet(16)                # R16
+            + fkinet(18);                    # R18
+  # x(2): HOBr
+  xdot(2) = - fkinet(1) + rkinet(1)          # R1
+            + 2 * fkinet(2) - rkinet(2)      # R2 check
+            + fkinet(3) - rkinet(3)          # R3
+            + fkinet(5)                      # R5
+            - fkinet(18);                    # R18  
+  # x(3): H+
+  xdot(3) = - fkinet(1) + rkinet(1)          # R1
+            - fkinet(2) + rkinet(2)          # R2
+            - fkinet(3) + rkinet(3)          # R3
+            - rkinet(4) + rkinet(4)          # R4
+            + 2 * fkinet(5)                  # R5
+            - fkinet(6) - rkinet(6)          # R6
+            - fkinet(11) - rkinet(11)        # R11
+            + fkinet(12)                     # R12
+            + fkinet(14)                     # R14
+            - 0                              # R15 check
+            + 2 * fkinet(16)                 # R16 check
+            - rkinet(17)                     # R17 check
+            + fkinet(18)                     # R18
+            - fkinet(19);                    # R19
+  # x(4): Br2
+  xdot(4) = + fkinet(1) - rkinet(1)          # R1
+            - fkinet(12)                     # R12
+            - fkinet(16);                    # R16
+  # x(5): H2O
+  xdot(5) = fkinet(1) - rkinet(1)            # R1
+            + fkinet(6) - rkinet(6)          # R6
+            + rkinet(13)                     # R13
+            + fkinet(17)                     # R17
+            + fkinet(18)                     # R18
+            + fkinet(19) ;                   # R19
+  # x(6): HBrO2
+  xdot(6) = - fkinet(2) + rkinet(2)          # R2
+            + fkinet(3) - rkinet(3)          # R3
+            - fkinet(4) + rkinet(4)          # R5
+            - fkinet(6) + rkinet(6)          # R6
+            + fkinet(8)                      # R8
+            + fkinet(17)                     # R17
+            + fkinet(18) ;                   # R18
+  # x(7): BrO3-
+  xdot(7) = - fkinet(3) + rkinet(3)          # R3
+            + fkinet(5)                      # R5
+            - fkinet(6) - rkinet(6)          # R6
+            - fkinet(17)                     # R17
+            - fkinet(19) ;                   # R19
+  # x(8): H2BrO2+
+  xdot(8) = + fkinet(4) - rkinet(4)          # R4
+            - fkinet(5) ;                    # R5
+  # x(9): Br2O4
+  xdot(9) = + fkinet(6) - rkinet(6)          # R6
+            - fkinet(7) + rkinet(7) ;        # R7
+  # x(10): BrO2*
+  xdot(10) = 2 * finet(7)                    # R7 check
+             - fkinet(8)                     # R8
+             - fkinet(9) ;                   # R9
+  # x(11): H2Q
+  xdot(11) = - fkinet(8)                     # R8
+             + fkinet(10) - rkinet(10)       # R10
+             + fkinet(15)                    # R15
+             - fkinet(16)                    # R16
+             - fkinet(17)                    # R17
+             - fkinet(18)                    # R18
+             + fkinet(19) ;                  # R19
+  # x(12): HQ*
+  xdot(12) = + fkinet(8)                     # R8
+             - fkinet(10) + 2 * rkinet(10) ; # R10 check
+  # x(13): Q
+  xdot(13) = + fkinet(10) - fkinet(10)       # R10
+             + fkinet(16)                    # R16
+             + fkinet(17)                    # R17
+             + fkinet(18) ;                  # R18
+  # x(14): CHD
+  xdot(14) = - fkinet(11) + rkinet(11)       # R11
+             - fkinet(19) ;                  # R19
+  # x(15): CHDE
+  xdot(15) = + fkinet(11) - rkinet(11)       # R15
+             - fkinet(12)                    # R12
+             - fkinet(13) ;                  # R13
+  # x(16): BrCHD
+  xdot(16) = + fkinet(12)                    # R12
+             + fkinet(13)                    # R13
+             - fkinet(14);                   # R14
+  # x(17): CHED
+  xdot(17) = + fkinet(14)                    # R14
+             - fkinet(15) ;                  # R15
+             
 endfunction
 
-function r = axz(x)
-  global BrO30 kBrO3;
+t = linspace (0, 0.01, 100);
 
-  #r = BrO30 - kBrO3 * x;
+if 1 > 2
 
-  #if r < 0.04
-	#r = 0.04;
-  #endif
-
-  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
-  # exponentially: C(t) =C(0)*EXP(-0.2*t).
-
-  #r = 0.001 + BrO30 * exp(-0.2 * x);
-  #r = 0.001 + BrO30 * exp(-kBrO3 * x);
-  r = 0.0005 + BrO30 * exp(-kBrO3 * x);
-  #r = 0.04;
-endfunction
-
-function r = bxz(x)
-  global BrCHD0 kBrCHD;
-
-  #r = BrCHD0 - kBrCHD * x; 
-
-   #if r < 0.001
-   #	r = 0.001;
-   #endif
-
-  #  (a) [BrCHD] = 0.022 (constant)
-  # r = 0.022;
-  # (b) [BrCHD] = 0 
-  # r = 0.001;
-  # (c) (or constant to be 0.0022).
-  # r = 0.0022;
-
-  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
-  # exponentially: C(t) =C(0)*EXP(-0.2*t).
-
-  #r = 0.001 + BrCHD0 * exp(-0.6 * x);
-  r = 0.001 + BrCHD0 * exp(-kBrCHD * x);
-
-# 3) Same as 2) but [BrCHD] is set constant as 1). 
-
-  #  (a) [BrCHD] = 0.022 (constant)
-  #r = 0.022;
-  # (b) [BrCHD] = 0 
-  #r = 0.001;
-  # (c) (or constant to be 0.0022).
-  #r = 0.0022;
-
-
-endfunction
-
-
-# Initial conditions
-#1 HBrO2
-x1 = 0.0007245927973977255 ;
-#2 Br-
-x2 = 0.001422769822454512 ;
-#3 H2Q
-x3 = 0.03193424249332828 ;
-
-x0 = [x1; x2; x3];
-
-# time = kf*t
-#t = linspace (0, 1, 10000);
-#t = linspace (0, 5, 10000);
-t = linspace (0, 15, 10000);
-#t = linspace (0, 1, 1000);
 
 y = lsode ("f", x0, t);
 
@@ -213,10 +225,11 @@ h1 = figure();
 #subplot(2, 1, 1);
 plot (t, y);
 
-xlabel("\\tau");
+xlabel("time");
 ylabel("concentration");
+
 title(cstrcat(
-			  "SKG4 model: ",
+			  "SK model ",
 			  " f=", num2str(gf),
 			  " [BrO_3^-]_0=", num2str(BrO30),
 			  " [BrCHD]_0=", num2str(BrCHD0),
@@ -224,49 +237,10 @@ title(cstrcat(
 			  " k_{BrCHD}=", num2str(kBrCHD)
 			  )
 	  );
-legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
+#legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
+print(h1, "sk.jpg", "-djpg");
 
-#print -djpg skg4.jpg
-#quit();
-
-
-#subplot(2, 1, 2);
-h2 = figure();
-
-hold on;
-#plot(y(:,1),y(:,3), "color", "black");
-plot(t, axz(t), "color", "blue");
-plot(t, bxz(t), "color", "red");
-
-#xlim([0, 0.015]);
-#ylim([0, 0.04]);
-
-xlabel("\\tau");
-ylabel("concentration");
-title(cstrcat(
-			  "SKG4 model: ",
-			  " f=", num2str(gf),
-			  " [BrO_3^-]_0=", num2str(BrO30),
-			  " [BrCHD]_0=", num2str(BrCHD0),
-			  " k_{BrO3}=", num2str(kBrO3),
-			  " k_{BrCHD}=", num2str(kBrCHD)
-			  )
-	  );
-
-legend("[BrO_3^-]", "[BrCHD]");
-
-#print -djpg -color skg4.jpg
-
-#d = [rot90(t, -1), y, rot90(null_x, -1), rot90(null_z, -1)];
-
-#save plot.mat d;
+endif
 
 
-#quit(0);
-
-#endif
-
-print(h1, "skg4a.jpg", "-djpg");
-
-print(h2, "skg4b.jpg", "-djpg");
 
