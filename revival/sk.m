@@ -126,7 +126,7 @@ function xdot = f (x, t)
             + fkinet(18);                    # R18
   # x(2): HOBr
   xdot(2) = - fkinet(1) + rkinet(1)          # R1
-            + 2 * fkinet(2) - rkinet(2)      # R2 check
+            + 2 * fkinet(2) - rkinet(2)      # R2
             + fkinet(3) - rkinet(3)          # R3
             + fkinet(5)                      # R5
             - fkinet(18);                    # R18  
@@ -140,9 +140,9 @@ function xdot = f (x, t)
             - fkinet(11) - rkinet(11)        # R11
             + fkinet(12)                     # R12
             + fkinet(14)                     # R14
-            - 0                              # R15 check
-            + 2 * fkinet(16)                 # R16 check
-            - rkinet(17)                     # R17 check
+            - fkinet(15)                     # R15
+            + 2 * fkinet(16)                 # R16
+            - rkinet(17)                     # R17
             + fkinet(18)                     # R18
             - fkinet(19);                    # R19
   # x(4): Br2
@@ -177,7 +177,7 @@ function xdot = f (x, t)
   xdot(9) = + fkinet(6) - rkinet(6)          # R6
             - fkinet(7) + rkinet(7) ;        # R7
   # x(10): BrO2*
-  xdot(10) = 2 * finet(7)                    # R7 check
+  xdot(10) = 2 * finet(7) - rkinet(7)        # R7
              - fkinet(8)                     # R8
              - fkinet(9) ;                   # R9
   # x(11): H2Q
@@ -190,7 +190,7 @@ function xdot = f (x, t)
              + fkinet(19) ;                  # R19
   # x(12): HQ*
   xdot(12) = + fkinet(8)                     # R8
-             - fkinet(10) + 2 * rkinet(10) ; # R10 check
+             - fkinet(10) + 2 * rkinet(10) ; # R10
   # x(13): Q
   xdot(13) = + fkinet(10) - fkinet(10)       # R10
              + fkinet(16)                    # R16
