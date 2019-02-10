@@ -10,7 +10,7 @@ global kf kr;
 # small initial concentration for intermediates     
 int0 = 0.1/10000; 
    
-x0 = zeros(17, 1);
+x0 = NaN(17, 1);
 # x(1): Br-
 x0(1) = int0;
 # x(2): HOBr
@@ -142,7 +142,7 @@ function xdot = f (x, t)
             + fkinet(14)                     # R14
             - fkinet(15)                     # R15
             + 2 * fkinet(16)                 # R16
-            - rkinet(17)                     # R17
+            - fkinet(17)                     # R17 check r/f
             + fkinet(18)                     # R18
             - fkinet(19);                    # R19
   # x(4): Br2
@@ -152,7 +152,7 @@ function xdot = f (x, t)
   # x(5): H2O
   xdot(5) = fkinet(1) - rkinet(1)            # R1
             + fkinet(6) - rkinet(6)          # R6
-            + rkinet(13)                     # R13
+            + fkinet(13)                     # R13 check r/f
             + fkinet(17)                     # R17
             + fkinet(18)                     # R18
             + fkinet(19) ;                   # R19
@@ -177,7 +177,7 @@ function xdot = f (x, t)
   xdot(9) = + fkinet(6) - rkinet(6)          # R6
             - fkinet(7) + rkinet(7) ;        # R7
   # x(10): BrO2*
-  xdot(10) = 2 * finet(7) - rkinet(7)        # R7
+  xdot(10) = 2 * fkinet(7) - rkinet(7)       # R7
              - fkinet(8)                     # R8
              - fkinet(9) ;                   # R9
   # x(11): H2Q
@@ -206,7 +206,7 @@ function xdot = f (x, t)
   # x(16): BrCHD
   xdot(16) = + fkinet(12)                    # R12
              + fkinet(13)                    # R13
-             - fkinet(14);                   # R14
+             - fkinet(14) ;                  # R14
   # x(17): CHED
   xdot(17) = + fkinet(14)                    # R14
              - fkinet(15) ;                  # R15
@@ -215,8 +215,7 @@ endfunction
 
 t = linspace (0, 0.01, 100);
 
-if 1 > 2
-
+if 3 > 2
 
 y = lsode ("f", x0, t);
 
@@ -238,7 +237,7 @@ title(cstrcat(
 			  )
 	  );
 #legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
-print(h1, "sk.jpg", "-djpg");
+#print(h1, "sk.jpg", "-djpg");
 
 endif
 
