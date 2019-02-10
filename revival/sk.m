@@ -83,35 +83,37 @@ kf(19) = 10^(-5);
 
 
 function xdot = f (x, t)
-  global kf kr;
+
+  global kf ;
+  global kr ;
   
-  fkinet(1) = kf(1) * x(1) * x(2) * x(3);
-  rkinet(1) = kr(1) * x(4) * x(5);
-  fkinet(2) = kf(2) * x(1) * x(6) * x(3);
-  rkinet(2) = kr(2) * x(2) * x(2);
-  fkinet(3) = kf(3) * x(1) * x(7) * x(3) * x(3);
-  rkinet(3) = kr(3) * x(2) * x(6);
-  fkinet(4) = kf(4) * x(6) * x(3);
-  rkinet(4) = kr(4) * x(8);
-  fkinet(5) = kf(5) * x(6) * x(8);
-  fkinet(6) = kf(6) * x(6) * x(7) * x(3);
-  rkinet(6) = kr(6) * x(9) * x(5);
-  fkinet(7) = kf(7) * x(9);
-  rkinet(7) = kr(7) * x(10) * x(10);
-  fkinet(8) = kf(8) * x(11) * x(10);
-  fkinet(9) = kf(9) * x(12) * x(10);
-  fkinet(10) = kf(10) * x(12) * x(12);
-  rkinet(10) = kr(10) * x(11) * x(13);
-  fkinet(11) = kf(11) * x(14) * x(3);
-  rkinet(11) = kr(11) * x(15) * x(3);
-  fkinet(12) = kf(12) * x(15) * x(4);
-  fkinet(13) = kf(13) * x(15) * x(2);
-  fkinet(14) = kf(14) * x(16);
-  fkinet(15) = kf(15) * x(17) * x(3);
-  fkinet(16) = kf(16) * x(11) * x(4);
-  fkinet(17) = kf(17) * x(11) * x(3) * x(7);
-  fkinet(18) = kf(18) * x(11) * x(2);
-  fkinet(19) = kf(19) * x(14) * x(7) * x(3); 
+  fkinet(1) = kf(1) * x(1) * x(2) * x(3) ;
+  rkinet(1) = kr(1) * x(4) * x(5) ;
+  fkinet(2) = kf(2) * x(1) * x(6) * x(3) ;
+  rkinet(2) = kr(2) * x(2) * x(2) ;
+  fkinet(3) = kf(3) * x(1) * x(7) * x(3) * x(3) ;
+  rkinet(3) = kr(3) * x(2) * x(6) ;
+  fkinet(4) = kf(4) * x(6) * x(3) ;
+  rkinet(4) = kr(4) * x(8) ;
+  fkinet(5) = kf(5) * x(6) * x(8) ;
+  fkinet(6) = kf(6) * x(6) * x(7) * x(3) ;
+  rkinet(6) = kr(6) * x(9) * x(5) ;
+  fkinet(7) = kf(7) * x(9) ;
+  rkinet(7) = kr(7) * x(10) * x(10) ;
+  fkinet(8) = kf(8) * x(11) * x(10) ;
+  fkinet(9) = kf(9) * x(12) * x(10) ;
+  fkinet(10) = kf(10) * x(12) * x(12) ;
+  rkinet(10) = kr(10) * x(11) * x(13) ;
+  fkinet(11) = kf(11) * x(14) * x(3) ;
+  rkinet(11) = kr(11) * x(15) * x(3) ;
+  fkinet(12) = kf(12) * x(15) * x(4) ;
+  fkinet(13) = kf(13) * x(15) * x(2) ;
+  fkinet(14) = kf(14) * x(16) ;
+  fkinet(15) = kf(15) * x(17) * x(3) ;
+  fkinet(16) = kf(16) * x(11) * x(4) ;
+  fkinet(17) = kf(17) * x(11) * x(3) * x(7) ;
+  fkinet(18) = kf(18) * x(11) * x(2) ;
+  fkinet(19) = kf(19) * x(14) * x(7) * x(3) ; 
   
   xdot = NaN(17, 1);
 
@@ -123,13 +125,13 @@ function xdot = f (x, t)
             + fkinet(12)                     # R12
             + fkinet(14)                     # R14
             + 2 *  fkinet(16)                # R16
-            + fkinet(18);                    # R18
+            + fkinet(18) ;                   # R18
   # x(2): HOBr
   xdot(2) = - fkinet(1) + rkinet(1)          # R1
             + 2 * fkinet(2) - rkinet(2)      # R2
             + fkinet(3) - rkinet(3)          # R3
             + fkinet(5)                      # R5
-            - fkinet(18);                    # R18  
+            - fkinet(18) ;                   # R18  
   # x(3): H+
   xdot(3) = - fkinet(1) + rkinet(1)          # R1
             - fkinet(2) + rkinet(2)          # R2
@@ -144,11 +146,11 @@ function xdot = f (x, t)
             + 2 * fkinet(16)                 # R16
             - fkinet(17)                     # R17 check r/f
             + fkinet(18)                     # R18
-            - fkinet(19);                    # R19
+            - fkinet(19) ;                   # R19
   # x(4): Br2
   xdot(4) = + fkinet(1) - rkinet(1)          # R1
             - fkinet(12)                     # R12
-            - fkinet(16);                    # R16
+            - fkinet(16) ;                   # R16
   # x(5): H2O
   xdot(5) = fkinet(1) - rkinet(1)            # R1
             + fkinet(6) - rkinet(6)          # R6
@@ -210,6 +212,7 @@ function xdot = f (x, t)
   # x(17): CHED
   xdot(17) = + fkinet(14)                    # R14
              - fkinet(15) ;                  # R15
+;
              
 endfunction
 
@@ -227,15 +230,15 @@ plot (t, y);
 xlabel("time");
 ylabel("concentration");
 
-title(cstrcat(
-			  "SK model ",
-			  " f=", num2str(gf),
-			  " [BrO_3^-]_0=", num2str(BrO30),
-			  " [BrCHD]_0=", num2str(BrCHD0),
-			  " k_{BrO3}=", num2str(kBrO3),
-			  " k_{BrCHD}=", num2str(kBrCHD)
-			  )
-	  );
+#title(cstrcat(
+#			  "SK model ",
+#			  " f=", num2str(gf),
+#			  " [BrO_3^-]_0=", num2str(BrO30),
+#			  " [BrCHD]_0=", num2str(BrCHD0),
+#			  " k_{BrO3}=", num2str(kBrO3),
+#			  " k_{BrCHD}=", num2str(kBrCHD)
+#			  )
+#	  );
 #legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
 #print(h1, "sk.jpg", "-djpg");
 
