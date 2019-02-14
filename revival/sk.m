@@ -219,30 +219,31 @@ function xdot = f (x, t)
   
 endfunction
 
-t = linspace (0, 0.01, 100);
+tend = 10000;
+tsteps = tend * 1000;
+t = linspace (0, tend, tsteps);
 
 if 3 > 2
 
 y = lsode ("f", x0, t);
 
 h1 = figure();
-#plot (t, axz(t));
-#subplot(2, 1, 1);
-plot (t, y);
+
+d = [rot90(t, -1), y(:, 6), y(:, 1), y(:, 11)];
+
+plot (t, d);
 
 xlabel("time");
 ylabel("concentration");
 
-#title(cstrcat(
-#			  "SK model ",
-#			  " f=", num2str(gf),
-#			  " [BrO_3^-]_0=", num2str(BrO30),
-#			  " [BrCHD]_0=", num2str(BrCHD0),
-#			  " k_{BrO3}=", num2str(kBrO3),
-#			  " k_{BrCHD}=", num2str(kBrCHD)
-#			  )
-#	  );
-#legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
+title(cstrcat(
+			  "SK model ",
+        ""
+			  )
+	  );
+
+legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
+
 #print(h1, "sk.jpg", "-djpg");
 
 endif
