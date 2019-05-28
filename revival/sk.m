@@ -219,9 +219,9 @@ function xdot = f (x, t)
   
 endfunction
 
-tend = 10000;
-tsteps = tend * 1000;
-t = linspace (0, tend, tsteps);
+t1 = 450; # 45000
+tsteps = 10000 * t1;
+t = linspace (0, t1, tsteps);
 
 if 3 > 2
 
@@ -229,7 +229,9 @@ y = lsode ("f", x0, t);
 
 h1 = figure();
 
-d = [rot90(t, -1), y(:, 6), y(:, 1), y(:, 11)];
+#d = [rot90(t, -1), y(:, 6), y(:, 1), y(:, 11)];
+d = [y(:, 6), y(:, 1), y(:, 11)];
+
 
 plot (t, d);
 
