@@ -10,7 +10,7 @@ more off
 global kf kr;
 
 # small initial concentration for intermediates     
-int0 = 0.1/10000; 
+int0 = 0; 
    
 x0 = NaN(17, 1);
 # x(1): Br-
@@ -40,7 +40,7 @@ x0(12) = int0;
 # x(13): Q
 x0(13) = 0.0182;
 # x(14): CHD
-x0(14) = 0.1;
+x0(14) = 1/10^5 ; # FIXME 0.1;
 # x(15): CHDE
 x0(15) = int0;
 # x(16): BrCHD
@@ -82,7 +82,10 @@ kf(18) = 6 * 10^5;
 kf(19) = 10^(-5);
 
 
-
+function j = jac (x, t)
+  j(17, 17) = zeros(17, 17);
+  
+endfunction
 
 function xdot = f (x, t)
   global kf kr;
@@ -223,21 +226,24 @@ function xdot = f (x, t)
   
 endfunction
 
-t1 = 450; # 45000
-tsteps = 10000 * t1;
+usej = 0;
+useplot = 0
+t1 = 1000;
+
+tsteps = 1000 * t1;
 t = linspace (0, t1, tsteps);
 
-if 3 > 2
+if 0 == usej
+  y = lsode ("f", x0, t);  
+else
+  y = lsode ({@f, @jac}, x0, t);
+endif
 
-y = lsode ("f", x0, t);
+if 1 == useplot
 
 h1 = figure();
 
-#d = [rot90(t, -1), y(:, 6), y(:, 1), y(:, 11)];
-d = [y(:, 6), y(:, 1), y(:, 11)];
-
-
-plot (t, d);
+plot (t, y);
 
 xlabel("time");
 ylabel("concentration");
@@ -248,9 +254,16 @@ title(cstrcat(
 			  )
 	  );
 
-legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
+#legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
 
-#print(h1, "sk.jpg", "-djpg");
+print(h1, "sk.jpg", "-djpg");
+
+else
+  
+  #d = [rot90(t, -1), y];
+  #d = [rot90(t, -1), y(:, 6), y(:, 1), y(:, 11)];
+  d = [rot90(t, -1), y(:, 11)];
+  save plot.mat d;
 
 endif
 
