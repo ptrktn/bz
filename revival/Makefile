@@ -179,4 +179,18 @@ xtest:
 	$(MAKE) TESTFLAG=1
 	./$(BINFILE)
 
+sk::
+	octave sk.m
+#	awk '0 == NR % 1000' plot.mat > tmp.mat
+	gnuplot xplot.m
+	xdg-open plot.jpg
+
+skm2j:
+	bash m2p.sh sk.m > sk_defs.dat
+	python jac.py sk_defs.dat > sk.py
+	python sk.py | sed -E 's/kf([0-9]{1,2})/kf\(\1\)/g' \
+		| sed -E 's/kr([0-9]{1,2})/kr\(\1\)/g' \
+		| sed -E 's/x([0-9]{1,2})/x\(\1\)/g' > sk_jac.m
+
+
 #*****
