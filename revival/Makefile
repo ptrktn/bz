@@ -31,8 +31,8 @@ install:: $(BINDIR)/skg.m
 .PHONY: clean
 clean:
 	$(RM) $(BINFILE) $(BINFILE2) $(BINOBJECTS) $(BINOBJECTS2) \
-          core *~ *.BAK *.jpg *.png \
-          plot.mat nohup.out octave-core
+          core *~ *.BAK *.jpg *.png *.pyc \
+          plot.mat nohup.out octave-core octave-workspace
 	if [ -d ./res ] ; then $(RMDIR) ./res ; fi
 	if [ -d ./index ] ; then $(RMDIR) ./index ; fi
 
@@ -179,18 +179,19 @@ xtest:
 	$(MAKE) TESTFLAG=1
 	./$(BINFILE)
 
-sk::
+sk:: sk_jac.m
+	rm -f sk.mat
 	octave sk.m
-#	awk '0 == NR % 1000' plot.mat > tmp.mat
 	gnuplot xplot.m
-	xdg-open plot.jpg
+	xdg-open sk.jpg
 
-skm2j:
-	bash m2p.sh sk.m > sk_defs.dat
-	python jac.py sk_defs.dat > sk.py
-	python sk.py | sed -E 's/kf([0-9]{1,2})/kf\(\1\)/g' \
+sk_jac.m: sk.m m2p.sh jac.py
+	rm -f tmp.dat tmp.py
+	bash m2p.sh sk.m > tmp.dat
+	python jac.py tmp.dat > tmp.py
+	python tmp.py | sed -E 's/kf([0-9]{1,2})/kf\(\1\)/g' \
 		| sed -E 's/kr([0-9]{1,2})/kr\(\1\)/g' \
 		| sed -E 's/x([0-9]{1,2})/x\(\1\)/g' > sk_jac.m
-
+	rm -f tmp.dat tmp.py
 
 #*****
