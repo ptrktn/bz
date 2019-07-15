@@ -7,7 +7,9 @@
 
 more off
 
-global kf kr;
+global n kf kr;
+
+n = 0;
 
 # small initial concentration for intermediates     
 int0 = 0; 
@@ -86,7 +88,7 @@ source("sk_jac.m");
 
 
 function xdot = f (x, t)
-  global kf kr;
+  global n kf kr;
   
   xdot = zeros(17, 1);
   
@@ -221,7 +223,12 @@ function xdot = f (x, t)
   xdot(17) =    fkinet(14) ;                   # R14
   xdot(17) += - fkinet(15) ;                   # R15
  
-  
+  n += 1;
+
+  if 0 == mod(n, 10000)
+	disp(t)
+  endif
+
 endfunction
 
 save sk_x0.mat x0;
@@ -230,7 +237,7 @@ save sk_kr.mat kr;
 
 usej = 1;
 useplot = 0;
-t1 = 25000;
+t1 = 60000;
 
 tsteps = 100 * t1;
 t = linspace (0, t1, tsteps);
@@ -238,7 +245,10 @@ t = linspace (0, t1, tsteps);
 lsode_options("integration method", "stiff");
 lsode_options("absolute tolerance", 1e-5);
 lsode_options("relative tolerance", 1e-5);
-lsode_options("maximum step size", 1e-2);
+lsode_options("maximum step size", 1e-3);
+lsode_options("step limit", 1000000);
+
+lsode_options
 
 if 0 == usej
   [y, istate, msg] = lsode ("f", x0, t);  
@@ -271,8 +281,8 @@ print(h1, "sk.jpg", "-djpg");
 else
   
   #d = [rot90(t, -1), y];
-  #d = [rot90(t, -1), y(:, 6), y(:, 1), y(:, 11)];
-  d = [rot90(t, -1), y(:, 11)];
+  # time H2Q HBrO2 Br-
+  d = [rot90(t, -1), y(:, 11), y(:, 6), y(:, 1)];
   save sk.mat d;
   
 endif
