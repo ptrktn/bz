@@ -14,6 +14,7 @@ TARGETS     = $(BINFILE)
 BINOBJECTS  = pointskg.o
 BINOBJECTS2 = 
 BINFILE2    = pointskg
+OCTAVEBIN   = /home/petteri/src/octave-4.0.3/run-octave --no-gui
 
 # link to bzsim library
 USEBZSIM=1
@@ -147,6 +148,8 @@ skg4summary:
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_RV1.jpg
 	montage $(XDATE)_LC1.jpg $(XDATE)_LC2.jpg $(XDATE)_RV1.jpg  -tile 3x1 -geometry +1+1 $(XDATE)_summary.jpg
 
+skg4test:
+	$(OCTAVEBIN) ./skg4.m 0.2 0.022 0 0 
 
 .PHONY: skg5plot
 skg5plot:
@@ -179,11 +182,11 @@ xtest:
 	$(MAKE) TESTFLAG=1
 	./$(BINFILE)
 
-sk:: sk_jac.m
+sk::
 	rm -f sk.mat
-	octave sk.m
-	gnuplot xplot.m
-	xdg-open sk.jpg
+	$(OCTAVEBIN) sk.m > ~/sk.log 2>&1
+	#gnuplot xplot.m
+	#xdg-open sk.jpg
 
 sk_jac.m: sk.m m2p.sh jac.py
 	rm -f tmp.dat tmp.py
