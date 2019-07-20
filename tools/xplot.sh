@@ -19,7 +19,7 @@ for i in $(seq 2 $NCOLS) ; do
 	rm -f tmp.eps
 	j=$(( $i -1 ))
 	f=${ID}_x$(printf "%02d" $j).$FMT
-	echo "set term $FMT ; set output 'tmp.eps' ; plot '$FNAME' u 1:$i w l title '${x}${i}'" | gnuplot || exit 1
+	echo "set term eps ; set output 'tmp.eps' ; plot '$FNAME' u 1:$i w l title '${x}${i}'" | gnuplot || exit 1
 	convert -density 300 tmp.eps -flatten -background white -resize 1024 $f
 	rm -f tmp.eps
 done
