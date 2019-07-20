@@ -8,7 +8,7 @@ test -x "$(command -v convert)" || {
 FNAME="$1"
 
 # the second argument is not really needed
-FMT=${2-"eps"}
+FMT=${2-"jpg"}
 
 test -f "$FNAME" || exit 1
 
