@@ -185,8 +185,6 @@ xtest:
 sk::
 	rm -f sk.mat
 	$(OCTAVEBIN) sk.m > ~/sk.log 2>&1
-	#gnuplot xplot.m
-	#xdg-open sk.jpg
 
 sk_jac.m: sk.m m2p.sh jac.py
 	rm -f tmp.dat tmp.py
