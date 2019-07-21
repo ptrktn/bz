@@ -140,7 +140,7 @@ function xdot = f (x, t)
   # x(3): H+
   xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
   xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
-  xdot(3) += - fkinet(3) + 2 * rkinet(3) ;     # R3
+  xdot(3) += - 2 * fkinet(3) + 2 * rkinet(3) ; # R3
   xdot(3) += - rkinet(4) + rkinet(4) ;         # R4
   xdot(3) +=   2 * fkinet(5) ;                 # R5
   xdot(3) += - fkinet(6) - rkinet(6) ;         # R6
@@ -187,7 +187,7 @@ function xdot = f (x, t)
   xdot(9) =    fkinet(6) - rkinet(6) ;         # R6
   xdot(9) += - fkinet(7) + rkinet(7) ;         # R7
   # x(10): BrO2*
-  xdot(10) =    2 * fkinet(7) - rkinet(7) ;    # R7
+  xdot(10) =    2 * fkinet(7) - 2 * rkinet(7) ; # R7
   xdot(10) += - fkinet(8) ;                    # R8
   xdot(10) += - fkinet(9) ;                    # R9
   # x(11): H2Q
@@ -201,7 +201,7 @@ function xdot = f (x, t)
   # x(12): HQ*
   xdot(12) =    fkinet(8) ;                    # R8
   xdot(12) += - fkinet(9) ;                    # R9
-  xdot(12) += - fkinet(10) + 2 * rkinet(10) ;  # R10
+  xdot(12) += - 2 * fkinet(10) + 2 * rkinet(10) ;  # R10
   # x(13): Q
   xdot(13) =    fkinet(9) ;                    # R9
   xdot(13) +=   fkinet(10) - rkinet(10) ;      # R10
