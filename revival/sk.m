@@ -12,7 +12,7 @@ global n kf kr;
 n = 0;
 
 # small initial concentration for intermediates     
-int0 = 0; 
+int0 = 10^(-5); 
    
 x0 = NaN(17, 1);
 # x(1): Br-
@@ -42,7 +42,7 @@ x0(12) = int0;
 # x(13): Q
 x0(13) = 0.0182;
 # x(14): CHD
-x0(14) = 0.1 ; # 0.1
+x0(14) = 0.1 ; 
 # x(15): CHDE
 x0(15) = int0;
 # x(16): BrCHD
@@ -280,9 +280,9 @@ print(h1, "sk.jpg", "-djpg");
 
 else
   
-  #d = [rot90(t, -1), y];
+  d = [rot90(t, -1), y];
   # time H2Q HBrO2 Br-
-  d = [rot90(t, -1), y(:, 11), y(:, 6), y(:, 1)];
+  #d = [rot90(t, -1), y(:, 11), y(:, 6), y(:, 1)];
   save sk.mat d;
   
 endif
