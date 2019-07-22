@@ -14,7 +14,7 @@ TARGETS     = $(BINFILE)
 BINOBJECTS  = pointskg.o
 BINOBJECTS2 = 
 BINFILE2    = pointskg
-OCTAVEBIN   = /home/petteri/src/octave-4.0.3/run-octave --no-gui
+OCTAVEBIN   = octave --no-gui
 
 # link to bzsim library
 USEBZSIM=1
@@ -26,6 +26,7 @@ include ../Makefile
 CFLAGS += 
 
 XDATE=$(shell date +%Y%m%d)
+XDATETIME=$(shell date +%Y%m%d%H%M)
 
 install:: $(BINDIR)/skg.m
 
@@ -184,7 +185,8 @@ xtest:
 
 sk::
 	rm -f sk.mat
-	$(OCTAVEBIN) sk.m > ~/sk.log 2>&1
+	$(OCTAVEBIN) sk.m > ~/$(XDATETIME).log 2>&1
+	ssh me-smp "cd `pwd` && ../tools/xplot.sh sk.mat"
 
 sk_jac.m: sk.m m2p.sh jac.py
 	rm -f tmp.dat tmp.py

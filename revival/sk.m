@@ -12,7 +12,7 @@ global n kf kr;
 n = 0;
 
 # small initial concentration for intermediates     
-int0 = 10^(-5); 
+int0 = 0; 
    
 x0 = NaN(17, 1);
 # x(1): Br-
