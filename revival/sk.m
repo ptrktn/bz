@@ -123,13 +123,13 @@ function xdot = f (x, t)
   
   # Table 3
   # x(1): Br-
-  xdot(1) =  - fkinet(1) + rkinet(1) ;          # R1
+  xdot(1) =  - fkinet(1) + rkinet(1) ;         # R1
   xdot(1) += - fkinet(2) + rkinet(2) ;         # R2
   xdot(1) += - fkinet(3) + rkinet(3) ;         # R3
   xdot(1) +=   fkinet(12) ;                    # R12
   xdot(1) +=   fkinet(14) ;                    # R14
   xdot(1) +=   2 *  fkinet(16) ;               # R16
-  xdot(1) +=   fkinet(18) ;                   # R18
+  xdot(1) +=   fkinet(18) ;                    # R18
   # x(2): HOBr
   xdot(2) =  - fkinet(1) + rkinet(1) ;         # R1
   xdot(2) +=   2 * fkinet(2) - rkinet(2) ;     # R2
@@ -148,7 +148,7 @@ function xdot = f (x, t)
   xdot(3) +=   fkinet(12) ;                    # R12
   xdot(3) +=   fkinet(14) ;                    # R14
   # CHED + H+ -> H2Q + H+
-  # xdot(3) += - fkinet(15)  ;                 # R15 CHECK
+  xdot(3) +=   fkinet(15)  ;                   # R15 CHECK
   xdot(3) +=   2 * fkinet(16) ;                # R16
   xdot(3) += - fkinet(17) ;                    # R17
   xdot(3) +=   fkinet(18) ;                    # R18
