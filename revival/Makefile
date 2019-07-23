@@ -186,7 +186,6 @@ xtest:
 sk::
 	rm -f sk.mat
 	$(OCTAVEBIN) sk.m > ~/$(XDATETIME).log 2>&1
-	ssh me-smp "cd `pwd` && ../tools/xplot.sh sk.mat"
 
 sk_jac.m: sk.m m2p.sh jac.py
 	rm -f tmp.dat tmp.py
