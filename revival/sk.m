@@ -3,7 +3,7 @@
 # SK model DOI: 10.1021/jp9832721
 # Szalai and Koros, J. Phys. Chem. A 1998, 102, 6892-6897
 #
-#
+# WARNING: No oscillations are reproduced in this simulation yet
 
 more off
 
