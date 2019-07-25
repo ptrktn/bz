@@ -28,7 +28,7 @@ x0(5) = 55;
 # x(6): HBrO2
 x0(6) = int0;
 # x(7): BrO3-
-x0(7) = 8 * 10^(-3);
+x0(7) = 0.1; # 8 * 10^(-3);
 # x(8): H2BrO2+
 x0(8) = int0;
 # x(9): Br2O4
@@ -36,7 +36,7 @@ x0(9) = int0;
 # x(10): BrO2*
 x0(10) = int0;
 # x(11): H2Q
-x0(11) = 5 * 10^(-5);
+x0(11) = 1 * 10^(-5); # 5 * 10^(-5); 
 # x(12): HQ*
 x0(12) = int0;
 # x(13): Q
@@ -91,7 +91,8 @@ function xdot = f (x, t)
   global n kf kr;
   
   xdot = zeros(17, 1);
-  
+  qss = 0;
+
   fkinet(1) = kf(1) * x(1) * x(2) * x(3);
   rkinet(1) = kr(1) * x(4) * x(5);
   fkinet(2) = kf(2) * x(1) * x(6) * x(3);
@@ -137,6 +138,7 @@ function xdot = f (x, t)
   xdot(2) +=   fkinet(5) ;                     # R5
   xdot(2) += - fkinet(13) ;                    # R13
   xdot(2) += - fkinet(18) ;                    # R18  
+  if 0 == qss
   # x(3): H+
   xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
   xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
@@ -154,10 +156,12 @@ function xdot = f (x, t)
   xdot(3) += - fkinet(17) ;                    # R17
   xdot(3) +=   fkinet(18) ;                    # R18
   xdot(3) += - fkinet(19) ;                    # R19
+  endif
   # x(4): Br2
   xdot(4) =    fkinet(1) - rkinet(1) ;         # R1
   xdot(4) += - fkinet(12) ;                    # R12
   xdot(4) += - fkinet(16) ;                    # R16
+  if 0 == qss
   # x(5): H2O
   xdot(5) =    fkinet(1) - rkinet(1) ;         # R1
   xdot(5) +=   fkinet(6) - rkinet(6) ;         # R6
@@ -165,6 +169,7 @@ function xdot = f (x, t)
   xdot(5) +=   fkinet(17) ;                    # R17
   xdot(5) +=   fkinet(18) ;                    # R18
   xdot(5) +=   fkinet(19) ;                    # R19
+  endif
   # x(6): HBrO2
   xdot(6) =  - fkinet(2) + rkinet(2) ;         # R2
   xdot(6) +=   fkinet(3) - rkinet(3) ;         # R3
@@ -226,7 +231,7 @@ function xdot = f (x, t)
  
   n += 1;
 
-  if 0 == mod(n, 10000)
+  if 0 == mod(n, 100000)
 	disp(t)
   endif
 
