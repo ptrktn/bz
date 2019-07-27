@@ -147,11 +147,12 @@ function xdot = f (x, t)
   xdot(3) +=   2 * fkinet(5) ;                 # R5
   xdot(3) += - fkinet(6) + rkinet(6) ;         # R6
   # CHD + H+ <=> CHDE + H+
-  xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11
+  xdot(3) += - fkinet(11) + rkinet(11) ;       # R11 RHS
+  xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11 LHS
   xdot(3) +=   fkinet(12) ;                    # R12
   xdot(3) +=   fkinet(14) ;                    # R14
   # CHED + H+ -> H2Q + H+
-  # xdot(3) +=   fkinet(15)  ;                 # R15 zero H+ change
+  xdot(3) +=   fkinet(15) - fkinet(15) ;       # R15
   xdot(3) +=   2 * fkinet(16) ;                # R16
   xdot(3) += - fkinet(17) ;                    # R17
   xdot(3) +=   fkinet(18) ;                    # R18
