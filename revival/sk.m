@@ -16,39 +16,39 @@ int0 = 0;
    
 x0 = NaN(17, 1);
 # x(1): Br-
-x0(1) = 2 * 10^(-6);
+x0(1) = 1 * 10^(-5); #2 * 10^(-6);
 # x(2): HOBr
-x0(2) = 6 * 10^(-8);
+x0(2) = 0 ;
 # x(3): H+
 x0(3) = 1.29; # 2.0 M???
 # x(4): Br2
-x0(4) = 10^(-3);
+x0(4) = 0;
 # x(5): H2O
-x0(5) = 55;
+x0(5) = 1; # 55;
 # x(6): HBrO2
-x0(6) = 6 * 10^(-8);
+x0(6) = 0;
 # x(7): BrO3-
-x0(7) = 0.1; # 8 * 10^(-3);
+x0(7) = 0.15; # 8 * 10^(-3);
 # x(8): H2BrO2+
-x0(8) = 10^(-9);
+x0(8) = 0;
 # x(9): Br2O4
-x0(9) = 10^(-12);
+x0(9) = 0;
 # x(10): BrO2*
-x0(10) = 10^(-9);
+x0(10) = 0;
 # x(11): H2Q
-x0(11) = 1 * 10^(-6); # 5 * 10^(-5); 
+x0(11) = 0; # 5 * 10^(-5); 
 # x(12): HQ*
-x0(12) = 10^(-9);
+x0(12) = 0;
 # x(13): Q
-x0(13) = 0.0182;
+x0(13) = 0; # 0.0182;
 # x(14): CHD
 x0(14) = 0.1 ; 
 # x(15): CHDE
-x0(15) = 10^(-9);
+x0(15) = 0;
 # x(16): BrCHD
-x0(16) = 0.0205;
+x0(16) = 0 ; # 0.0205;
 # x(17): CHED
-x0(17) = 0.00425;
+x0(17) = 0; # 0.00425;
 
 # forward reaction rates
 kf = zeros(19, 1);
@@ -68,7 +68,7 @@ kf(6) = 48;
 kr(6) = 3.2 * 10^3;
 kf(7) = 7.5 * 10^4;
 kr(7) = 1.4 * 10^9;
-kf(8) = 8 * 10^5;
+kf(8) = 2 * 10^6; # 8 * 10^5;
 kf(9) = 8 * 10^9;
 kf(10) = 8.8 * 10^8;
 kr(10) = 7.7 * 10^(-4);
@@ -81,7 +81,7 @@ kf(15) = 1.94 * 10^(-4);
 kf(16) = 3 * 10^4;
 kf(17) = 2 * 10^(-2);
 kf(18) = 6 * 10^5;
-kf(19) = 10^(-5);
+kf(19) = 2 * 10^(-5); # 2 * 10^(-5);
 
 
 source("sk_jac.m");
@@ -91,7 +91,7 @@ function xdot = f (x, t)
   global n kf kr;
   
   xdot = zeros(17, 1);
-  qss = 0;
+  # qss = 1;
 
   fkinet(1) = kf(1) * x(1) * x(2) * x(3);
   rkinet(1) = kr(1) * x(4) * x(5);
@@ -114,7 +114,7 @@ function xdot = f (x, t)
   rkinet(11) = kr(11) * x(15) * x(3);
   fkinet(12) = kf(12) * x(15) * x(4);
   fkinet(13) = kf(13) * x(15) * x(2);
-  fkinet(14) = kf(14) * x(16);
+  fkinet(14) = kf(14) * x(16) * x(3); # CHANGED
   fkinet(15) = kf(15) * x(17) * x(3);
   fkinet(16) = kf(16) * x(11) * x(4);
   fkinet(17) = kf(17) * x(11) * x(3) * x(7);
@@ -138,40 +138,42 @@ function xdot = f (x, t)
   xdot(2) +=   fkinet(5) ;                     # R5
   xdot(2) += - fkinet(13) ;                    # R13
   xdot(2) += - fkinet(18) ;                    # R18  
-  if 0 == qss
-  # x(3): H+
-  xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
-  xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
-  xdot(3) += - 2 * fkinet(3) + 2 * rkinet(3) ; # R3
-  xdot(3) += - fkinet(4) + rkinet(4) ;         # R4
-  xdot(3) +=   2 * fkinet(5) ;                 # R5
-  xdot(3) += - fkinet(6) + rkinet(6) ;         # R6
-  # CHD + H+ <=> CHDE + H+
-  xdot(3) += - fkinet(11) + rkinet(11) ;       # R11 RHS
-  xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11 LHS
-  xdot(3) +=   fkinet(12) ;                    # R12
-  xdot(3) +=   fkinet(14) ;                    # R14
-  # CHED + H+ -> H2Q + H+
-  xdot(3) +=   fkinet(15) - fkinet(15) ;       # R15
-  xdot(3) +=   2 * fkinet(16) ;                # R16
-  xdot(3) += - fkinet(17) ;                    # R17
-  xdot(3) +=   fkinet(18) ;                    # R18
-  xdot(3) += - fkinet(19) ;                    # R19
-  endif
+  xdot(3) = 0;
+  ## if 0 == qss
+  ## # x(3): H+
+  ## xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
+  ## xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
+  ## xdot(3) += - 2 * fkinet(3) + 2 * rkinet(3) ; # R3
+  ## xdot(3) += - fkinet(4) + rkinet(4) ;         # R4
+  ## xdot(3) +=   2 * fkinet(5) ;                 # R5
+  ## xdot(3) += - fkinet(6) + rkinet(6) ;         # R6
+  ## # CHD + H+ <=> CHDE + H+
+  ## xdot(3) += - fkinet(11) + rkinet(11) ;       # R11 RHS
+  ## xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11 LHS
+  ## xdot(3) +=   fkinet(12) ;                    # R12
+  ## xdot(3) +=   fkinet(14) ;                    # R14
+  ## # CHED + H+ -> H2Q + H+
+  ## xdot(3) +=   fkinet(15) - fkinet(15) ;       # R15
+  ## xdot(3) +=   2 * fkinet(16) ;                # R16
+  ## xdot(3) += - fkinet(17) ;                    # R17
+  ## xdot(3) +=   fkinet(18) ;                    # R18
+  ## xdot(3) += - fkinet(19) ;                    # R19
+  ## endif
   # x(4): Br2
   xdot(4) =    fkinet(1) - rkinet(1) ;         # R1
   xdot(4) += - fkinet(12) ;                    # R12
   xdot(4) += - fkinet(16) ;                    # R16
-  if 0 == qss
-  # x(5): H2O
-  xdot(5) =    fkinet(1) - rkinet(1) ;         # R1
-  xdot(5) +=   fkinet(6) - rkinet(6) ;         # R6
-  xdot(5) +=   fkinet(13) ;                    # R13
-  xdot(5) +=   fkinet(17) ;                    # R17
-  xdot(5) +=   fkinet(18) ;                    # R18
-  xdot(5) +=   fkinet(19) ;                    # R19
-  endif
-  # x(6): HBrO2
+  xdot(5) = 0;
+  ## if 0 == qss
+  ## # x(5): H2O
+  ## xdot(5) =    fkinet(1) - rkinet(1) ;         # R1
+  ## xdot(5) +=   fkinet(6) - rkinet(6) ;         # R6
+  ## xdot(5) +=   fkinet(13) ;                    # R13
+  ## xdot(5) +=   fkinet(17) ;                    # R17
+  ## xdot(5) +=   fkinet(18) ;                    # R18
+  ## xdot(5) +=   fkinet(19) ;                    # R19
+  ## endif
+  ## # x(6): HBrO2
   xdot(6) =  - fkinet(2) + rkinet(2) ;         # R2
   xdot(6) +=   fkinet(3) - rkinet(3) ;         # R3
   xdot(6) += - fkinet(4) + rkinet(4) ;         # R4
