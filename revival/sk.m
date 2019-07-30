@@ -3,7 +3,7 @@
 # SK model DOI: 10.1021/jp9832721
 # Szalai and Koros, J. Phys. Chem. A 1998, 102, 6892-6897
 #
-# WARNING: No oscillations are reproduced in this simulation yet
+# Oscillations are reproduced in this simulation
 
 more off
 
@@ -11,9 +11,6 @@ global n kf kr;
 
 n = 0;
 
-# small initial concentration for intermediates     
-int0 = 0; 
-   
 x0 = NaN(17, 1);
 # x(1): Br-
 x0(1) = 1 * 10^(-5); #2 * 10^(-6);
@@ -52,6 +49,7 @@ x0(17) = 0; # 0.00425;
 
 # forward reaction rates
 kf = zeros(19, 1);
+
 # reverse reaction rates
 kr = zeros(19, 1);
 
@@ -91,8 +89,7 @@ function xdot = f (x, t)
   global n kf kr;
   
   xdot = zeros(17, 1);
-  # qss = 1;
-
+ 
   fkinet(1) = kf(1) * x(1) * x(2) * x(3);
   rkinet(1) = kr(1) * x(4) * x(5);
   fkinet(2) = kf(2) * x(1) * x(6) * x(3);
@@ -138,33 +135,29 @@ function xdot = f (x, t)
   xdot(2) +=   fkinet(5) ;                     # R5
   xdot(2) += - fkinet(13) ;                    # R13
   xdot(2) += - fkinet(18) ;                    # R18  
-  xdot(3) = 0;
-  ## if 0 == qss
-  ## # x(3): H+
-  ## xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
-  ## xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
-  ## xdot(3) += - 2 * fkinet(3) + 2 * rkinet(3) ; # R3
-  ## xdot(3) += - fkinet(4) + rkinet(4) ;         # R4
-  ## xdot(3) +=   2 * fkinet(5) ;                 # R5
-  ## xdot(3) += - fkinet(6) + rkinet(6) ;         # R6
-  ## # CHD + H+ <=> CHDE + H+
-  ## xdot(3) += - fkinet(11) + rkinet(11) ;       # R11 RHS
-  ## xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11 LHS
-  ## xdot(3) +=   fkinet(12) ;                    # R12
-  ## xdot(3) +=   fkinet(14) ;                    # R14
-  ## # CHED + H+ -> H2Q + H+
-  ## xdot(3) +=   fkinet(15) - fkinet(15) ;       # R15
-  ## xdot(3) +=   2 * fkinet(16) ;                # R16
-  ## xdot(3) += - fkinet(17) ;                    # R17
-  ## xdot(3) +=   fkinet(18) ;                    # R18
-  ## xdot(3) += - fkinet(19) ;                    # R19
-  ## endif
+  # x(3): H+
+  xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
+  xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
+  xdot(3) += - 2 * fkinet(3) + 2 * rkinet(3) ; # R3
+  xdot(3) += - fkinet(4) + rkinet(4) ;         # R4
+  xdot(3) +=   2 * fkinet(5) ;                 # R5
+  xdot(3) += - fkinet(6) + rkinet(6) ;         # R6
+  # CHD + H+ <=> CHDE + H+
+  xdot(3) += - fkinet(11) + rkinet(11) ;       # R11 RHS
+  xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11 LHS
+  xdot(3) +=   fkinet(12) ;                    # R12
+  xdot(3) +=   fkinet(14) ;                    # R14
+  # CHED + H+ -> H2Q + H+
+  xdot(3) +=   fkinet(15) - fkinet(15) ;       # R15
+  xdot(3) +=   2 * fkinet(16) ;                # R16
+  xdot(3) += - fkinet(17) ;                    # R17
+  xdot(3) +=   fkinet(18) ;                    # R18
+  xdot(3) += - fkinet(19) ;                    # R19
   # x(4): Br2
   xdot(4) =    fkinet(1) - rkinet(1) ;         # R1
   xdot(4) += - fkinet(12) ;                    # R12
   xdot(4) += - fkinet(16) ;                    # R16
   xdot(5) = 0;
-  ## if 0 == qss
   ## # x(5): H2O
   ## xdot(5) =    fkinet(1) - rkinet(1) ;         # R1
   ## xdot(5) +=   fkinet(6) - rkinet(6) ;         # R6
@@ -172,7 +165,6 @@ function xdot = f (x, t)
   ## xdot(5) +=   fkinet(17) ;                    # R17
   ## xdot(5) +=   fkinet(18) ;                    # R18
   ## xdot(5) +=   fkinet(19) ;                    # R19
-  ## endif
   ## # x(6): HBrO2
   xdot(6) =  - fkinet(2) + rkinet(2) ;         # R2
   xdot(6) +=   fkinet(3) - rkinet(3) ;         # R3
