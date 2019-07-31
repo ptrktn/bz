@@ -13,7 +13,7 @@ n = 0;
 
 x0 = NaN(17, 1);
 # x(1): Br-
-x0(1) = 1 * 10^(-5); #2 * 10^(-6);
+x0(1) = 2 * 10^(-6); # 1 * 10^(-5);
 # x(2): HOBr
 x0(2) = 0 ;
 # x(3): H+
@@ -66,7 +66,7 @@ kf(6) = 48;
 kr(6) = 3.2 * 10^3;
 kf(7) = 7.5 * 10^4;
 kr(7) = 1.4 * 10^9;
-kf(8) = 2 * 10^6; # 8 * 10^5;
+kf(8) = 8 * 10^5; # 2 * 10^6;
 kf(9) = 8 * 10^9;
 kf(10) = 8.8 * 10^8;
 kr(10) = 7.7 * 10^(-4);
@@ -79,7 +79,7 @@ kf(15) = 1.94 * 10^(-4);
 kf(16) = 3 * 10^4;
 kf(17) = 2 * 10^(-2);
 kf(18) = 6 * 10^5;
-kf(19) = 2 * 10^(-5); # 2 * 10^(-5);
+kf(19) = 1 * 10^(-5); # 2 * 10^(-5);
 
 
 source("sk_jac.m");
@@ -111,7 +111,7 @@ function xdot = f (x, t)
   rkinet(11) = kr(11) * x(15) * x(3);
   fkinet(12) = kf(12) * x(15) * x(4);
   fkinet(13) = kf(13) * x(15) * x(2);
-  fkinet(14) = kf(14) * x(16) * x(3); # CHANGED
+  fkinet(14) = kf(14) * x(16) ; # * x(3); # CHANGED
   fkinet(15) = kf(15) * x(17) * x(3);
   fkinet(16) = kf(16) * x(11) * x(4);
   fkinet(17) = kf(17) * x(11) * x(3) * x(7);
@@ -121,42 +121,43 @@ function xdot = f (x, t)
   
   # Table 3
   # x(1): Br-
-  xdot(1) =  - fkinet(1) + rkinet(1) ;         # R1
-  xdot(1) += - fkinet(2) + rkinet(2) ;         # R2
-  xdot(1) += - fkinet(3) + rkinet(3) ;         # R3
-  xdot(1) +=   fkinet(12) ;                    # R12
-  xdot(1) +=   fkinet(14) ;                    # R14
-  xdot(1) +=   2 *  fkinet(16) ;               # R16
-  xdot(1) +=   fkinet(18) ;                    # R18
+  xdot(1) =  - fkinet(1) + rkinet(1) ;            # R1
+  xdot(1) += - fkinet(2) + rkinet(2) ;            # R2
+  xdot(1) += - fkinet(3) + rkinet(3) ;            # R3
+  xdot(1) +=   fkinet(12) ;                       # R12
+  xdot(1) +=   fkinet(14) ;                       # R14
+  xdot(1) +=   2 *  fkinet(16) ;                  # R16
+  xdot(1) +=   fkinet(18) ;                       # R18
   # x(2): HOBr
-  xdot(2) =  - fkinet(1) + rkinet(1) ;         # R1
-  xdot(2) +=   2 * fkinet(2) - 2 * rkinet(2) ; # R2
-  xdot(2) +=   fkinet(3) - rkinet(3) ;         # R3
-  xdot(2) +=   fkinet(5) ;                     # R5
-  xdot(2) += - fkinet(13) ;                    # R13
-  xdot(2) += - fkinet(18) ;                    # R18  
+  xdot(2) =  - fkinet(1) + rkinet(1) ;            # R1
+  xdot(2) +=   2 * fkinet(2) - 2 * rkinet(2) ;    # R2
+  xdot(2) +=   fkinet(3) - rkinet(3) ;            # R3
+  xdot(2) +=   fkinet(5) ;                        # R5
+  xdot(2) += - fkinet(13) ;                       # R13
+  xdot(2) += - fkinet(18) ;                       # R18  
   # x(3): H+
-  xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
-  xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
-  xdot(3) += - 2 * fkinet(3) + 2 * rkinet(3) ; # R3
-  xdot(3) += - fkinet(4) + rkinet(4) ;         # R4
-  xdot(3) +=   2 * fkinet(5) ;                 # R5
-  xdot(3) += - fkinet(6) + rkinet(6) ;         # R6
-  # CHD + H+ <=> CHDE + H+
-  xdot(3) += - fkinet(11) + rkinet(11) ;       # R11 RHS
-  xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11 LHS
-  xdot(3) +=   fkinet(12) ;                    # R12
-  xdot(3) +=   fkinet(14) ;                    # R14
-  # CHED + H+ -> H2Q + H+
-  xdot(3) +=   fkinet(15) - fkinet(15) ;       # R15
-  xdot(3) +=   2 * fkinet(16) ;                # R16
-  xdot(3) += - fkinet(17) ;                    # R17
-  xdot(3) +=   fkinet(18) ;                    # R18
-  xdot(3) += - fkinet(19) ;                    # R19
+  xdot(3) = 0;
+  ## xdot(3) =  - fkinet(1) + rkinet(1) ;         # R1
+  ## xdot(3) += - fkinet(2) + rkinet(2) ;         # R2
+  ## xdot(3) += - 2 * fkinet(3) + 2 * rkinet(3) ; # R3
+  ## xdot(3) += - fkinet(4) + rkinet(4) ;         # R4
+  ## xdot(3) +=   2 * fkinet(5) ;                 # R5
+  ## xdot(3) += - fkinet(6) + rkinet(6) ;         # R6
+  ## # CHD + H+ <=> CHDE + H+
+  ## xdot(3) += - fkinet(11) + rkinet(11) ;       # R11 RHS
+  ## xdot(3) +=   fkinet(11) - rkinet(11) ;       # R11 LHS
+  ## xdot(3) +=   fkinet(12) ;                    # R12
+  ## xdot(3) +=   fkinet(14) ;                    # R14
+  ## # CHED + H+ -> H2Q + H+
+  ## xdot(3) +=   fkinet(15) - fkinet(15) ;       # R15
+  ## xdot(3) +=   2 * fkinet(16) ;                # R16
+  ## xdot(3) += - fkinet(17) ;                    # R17
+  ## xdot(3) +=   fkinet(18) ;                    # R18
+  ## xdot(3) += - fkinet(19) ;                    # R19
   # x(4): Br2
-  xdot(4) =    fkinet(1) - rkinet(1) ;         # R1
-  xdot(4) += - fkinet(12) ;                    # R12
-  xdot(4) += - fkinet(16) ;                    # R16
+  xdot(4) =    fkinet(1) - rkinet(1) ;            # R1
+  xdot(4) += - fkinet(12) ;                       # R12
+  xdot(4) += - fkinet(16) ;                       # R16
   xdot(5) = 0;
   ## # x(5): H2O
   ## xdot(5) =    fkinet(1) - rkinet(1) ;         # R1
@@ -166,63 +167,63 @@ function xdot = f (x, t)
   ## xdot(5) +=   fkinet(18) ;                    # R18
   ## xdot(5) +=   fkinet(19) ;                    # R19
   ## # x(6): HBrO2
-  xdot(6) =  - fkinet(2) + rkinet(2) ;         # R2
-  xdot(6) +=   fkinet(3) - rkinet(3) ;         # R3
-  xdot(6) += - fkinet(4) + rkinet(4) ;         # R4
-  xdot(6) += - fkinet(5) ;                     # R5
-  xdot(6) += - fkinet(6) + rkinet(6) ;         # R6
-  xdot(6) +=   fkinet(8) ;                     # R8
-  xdot(6) +=   fkinet(9) ;                     # R9
-  xdot(6) +=   fkinet(17) ;                    # R17
-  xdot(6) +=   fkinet(19) ;                    # R19
+  xdot(6) =  - fkinet(2) + rkinet(2) ;            # R2
+  xdot(6) +=   fkinet(3) - rkinet(3) ;            # R3
+  xdot(6) += - fkinet(4) + rkinet(4) ;            # R4
+  xdot(6) += - fkinet(5) ;                        # R5
+  xdot(6) += - fkinet(6) + rkinet(6) ;            # R6
+  xdot(6) +=   fkinet(8) ;                        # R8
+  xdot(6) +=   fkinet(9) ;                        # R9
+  xdot(6) +=   fkinet(17) ;                       # R17
+  xdot(6) +=   fkinet(19) ;                       # R19
   # x(7): BrO3-
-  xdot(7) =   - fkinet(3) + rkinet(3) ;        # R3
-  xdot(7) +=    fkinet(5) ;                    # R5
-  xdot(7) +=  - fkinet(6) + rkinet(6) ;        # R6
-  xdot(7) +=  - fkinet(17) ;                   # R17
-  xdot(7) +=  - fkinet(19) ;                   # R19
+  xdot(7) =   - fkinet(3) + rkinet(3) ;           # R3
+  xdot(7) +=    fkinet(5) ;                       # R5
+  xdot(7) +=  - fkinet(6) + rkinet(6) ;           # R6
+  xdot(7) +=  - fkinet(17) ;                      # R17
+  xdot(7) +=  - fkinet(19) ;                      # R19
   # x(8): H2BrO2+
-  xdot(8) =    fkinet(4) - rkinet(4) ;         # R4
-  xdot(8) += - fkinet(5) ;                     # R5
+  xdot(8) =    fkinet(4) - rkinet(4) ;            # R4
+  xdot(8) += - fkinet(5) ;                        # R5
   # x(9): Br2O4
-  xdot(9) =    fkinet(6) - rkinet(6) ;         # R6
-  xdot(9) += - fkinet(7) + rkinet(7) ;         # R7
+  xdot(9) =    fkinet(6) - rkinet(6) ;            # R6
+  xdot(9) += - fkinet(7) + rkinet(7) ;            # R7
   # x(10): BrO2*
-  xdot(10) =   2 * fkinet(7) - 2 * rkinet(7) ; # R7
-  xdot(10) += - fkinet(8) ;                    # R8
-  xdot(10) += - fkinet(9) ;                    # R9
+  xdot(10) =   2 * fkinet(7) - 2 * rkinet(7) ;    # R7
+  xdot(10) += - fkinet(8) ;                       # R8
+  xdot(10) += - fkinet(9) ;                       # R9
   # x(11): H2Q
-  xdot(11) =   - fkinet(8) ;                   # R8
-  xdot(11) +=    fkinet(10) - rkinet(10) ;     # R10
-  xdot(11) +=    fkinet(15) ;                  # R15
-  xdot(11) +=  - fkinet(16) ;                  # R16
-  xdot(11) +=  - fkinet(17) ;                  # R17
-  xdot(11) +=  - fkinet(18) ;                  # R18
-  xdot(11) +=    fkinet(19) ;                  # R19
+  xdot(11) =   - fkinet(8) ;                      # R8
+  xdot(11) +=    fkinet(10) - rkinet(10) ;        # R10
+  xdot(11) +=    fkinet(15) ;                     # R15
+  xdot(11) +=  - fkinet(16) ;                     # R16
+  xdot(11) +=  - fkinet(17) ;                     # R17
+  xdot(11) +=  - fkinet(18) ;                     # R18
+  xdot(11) +=    fkinet(19) ;                     # R19
   # x(12): HQ*
-  xdot(12) =    fkinet(8) ;                    # R8
-  xdot(12) += - fkinet(9) ;                    # R9
-  xdot(12) += - 2 * fkinet(10) + 2 * rkinet(10) ;  # R10
+  xdot(12) =    fkinet(8) ;                       # R8
+  xdot(12) += - fkinet(9) ;                       # R9
+  xdot(12) += - 2 * fkinet(10) + 2 * rkinet(10) ; # R10
   # x(13): Q
-  xdot(13) =    fkinet(9) ;                    # R9
-  xdot(13) +=   fkinet(10) - rkinet(10) ;      # R10
-  xdot(13) +=   fkinet(16) ;                   # R16
-  xdot(13) +=   fkinet(17) ;                   # R17
-  xdot(13) +=   fkinet(18) ;                   # R18
+  xdot(13) =    fkinet(9) ;                       # R9
+  xdot(13) +=   fkinet(10) - rkinet(10) ;         # R10
+  xdot(13) +=   fkinet(16) ;                      # R16
+  xdot(13) +=   fkinet(17) ;                      # R17
+  xdot(13) +=   fkinet(18) ;                      # R18
   # x(14): CHD
-  xdot(14) =  - fkinet(11) + rkinet(11) ;      # R11
-  xdot(14) += - fkinet(19) ;                   # R19
+  xdot(14) =  - fkinet(11) + rkinet(11) ;         # R11
+  xdot(14) += - fkinet(19) ;                      # R19
   # x(15): CHDE
-  xdot(15) =    fkinet(11) - rkinet(11) ;      # R11
-  xdot(15) += - fkinet(12) ;                   # R12
-  xdot(15) += - fkinet(13) ;                   # R13
+  xdot(15) =    fkinet(11) - rkinet(11) ;         # R11
+  xdot(15) += - fkinet(12) ;                      # R12
+  xdot(15) += - fkinet(13) ;                      # R13
   # x(16): BrCHD
-  xdot(16) =    fkinet(12) ;                   # R12
-  xdot(16) +=   fkinet(13) ;                   # R13
-  xdot(16) += - fkinet(14) ;                   # R14
+  xdot(16) =    fkinet(12) ;                      # R12
+  xdot(16) +=   fkinet(13) ;                      # R13
+  xdot(16) += - fkinet(14) ;                      # R14
   # x(17): CHED
-  xdot(17) =    fkinet(14) ;                   # R14
-  xdot(17) += - fkinet(15) ;                   # R15
+  xdot(17) =    fkinet(14) ;                      # R14
+  xdot(17) += - fkinet(15) ;                      # R15
  
   n += 1;
 
