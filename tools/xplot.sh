@@ -6,13 +6,14 @@ test -x "$(command -v convert)" || {
 }
 
 FNAME="$1"
+TITLE="$2"
 
-# the second argument is not really needed
-FMT=${2-"jpg"}
+declare -a title=( $TITLE )
 
 test -f "$FNAME" || exit 1
 
 NCOLS=$(egrep -v '^#' $FNAME | head -1 | awk '{ print NF }')
+
 ID=$(echo $(basename $FNAME) | sed 's/\..*$//')_$(date +%Y%m%d%H%M%S)_$(printf "%05d" $RANDOM)
 
 xplot() {
@@ -20,15 +21,14 @@ xplot() {
 	local col=$2
 	local j=$(( $col -1 ))
 	local tmp=$(mktemp --tmpdir=/tmp tmp.XXXXX.ps)
-	local f=${ID}_x$(printf "%02d" $j).$FMT
+	local f=${ID}_x$(printf "%02d" $j).jpg
 
-	echo "set term postscript ; set output '$tmp' ; plot '$fname' u 1:$col w l title '${x}${j}'" | gnuplot > /dev/null 2>&1 || exit 1
+	echo "set term postscript ; set output '$tmp' ; plot '$fname' u 1:$col w l title 'x${j} ${title[$j]}'" | gnuplot > /dev/null 2>&1 || exit 1
 	convert -density 300 $tmp -flatten -background white -resize 1024 -rotate 90 $f
 	rm -f $tmp
 }
 
 for i in $(seq 2 $NCOLS) ; do
-	rm -f tmp.ps
 	j=$(( $i -1 ))
 	xplot $FNAME $i &
 done
