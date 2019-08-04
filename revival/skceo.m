@@ -91,13 +91,17 @@ function xdot = f (x, t)
   global n kf kr;
   
   xdot = zeros(17, 1);
-  
+
+  # R1
   fkinet(1) = kf(1) * x(1) * x(2) * x(3);
   rkinet(1) = kr(1) * x(4) * x(5);
+  # R2
   fkinet(2) = kf(2) * x(1) * x(6) * x(3);
   rkinet(2) = kr(2) * x(2) * x(2);
+  # R3
   fkinet(3) = kf(3) * x(1) * x(7) * x(3) * x(3);
   rkinet(3) = kr(3) * x(2) * x(6);
+  # R4a
   fkinet(4) = kf(4) * x(6) * x(3);
   rkinet(4) = kr(4) * x(8);
   fkinet(5) = kf(5) * x(6) * x(8);
