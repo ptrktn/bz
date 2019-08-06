@@ -15,14 +15,12 @@ class R:
         self.rates = [0, 0]
         self.s = {}
 
-    def setlhs(self, x):
-        self.lhs = x
-        for i in x.split("+"):
-            i = i.strip()
-            self.s[i] = 1 + self.s.get(i, 0)
+    def reaction(self, x, d=True):
+        if d:
+            self.lhs = x
+        else:
+            self.rhs = x
 
-    def setrhs(self, x):
-        self.rhs = x
         for i in x.split("+"):
             i = i.strip()
             self.s[i] = 1 + self.s.get(i, 0)
@@ -30,18 +28,21 @@ class R:
     def setrates(self, x):
         self.rates = list((int(x.split()[0]), int(x.split()[1])))
     
-    def fkinet(self):
+    def kinet(self, d=True):
+        if d:
+            a = self.lhs
+            j = 0
+        else:
+            a = self.rhs
+            j = 1
+            
         k = False
-        if self.rates[0] > 0:
-            k = "kf" + str(self.i) + " * " + " * ".join(self.lhs.split("+"))
+        
+        if self.rates[j] > 0:
+            k = "kf" + str(self.i) + " * " + " * ".join(a.split("+"))
+
         return k
     
-    def rkinet(self):
-        k = False
-        if self.rates[1] > 0:
-            k = "kr" + str(self.i) + " * " + " * ".join(self.rhs.split("+"))
-        return k
-
     def species(self):
         return self.s
 
@@ -78,9 +79,9 @@ def read_r(fname):
             if len(line) > 0 and '#' != line[0]:
                 n += 1
                 if 1 == n % 3:
-                    r.setlhs(line)
+                    r.reaction(line, True)
                 elif 2 == n % 3:
-                    r.setrhs(line)
+                    r.reaction(line, False)
                 else:
                     r.i = nr
                     r.setrates(line)
@@ -102,7 +103,7 @@ def proc_r():
         a = []
         for r in rctns:
             # A + B -> C + D
-            k = r.fkinet()
+            k = r.kinet(True)
             x = r.smc(True, s)
             if x > 0 and k:
                 a.append("- %d * %s" % (x, k))
@@ -111,7 +112,7 @@ def proc_r():
                 a.append("+ %d * %s" % (x, k))
 
             # A + B <- C + D
-            k = r.rkinet()
+            k = r.kinet(False)
             x = r.smc(False, s)
             if x > 0 and k:
                 a.append("- %d * %s" % (x, k))
@@ -131,8 +132,8 @@ def main(fname):
         print(r.lhs)
         print(r.rhs)
         print(r.rates)
-        print(r.fkinet())
-        print(r.rkinet())
+        print(r.kinet())
+        print(r.kinet(False))
         print(r.species())
         
     proc_rspcs()
