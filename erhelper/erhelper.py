@@ -15,19 +15,27 @@ class R:
         self.rates = [0, 0]
         self.s = {}
 
-    def reaction(self, x, d=True):
-        if d:
-            self.lhs = x
+    def reaction(self, x, n):
+        self.i = n
+
+        if " <==> " in x:
+            self.rates = [1, 1]
+            cs = " <==> "
+        elif " ==> " in x:
+            self.rates = [1, 0]
+            cs = " ==> "
+        elif " <== " in x:
+            self.rates = [0, 1]
+            cs = " <== "
         else:
-            self.rhs = x
+            raise Exception("Type not found: \" <==> \", \" ==> \" or \" <== \" (%d)" % n)
 
-        for i in x.split("+"):
-            i = i.strip()
-            self.s[i] = 1 + self.s.get(i, 0)
+        [self.lhs, self.rhs] = x.split(cs)
 
-    def setrates(self, x):
-        self.rates = list((int(x.split()[0]), int(x.split()[1])))
-    
+        for c in x.replace(cs, "+").split("+"):
+            c = c.strip()
+            self.s[c] = 1 + self.s.get(c, 0)
+
     def kinet(self, d=True):
         if d:
             a = self.lhs
@@ -78,16 +86,10 @@ def read_r(fname):
             line = l.strip()
             if len(line) > 0 and '#' != line[0]:
                 n += 1
-                if 1 == n % 3:
-                    r.reaction(line, True)
-                elif 2 == n % 3:
-                    r.reaction(line, False)
-                else:
-                    r.i = nr
-                    r.setrates(line)
-                    rctns.append(r)
-                    r = R()
-                    nr += 1
+                r.reaction(line, nr)
+                rctns.append(r)
+                r = R()
+                nr += 1
 
 
 def proc_rspcs():
@@ -95,6 +97,20 @@ def proc_rspcs():
         for s in r.species():
             i = s.strip()
             rspcs[i] = 1 + rspcs.get(i, 0)
+
+            
+def symbols(x):
+    r = []
+
+    for i in " ".join(x.split()).split(" "):
+        i = i.strip()
+        if i is None:
+            pass
+        elif i.isdigit() or "+" == i or "-" == i or "*" == i:
+            r.append(i)
+        else:
+            r.append("Symbol('%s')" % i)
+    return " ".join(r)
 
 
 def proc_r():
@@ -121,7 +137,13 @@ def proc_r():
                 a.append("+ %d * %s" % (x, k))
 
         print("d%s = %s" % (s, " ".join(a)))
+        b = symbols(" ".join(a))
+        exec("f = %s" % b)
+        print(f)
 
+        # map(symbols, x)
+# x.isdigit
+# '+' '-' '*' pass as they are
         
 def main(fname):
     
