@@ -5,6 +5,8 @@ import string
 from sympy import *
 
 rctns = list(())
+x = list(())
+xdot = list(())
 rspcs = {}
 
 class R:
@@ -13,26 +15,27 @@ class R:
         self.lhs = None
         self.rhs = None
         self.rates = [0, 0]
+        self.k = ["kf", "kr"]
         self.s = {}
 
-    def reaction(self, x, n):
+    def reaction(self, r, n):
         self.i = n
 
-        if " <==> " in x:
+        if " <==> " in r:
             self.rates = [1, 1]
             cs = " <==> "
-        elif " ==> " in x:
+        elif " ==> " in r:
             self.rates = [1, 0]
             cs = " ==> "
-        elif " <== " in x:
+        elif " <== " in r:
             self.rates = [0, 1]
             cs = " <== "
         else:
             raise Exception("Type not found: \" <==> \", \" ==> \" or \" <== \" (%d)" % n)
 
-        [self.lhs, self.rhs] = x.split(cs)
+        [self.lhs, self.rhs] = r.split(cs)
 
-        for c in x.replace(cs, "+").split("+"):
+        for c in r.replace(cs, "+").split("+"):
             c = c.strip()
             self.s[c] = 1 + self.s.get(c, 0)
 
@@ -47,7 +50,7 @@ class R:
         k = False
         
         if self.rates[j] > 0:
-            k = "kf" + str(self.i) + " * " + " * ".join(a.split("+"))
+            k = self.k[j] + str(self.i) + " * " + " * ".join(a.split("+"))
 
         return k
     
@@ -58,11 +61,11 @@ class R:
         c = 0
         
         if d:
-            x = self.lhs
+            r = self.lhs
         else:
-            x = self.rhs
+            r = self.rhs
         
-        for i in map(string.strip, x.split("+")):
+        for i in map(string.strip, r.split("+")):
             if y == i:
                 c += 1
                 
@@ -114,39 +117,39 @@ def symbols(x):
 
 
 def proc_r():
-
+    i = 1
+    
     for s in rspcs:
         a = []
         for r in rctns:
             # A + B -> C + D
             k = r.kinet(True)
-            x = r.smc(True, s)
-            if x > 0 and k:
-                a.append("- %d * %s" % (x, k))
-            x = r.smc(False, s)
-            if x > 0 and k:
-                a.append("+ %d * %s" % (x, k))
+            y = r.smc(True, s)
+            if y > 0 and k:
+                a.append("- %d * %s" % (y, k))
+            y = r.smc(False, s)
+            if y > 0 and k:
+                a.append("+ %d * %s" % (y, k))
 
             # A + B <- C + D
             k = r.kinet(False)
-            x = r.smc(False, s)
-            if x > 0 and k:
-                a.append("- %d * %s" % (x, k))
-            x = r.smc(True, s)
-            if x > 0 and k:
-                a.append("+ %d * %s" % (x, k))
+            y = r.smc(False, s)
+            if y > 0 and k:
+                a.append("- %d * %s" % (y, k))
+            y = r.smc(True, s)
+            if y > 0 and k:
+                a.append("+ %d * %s" % (y, k))
 
-        print("d%s = %s" % (s, " ".join(a)))
+        # print("d%s = %s" % (s, " ".join(a)))
         b = symbols(" ".join(a))
         exec("f = %s" % b)
         print(f)
-
-        # map(symbols, x)
-# x.isdigit
-# '+' '-' '*' pass as they are
+        xdot.append(f)
+        i += 1
+        
         
 def main(fname):
-    
+
     read_r(fname)
     
     for r in rctns:
@@ -161,10 +164,15 @@ def main(fname):
     proc_rspcs()
 
     for s in rspcs:
-        print("X %s" % s)
+        # print("X %s" % s)
+        x.append(s)
 
     proc_r()
-    
+
+    i = 0
+    for dx in xdot:
+        print("xdot(%d) = %s ; " % (i + 1, xdot[i]))
+        i += 1
         
 if "__main__" == __name__:
     main(sys.argv[1])
