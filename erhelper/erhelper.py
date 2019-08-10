@@ -14,6 +14,8 @@ rspcs = {}
 initial = {}
 kf = {}
 kr = {}
+t_interval = 10
+t_points = 10
 
 class R:
     def __init__(self):
@@ -117,6 +119,17 @@ def read_r(fname):
                         a = int(vals[1])
                         kf[a] = vals[2]
                         kr[a] = vals[3]
+                    continue
+                elif re.search(r'^SIMULATION\s', line):
+                    vals = line.split()
+                    if len(vals) > 2:
+                        global t_interval, t_points
+                        if "T_INTERVAL" == vals[1]:
+                            t_interval = int(vals[2])
+                            print(line)
+                            print(t_interval)
+                        elif "T_POINTS" == vals[1]:
+                            t_points = int(vals[2])
                     continue
                 
                 n += 1
@@ -256,12 +269,15 @@ def octave_output(fbase):
             fp.write("    xdot(%d) = %s ; \n" % (i + 1, xdot[i]))
             i += 1
         
-        fp.write("endfunction\n\n")
+        fp.write("endfunction\n")
 
-        fp.write("lsode_options(\"integration method\", \"stiff\") ;\n")
+        fp.write("\nlsode_options(\"integration method\", \"stiff\") ;\n")
         fp.write("lsode_options(\"maximum step size\", 1e-3) ;\n")
-        
-        fp.write("t = linspace (0, 25, 25 * 100) ;\n")
+        fp.write("lsode_options\n")
+
+        fp.write("\nt_interval = %d ;\n" % t_interval)
+        fp.write("t_points = %d ;\n" % t_points)
+        fp.write("t = linspace(0, t_interval, t_interval * t_points) ;\n")
         fp.write("tstart = cputime ;\n")
         fp.write("  [y, istate, msg] = lsode (\"f\", x0, t) ;\n")
         fp.write("  istate\n")
