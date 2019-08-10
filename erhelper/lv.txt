@@ -7,3 +7,9 @@ X + Y ==> Y + Y
 # 
 Y ==> E
 
+EXCESS A E
+INITIAL A 100
+INITIAL E 0
+INITIAL X 10
+INITIAL Y 1
+

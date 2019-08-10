@@ -7,8 +7,10 @@ import re
 
 rctns = list(())
 x = list(())
+excess = list(())
 xdot = list(())
 rspcs = {}
+initial = {}
 
 class R:
     def __init__(self):
@@ -89,6 +91,18 @@ def read_r(fname):
         for l in f:
             line = l.strip()
             if len(line) > 0 and '#' != line[0]:
+                if re.search(r'^EXCESS\s', line):
+                    if len(line.split()) > 1:
+                        for a in line.split()[1:]:
+                            if not a in excess:
+                                excess.append(a)
+                    continue
+                elif re.search(r'^INITIAL\s', line):
+                    if len(line.split()) > 2:
+                        a, val = line.split()[1:3]
+                        initial[a] = val
+                    continue
+                
                 n += 1
                 r.reaction(line, nr)
                 rctns.append(r)
@@ -119,8 +133,14 @@ def symbols(x):
 
 def proc_r():
     i = 1
-    
+
     for s in rspcs:
+        
+        if s in excess:
+            continue
+
+        x.append(s)
+        
         a = []
         for r in rctns:
             # A + B -> C + D
@@ -152,11 +172,19 @@ def proc_r():
 def subst_x(df):
     i = 1
     e = df
+
     for s in rspcs:
         s1 = "__%s__" % s
-        s2 = " x(%i) " % i
+        
+        if s in excess:
+            s2 = " %s " % s
+        else:
+            s2 = " x(%i) " % i
+            
         e = e.replace(s1, s2)
-        i += 1
+        
+        if s in x:
+            i += 1
         
     e = re.sub(r'__(k[f,r])(\d+)__', r' \1(\2) ', e)
 
@@ -168,7 +196,7 @@ def octave_output(fbase):
         fname = "%s.m" % fbase
         fname = "%s.m" % fbase 
         mname = "%s.mat" % fbase
-        n = len(xdot)
+        n = len(rctns)
 
         fp = open(fname, "w")
 
@@ -176,12 +204,23 @@ def octave_output(fbase):
         fp.write("# -*-octave-*-\n")
         fp.write("more off\n")
         fp.write("global kf kr ;\n")
-        fp.write("# forward reaction rates\nkf = zeros(%d, 1) ;\n" % n)
-        fp.write("# reverse reaction rates\nkr = zeros(%d, 1) ;\n" % n)
-        fp.write("# initial conditions\nx0 = zeros(%d, 1) ;\n" % n)
+        if len(excess):
+            fp.write("    global %s ;\n" % " ".join(excess))
+            for a in excess:
+                if initial.has_key(a):
+                    fp.write("%s = %s ;\n" % (a, initial[a]))
+        fp.write("# forward reaction rates\nkf = ones(%d, 1) ;\n" % n)
+        fp.write("# reverse reaction rates\nkr = ones(%d, 1) ;\n" % n)
+        fp.write("# initial conditions\nx0 = zeros(%d, 1) ;\n" % len(xdot))
+        for a in x:
+            if a in initial:
+                i = 1 + x.index(a)
+                fp.write("# %s\nx0(%d) = %s ;\n" % (a, i, initial[a]))
         fp.write("\nfunction xdot = f (x, t)\n")
         fp.write("    global kf kr ;\n")
-        fp.write("    xdot = zeros(%d, 1) ;\n" % n)
+        if len(excess):
+            fp.write("global %s ;\n" % " ".join(excess))
+        fp.write("    xdot = zeros(%d, 1) ;\n" % len(xdot))
         i = 0
         for dx in xdot:
             fp.write("    xdot(%d) = %s ; \n" % (i + 1, xdot[i]))
@@ -189,6 +228,8 @@ def octave_output(fbase):
         
         fp.write("endfunction\n\n")
 
+        fp.write("lsode_options(\"maximum step size\", 1e-3) ;\n")
+        
         fp.write("t = linspace (0, 25, 25 * 100) ;\n")
         fp.write("tstart = cputime ;\n")
         fp.write("  [y, istate, msg] = lsode (\"f\", x0, t) ;\n")
@@ -203,9 +244,17 @@ def octave_output(fbase):
     finally:
         fp.close()
 
+
+def validate_input():
+    for a in excess:
+        if a not in initial:
+            raise Exception("Missing initial value for: %s" % a)
+        
 def main(fname):
 
     read_r(fname)
+
+    validate_input()
     
     for r in rctns:
         print(r.i)
@@ -218,10 +267,6 @@ def main(fname):
         
     proc_rspcs()
 
-    for s in rspcs:
-        # print("X %s" % s)
-        x.append(s)
-
     proc_r()
 
     i = 0
@@ -230,7 +275,10 @@ def main(fname):
         i += 1
 
     octave_output("erhelper")
-        
+    
+    print("XXXXXXXX %s" % x)
+    print("XXXXXXXX %s" % excess)
+    print("XXXXXXXX %s" % initial)
 if "__main__" == __name__:
     main(sys.argv[1])
 
