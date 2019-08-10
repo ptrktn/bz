@@ -4,6 +4,7 @@ import sys
 import string
 from sympy import *
 import re
+import os
 
 rctns = list(())
 x = list(())
@@ -11,6 +12,8 @@ excess = list(())
 xdot = list(())
 rspcs = {}
 initial = {}
+kf = {}
+kr = {}
 
 class R:
     def __init__(self):
@@ -105,6 +108,16 @@ def read_r(fname):
                         a, val = line.split()[1:3]
                         initial[a] = val
                     continue
+                elif re.search(r'^RATES\s', line):
+                    vals = line.split()
+                    if 3 == len(vals):
+                        a = int(vals[1])
+                        kf[a] = vals[2]
+                    if 3 < len(vals):
+                        a = int(vals[1])
+                        kf[a] = vals[2]
+                        kr[a] = vals[3]
+                    continue
                 
                 n += 1
                 r.reaction(line, nr)
@@ -195,15 +208,14 @@ def subst_x(df):
 
 
 def octave_output(fbase):
+    fname = "%s.m" % fbase
+    mname = "%s.mat" % fbase
+    n = len(rctns)
+    
     try:
-        fname = "%s.m" % fbase
-        fname = "%s.m" % fbase 
-        mname = "%s.mat" % fbase
-        n = len(rctns)
-
         fp = open(fname, "w")
 
-        fp.write("#!/usr/bin/env octave -qf\n")
+        fp.write("#!/usr/bin/octave -qf\n")
         fp.write("# -*-octave-*-\n")
 
         sx = 0
@@ -223,9 +235,13 @@ def octave_output(fbase):
             for a in excess:
                 if initial.has_key(a):
                     fp.write("%s = %s ;\n" % (a, initial[a]))
-        fp.write("# forward reaction rates\nkf = ones(%d, 1) ;\n" % n)
-        fp.write("# reverse reaction rates\nkr = ones(%d, 1) ;\n" % n)
-        fp.write("# initial conditions\nx0 = zeros(%d, 1) ;\n" % len(xdot))
+        fp.write("\n# forward reaction rates\nkf = zeros(%d, 1) ;\n" % n)
+        for a in kf:
+            fp.write("kf(%d) = %s ;\n" % (a, kf[a])) 
+        fp.write("\n# reverse reaction rates\nkr = zeros(%d, 1) ;\n" % n)
+        for a in kr:
+            fp.write("kr(%d) = %s ;\n" % (a, kr[a])) 
+        fp.write("\n# initial conditions\nx0 = zeros(%d, 1) ;\n" % len(xdot))
         for a in x:
             if a in initial:
                 i = 1 + x.index(a)
@@ -233,7 +249,7 @@ def octave_output(fbase):
         fp.write("\nfunction xdot = f (x, t)\n")
         fp.write("    global kf kr ;\n")
         if len(excess):
-            fp.write("global %s ;\n" % " ".join(excess))
+            fp.write("    global %s ;\n" % " ".join(excess))
         fp.write("    xdot = zeros(%d, 1) ;\n" % len(xdot))
         i = 0
         for dx in xdot:
@@ -242,6 +258,7 @@ def octave_output(fbase):
         
         fp.write("endfunction\n\n")
 
+        fp.write("lsode_options(\"integration method\", \"stiff\") ;\n")
         fp.write("lsode_options(\"maximum step size\", 1e-3) ;\n")
         
         fp.write("t = linspace (0, 25, 25 * 100) ;\n")
@@ -258,6 +275,10 @@ def octave_output(fbase):
     finally:
         fp.close()
 
+    try:
+        os.chmod(fname, 0755)
+    except:
+        pass
 
 def validate_input():
     for a in excess:
@@ -293,6 +314,8 @@ def main(fname):
     print("XXXXXXXX %s" % x)
     print("XXXXXXXX %s" % excess)
     print("XXXXXXXX %s" % initial)
+
+
 if "__main__" == __name__:
     main(sys.argv[1])
 

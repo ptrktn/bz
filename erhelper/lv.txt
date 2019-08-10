@@ -1,6 +1,5 @@
 #
 A + X ==> X + X
-
 #
 X + Y ==> Y + Y
 
@@ -12,4 +11,10 @@ INITIAL A 100
 INITIAL E 0
 INITIAL X 10
 INITIAL Y 1
+
+RATES 1 0.5
+RATES 2 0.2
+RATES 3 1.0 1e-10
+
+
 
