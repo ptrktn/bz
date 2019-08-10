@@ -3,6 +3,7 @@
 import sys
 import string
 from sympy import *
+import re
 
 rctns = list(())
 x = list(())
@@ -112,7 +113,7 @@ def symbols(x):
         elif i.isdigit() or "+" == i or "-" == i or "*" == i:
             r.append(i)
         else:
-            r.append("Symbol('%s')" % i)
+            r.append("Symbol('__%s__')" % i)
     return " ".join(r)
 
 
@@ -142,12 +143,26 @@ def proc_r():
 
         # print("d%s = %s" % (s, " ".join(a)))
         b = symbols(" ".join(a))
-        exec("f = %s" % b)
-        print(f)
-        xdot.append(f)
+        exec("df = %s" % b)
+        print(df)
+        xdot.append(subst_x(str(df)))
+        i += 1
+
+
+def subst_x(df):
+    i = 1
+    e = df
+    for s in rspcs:
+        s1 = "__%s__" % s
+        s2 = " x(%i) " % i
+        e = e.replace(s1, s2)
         i += 1
         
-        
+    e = re.sub(r'__(k[f,r])(\d+)__', r' \1(\2) ', e)
+
+    return e
+
+
 def main(fname):
 
     read_r(fname)
