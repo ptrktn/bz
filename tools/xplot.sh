@@ -14,7 +14,7 @@ test -f "$FNAME" || exit 1
 
 NCOLS=$(egrep -v '^#' $FNAME | head -1 | awk '{ print NF }')
 
-ID=$(echo $(basename $FNAME) | sed 's/\..*$//')_$(date +%Y%m%d%H%M%S)_$(printf "%05d" $RANDOM)
+ID=$(echo $(basename $FNAME) | sed 's/\..*$//')_$(date +%Y%m%d%H%M)_$(printf "%05d" $RANDOM)
 
 xplot() {
 	local fname=$1
