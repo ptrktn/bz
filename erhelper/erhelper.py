@@ -163,6 +163,46 @@ def subst_x(df):
     return e
 
 
+def octave_output(fbase):
+    try:
+        fname = "%s.m" % fbase
+        fname = "%s.m" % fbase 
+        mname = "%s.mat" % fbase
+        n = len(xdot)
+
+        fp = open(fname, "w")
+
+        fp.write("#!/usr/bin/env octave -qf\n")
+        fp.write("# -*-octave-*-\n")
+        fp.write("more off\n")
+        fp.write("global kf kr ;\n")
+        fp.write("# forward reaction rates\nkf = zeros(%d, 1) ;\n" % n)
+        fp.write("# reverse reaction rates\nkr = zeros(%d, 1) ;\n" % n)
+        fp.write("# initial conditions\nx0 = zeros(%d, 1) ;\n" % n)
+        fp.write("\nfunction xdot = f (x, t)\n")
+        fp.write("    global kf kr ;\n")
+        fp.write("    xdot = zeros(%d, 1) ;\n" % n)
+        i = 0
+        for dx in xdot:
+            fp.write("    xdot(%d) = %s ; \n" % (i + 1, xdot[i]))
+            i += 1
+        
+        fp.write("endfunction\n\n")
+
+        fp.write("t = linspace (0, 25, 25 * 100) ;\n")
+        fp.write("tstart = cputime ;\n")
+        fp.write("  [y, istate, msg] = lsode (\"f\", x0, t) ;\n")
+        fp.write("  istate\n")
+        fp.write("  msg\n")
+        fp.write("printf('Total CPU time: %f seconds\\n', cputime - tstart) ;\n")
+        fp.write("mat = [rot90(t, -1), y] ;\n")
+        fp.write("save %s mat ;\n" % mname)
+  
+    except:
+        raise
+    finally:
+        fp.close()
+
 def main(fname):
 
     read_r(fname)
@@ -188,6 +228,8 @@ def main(fname):
     for dx in xdot:
         print("xdot(%d) = %s ; " % (i + 1, xdot[i]))
         i += 1
+
+    octave_output("erhelper")
         
 if "__main__" == __name__:
     main(sys.argv[1])
