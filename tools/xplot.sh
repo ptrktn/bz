@@ -23,7 +23,7 @@ xplot() {
 	local tmp=$(mktemp --tmpdir=/tmp tmp.XXXXX.ps)
 	local f=${ID}_x$(printf "%02d" $j).jpg
 
-	echo "set term postscript ; set output '$tmp' ; plot '$fname' u 1:$col w l title 'x${j} ${title[$j]}'" | gnuplot > /dev/null 2>&1 || exit 1
+	echo "set term postscript ; set output '$tmp' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l title 'x(${j}) ${title[$j]}'" | gnuplot > /dev/null 2>&1 || exit 1
 	convert -density 300 $tmp -flatten -background white -resize 1024 -rotate 90 $f
 	rm -f $tmp
 }
