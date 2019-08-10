@@ -14,6 +14,7 @@ initial = {}
 
 class R:
     def __init__(self):
+        self.text = None
         self.i = 0
         self.lhs = None
         self.rhs = None
@@ -36,6 +37,8 @@ class R:
         else:
             raise Exception("Type not found: \" <==> \", \" ==> \" or \" <== \" (%d)" % n)
 
+        self.text = " ".join(" ".join(r.split()).split(" "))
+        
         [self.lhs, self.rhs] = r.split(cs)
 
         for c in r.replace(cs, "+").split("+"):
@@ -202,6 +205,17 @@ def octave_output(fbase):
 
         fp.write("#!/usr/bin/env octave -qf\n")
         fp.write("# -*-octave-*-\n")
+
+        sx = 0
+        for r in rctns:
+            if len(r.text) > sx:
+                sx = len(r.text)
+
+        sx += 3
+        fmt = "# %%-%ds (R%%d)\n" % sx
+        for r in rctns:
+            fp.write(fmt % (r.text, r.i))
+
         fp.write("more off\n")
         fp.write("global kf kr ;\n")
         if len(excess):
