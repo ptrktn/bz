@@ -312,6 +312,7 @@ def octave_output(fbase):
         fp.write("istate\n")
         fp.write("msg\n")
         fp.write("printf('Total CPU time: %f seconds\\n', cputime - tstart) ;\n")
+        fp.write("if istate != 2\n    exit(1) ;\nendif\n")
         fp.write("mat = [rot90(t, -1), y] ;\n")
         fp.write("save %s mat ;\n" % mname)
   
