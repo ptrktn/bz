@@ -28,10 +28,18 @@ test: test-lv
 
 .PHONY: test-lv
 test-lv:
-	./erhelper.py lv.txt
+	rm -f erhelper.mat erhelper.m
+	./erhelper.py examples/lotka-volterra.txt
+	$(OCTAVE) erhelper.m
+	../tools/xplot.sh erhelper.mat
+
+.PHONY: otest
+otest:
+	rm -f erhelper.mat erhelper.m
+	./erhelper.py examples/oregonator.txt
 
 .PHONY: clean
 clean:
-	$(RM) core *~ *.BAK octave-workspace
+	$(RM) core *~ *.BAK octave-workspace *.jpg *.mat *.m
 
 #*****

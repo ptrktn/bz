@@ -13,6 +13,7 @@ xdot = list(())
 rspcs = {}
 initial = {}
 constant = {}
+simulation = {}
 kf = {}
 kr = {}
 t_interval = 10
@@ -49,8 +50,9 @@ class R:
 
         for c in r.replace(cs, "+").replace("*", "+").split("+"):
             c = c.strip()
-            if not(c in constant):
-                self.s[c] = 1 + self.s.get(c, 0)
+            for d in c.split():
+                if not(d in constant):
+                    self.s[d] = 1 + self.s.get(d, 0)
 
     def kinet(self, d=True):
         if d:
@@ -133,12 +135,12 @@ def read_r(fname):
                         global t_interval, t_points
                         if "T_INTERVAL" == vals[1]:
                             t_interval = int(vals[2])
-                            print(line)
-                            print(t_interval)
                         elif "T_POINTS" == vals[1]:
                             t_points = int(vals[2])
+                        elif "MAXIMUM_STEP_SIZE" == vals[1]:
+                            simulation["MAXIMUM_STEP_SIZE"] = vals[2]
                     continue
-                
+
                 n += 1
                 r.reaction(line, nr)
                 rctns.append(r)
@@ -294,7 +296,11 @@ def octave_output(fbase):
         fp.write("endfunction\n")
 
         fp.write("\nlsode_options(\"integration method\", \"stiff\") ;\n")
-        fp.write("lsode_options(\"maximum step size\", 1e-3) ;\n")
+
+        if "MAXIMUM_STEP_SIZE" in simulation:
+            fp.write("lsode_options(\"maximum step size\", %s) ;\n" %
+                     simulation["MAXIMUM_STEP_SIZE"])
+
         fp.write("lsode_options(\"absolute tolerance\", 1e-7) ;\n")
         fp.write("lsode_options(\"relative tolerance\", 1e-7) ;\n")
         fp.write("\nt_interval = %d ;\n" % t_interval)
