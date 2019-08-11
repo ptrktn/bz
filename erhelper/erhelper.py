@@ -10,7 +10,7 @@ rctns = list(())
 x = list(())
 excess = list(())
 xdot = list(())
-rspcs = {}
+rspcs = []
 initial = {}
 constant = {}
 simulation = {}
@@ -152,9 +152,10 @@ def proc_rspcs():
     for r in rctns:
         for s in r.species():
             i = s.strip()
-            rspcs[i] = 1 + rspcs.get(i, 0)
+            if not(i in rspcs):
+                rspcs.append(i)
 
-            
+
 def symbols(x):
     r = []
 
