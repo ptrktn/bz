@@ -12,6 +12,7 @@ excess = list(())
 xdot = list(())
 rspcs = {}
 initial = {}
+constant = {}
 kf = {}
 kr = {}
 t_interval = 10
@@ -46,9 +47,10 @@ class R:
         
         [self.lhs, self.rhs] = r.split(cs)
 
-        for c in r.replace(cs, "+").split("+"):
+        for c in r.replace(cs, "+").replace("*", "+").split("+"):
             c = c.strip()
-            self.s[c] = 1 + self.s.get(c, 0)
+            if not(c in constant):
+                self.s[c] = 1 + self.s.get(c, 0)
 
     def kinet(self, d=True):
         if d:
@@ -110,6 +112,11 @@ def read_r(fname):
                         a, val = line.split()[1:3]
                         initial[a] = val
                     continue
+                elif re.search(r'^CONSTANT\s', line):
+                    if len(line.split()) > 2:
+                        a, val = line.split()[1:3]
+                        constant[a] = val
+                    continue
                 elif re.search(r'^RATES\s', line):
                     vals = line.split()
                     if 3 == len(vals):
@@ -163,12 +170,16 @@ def symbols(x):
 def proc_r():
     i = 1
 
+    for s in rspcs:        
+        if s in excess or s in constant:
+            continue
+        x.append(s)
+
+    
     for s in rspcs:
         
-        if s in excess:
+        if s in excess or s in constant:
             continue
-
-        x.append(s)
         
         a = []
         for r in rctns:
@@ -199,24 +210,24 @@ def proc_r():
 
 
 def subst_x(df):
-    i = 1
     e = df
 
+    print(" IN: %s" % e)
     for s in rspcs:
         s1 = "__%s__" % s
         
-        if s in excess:
+        if s in excess or s in constant:
             s2 = " %s " % s
         else:
+            i = 1 + x.index(s)
             s2 = " x(%i) " % i
             
         e = e.replace(s1, s2)
         
-        if s in x:
-            i += 1
-        
     e = re.sub(r'__(k[f,r])(\d+)__', r' \1(\2) ', e)
 
+    print("OUT: %s" % e)
+    
     return e
 
 
@@ -243,11 +254,18 @@ def octave_output(fbase):
 
         fp.write("more off\n")
         fp.write("global kf kr ;\n")
+
         if len(excess):
-            fp.write("    global %s ;\n" % " ".join(excess))
+            fp.write("\n# Species in excess\nglobal %s ;\n" % " ".join(excess))
             for a in excess:
                 if initial.has_key(a):
                     fp.write("%s = %s ;\n" % (a, initial[a]))
+
+        if len(constant):
+            fp.write("\n# Constants\nglobal %s ;\n" % " ".join(constant))
+            for a in constant:
+                fp.write("%s = %s ;\n" % (a, constant[a]))
+            
         fp.write("\n# forward reaction rates\nkf = zeros(%d, 1) ;\n" % n)
         for a in kf:
             fp.write("kf(%d) = %s ;\n" % (a, kf[a])) 
@@ -261,8 +279,12 @@ def octave_output(fbase):
                 fp.write("# %s\nx0(%d) = %s ;\n" % (a, i, initial[a]))
         fp.write("\nfunction xdot = f (x, t)\n")
         fp.write("    global kf kr ;\n")
+
         if len(excess):
             fp.write("    global %s ;\n" % " ".join(excess))
+        if len(constant):
+            fp.write("    global %s ;\n" % " ".join(constant))
+
         fp.write("    xdot = zeros(%d, 1) ;\n" % len(xdot))
         i = 0
         for dx in xdot:
@@ -273,15 +295,16 @@ def octave_output(fbase):
 
         fp.write("\nlsode_options(\"integration method\", \"stiff\") ;\n")
         fp.write("lsode_options(\"maximum step size\", 1e-3) ;\n")
-        fp.write("lsode_options\n")
-
+        fp.write("lsode_options(\"absolute tolerance\", 1e-7) ;\n")
+        fp.write("lsode_options(\"relative tolerance\", 1e-7) ;\n")
         fp.write("\nt_interval = %d ;\n" % t_interval)
         fp.write("t_points = %d ;\n" % t_points)
         fp.write("t = linspace(0, t_interval, t_interval * t_points) ;\n")
         fp.write("tstart = cputime ;\n")
         fp.write("  [y, istate, msg] = lsode (\"f\", x0, t) ;\n")
-        fp.write("  istate\n")
-        fp.write("  msg\n")
+        fp.write("lsode_options\n")
+        fp.write("istate\n")
+        fp.write("msg\n")
         fp.write("printf('Total CPU time: %f seconds\\n', cputime - tstart) ;\n")
         fp.write("mat = [rot90(t, -1), y] ;\n")
         fp.write("save %s mat ;\n" % mname)
@@ -327,9 +350,10 @@ def main(fname):
 
     octave_output("erhelper")
     
-    print("XXXXXXXX %s" % x)
-    print("XXXXXXXX %s" % excess)
-    print("XXXXXXXX %s" % initial)
+    print("X %s" % x)
+    print("EXCESS %s" % excess)
+    print("INITIAL %s" % initial)
+    print("CONSTANT %s" % constant)
 
 
 if "__main__" == __name__:
