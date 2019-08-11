@@ -1,0 +1,82 @@
+# Szalai et al, J. Phys. Chem. A 2003, 107, 10074-10081
+# doi:10.1021/jp0360523
+
+EXCESS H H2O
+INITIAL H 1.29
+INITIAL H2O 1
+
+# R1
+Br + HOBr + H <==> Br2 + H2O
+# R2
+Br + HBrO2 + H <==> HOBr + HOBr
+# R3
+Br + BrO3 + H + H <==> HOBr + HBrO2
+# R4a
+HBrO2 + H  <==> H2BrO2 + H2BrO2
+# R4b
+HBrO2 + H2BrO2 ==> BrO3 + HOBr + H + H
+# R5a
+HBrO2 + BrO3 + H <==> Br2O4 + H2O
+# R5b
+Br2O4 <==> BrO2 + BrO2
+# R6a
+H2Q + BrO2 + BrO2 ==> HBrO2 + HBrO2 + Q
+# R6b
+Red + BrO2 + H  <==>  Ox + HBrO2
+# R7
+CHD + H  <==> CHDE + H
+# R8
+CHDE + Br2 ==> BrCHD + Br + H
+# R9
+BrCHD + H  ==>  CHED + Br + H + H
+# R10
+CHED + H ==> H2Q + H
+# R11
+CHD + BrO3 + H ==> H2Q + HBrO2 + H2O
+# R12
+CHD + HBrO2 ==> H2Q + HOBr + H2O
+# R13
+H2Q + BrO3 + H ==> Q + HBrO2 + H2O
+# R14
+H2Q + HOBr ==> Q + Br + H + H2O
+# R15
+H2Q + Br2 ==> Q + Br + Br + H + H
+# R16
+Ox + Ox + CHD ==> Red + Red + H2Q + H + H
+# R17
+Ox + Ox + BrCHD ==> Q + Br + H + H + H + Red + Red
+# R18
+Ox + Ox + H2Q ==> Red + Red + Q + H + H
+# R19
+Red + Red + BrO3  + H + H + H ==> Ox + Ox + HBrO2 + H2O
+
+RATES 1 8*10^9 80
+RATES 2 2.5*10^6 2*10^(-5)
+RATES 3 1.2 3.2
+RATES 4 2*10^6 10^8
+RATES 5 1.7*10^5
+RATES 6 48 3.2*10^3
+RATES 7 7.5*10^4 1.4*10^9
+RATES 8 2*10^6
+RATES 9 10^7
+RATES 10 2.1*10^(-4) 5.2*10^2
+RATES 11 2.8*10^9
+RATES 12 1.0*10^(-4)
+RATES 13 1.9*10^(-4)
+RATES 14 2*10^(-5)
+RATES 15 5
+RATES 16 2*10^(-2)
+RATES 17 6*10^5
+RATES 18 10^4
+RATES 19 0.11
+RATES 20 0.051
+RATES 21 6*10^3
+RATES 22 0.02
+
+INITIAL Br 10^(-5)
+INITIAL BrO3 0.1
+INITIAL CHD 0.1
+
+SIMULATION T_INTERVAL 15000
+SIMULATION T_POINTS 50
+SIMULATION MAXIMUM_STEP_SIZE 0.001
