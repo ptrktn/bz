@@ -10,6 +10,7 @@ rctns = list(())
 x = list(())
 excess = list(())
 xdot = list(())
+xdot_raw = list(())
 rspcs = []
 initial = {}
 constant = {}
@@ -156,6 +157,21 @@ def proc_rspcs():
                 rspcs.append(i)
 
 
+def symbols2(x):
+    r = []
+
+    for i in " ".join(x.split()).split(" "):
+        i = i.strip()
+        if i is None:
+            pass
+        elif i.isdigit() or "+" == i or "-" == i or "*" == i:
+            r.append(i)
+        else:
+            r.append("__%s__" % i)
+
+    return " ".join(r)
+
+                
 def symbols(x):
     r = []
 
@@ -167,6 +183,7 @@ def symbols(x):
             r.append(i)
         else:
             r.append("Symbol('__%s__')" % i)
+
     return " ".join(r)
 
 
@@ -204,11 +221,12 @@ def proc_r():
             if y > 0 and k:
                 a.append("+ %d * %s" % (y, k))
 
-        # print("d%s = %s" % (s, " ".join(a)))
+        # print("d%s = %s" % (s, " ".join(a)))        
         b = symbols(" ".join(a))
         exec("df = %s" % b)
         print(df)
         xdot.append(subst_x(str(df)))
+        xdot_raw.append(subst_x(str(symbols2(" ".join(a)))))
         i += 1
 
 
@@ -233,7 +251,7 @@ def subst_x(df):
     
     return e
 
-def lsoda_output(fbase):
+def lsoda_c_output(fbase):
     fname = "%s.h" % fbase
     mname = "%s.mat" % fbase
     n = len(rctns)
@@ -242,7 +260,7 @@ def lsoda_output(fbase):
     try:
         fp = open(fname, "w")
 
-        fp.write("\n/*\n")
+        fp.write("#ifndef __ERHELPER_H__\n#define __ERHELPER_H__\n\n/*\n")
         
         sx = 0
         for r in rctns:
@@ -263,34 +281,8 @@ def lsoda_output(fbase):
 #define kr(i) kr[i]
 """
         
-        fp.write("%s\n" % defs)
+        fp.write("%s" % defs)
 
-        
-        fp.write("#define T_END %d\n" % t_interval)
-        fp.write("#define T_DELTA (1/ (double) %d)\n" % t_points)
-        fp.write("#define NEQ %d\n\n" % neq)
-
-        fp.write("\nstatic void erhelper_init(double *x, double *abstol, double *reltol)\n{\n")
-
-        i = 0
-        while i <= neq:
-            fp.write("\tabstol[%d] = 1.0E-7;\n" % i)
-            fp.write("\treltol[%d] = 1.0E-7;\n" % i)
-            fp.write("\tx[%d] = 0;\n" % i)
-            i += 1
-        
-        fp.write("\n/* initial conditions */\n")
-        for a in x:
-            if a in initial:
-                i = 1 + x.index(a)
-                fp.write("\t/* %s */\n\tx[%d] = %s ;\n" % (a, i, initial[a]))
-	
-        fp.write("\n}\n")
-                
-        fp.write("\nstatic void fex(double t, double *x, double *xdot, void *data)\n{\n")
-
-        fp.write("double kf[NEQ], kr[NEQ+1];")
-        
         if len(excess):
             fp.write("\n/* Species in excess %s */\n" % " ".join(excess))
             for a in excess:
@@ -301,21 +293,49 @@ def lsoda_output(fbase):
             fp.write("\n/* Constants %s */\n" % " ".join(constant))
             for a in constant:
                 fp.write("#define %s (%s)\n" % (a, constant[a]))
-            
-        fp.write("\n/* forward reaction rates */\n")
-        for a in kf:
-            fp.write("kf[%d] = %s ;\n" % (a, kf[a]))
-        fp.write("\n/* reverse reaction rates */\n")
-        for a in kr:
-            fp.write("kr[%d] = %s ;\n" % (a, kr[a])) 
 
+        fp.write("\n#define T_END %d\n" % t_interval)
+        fp.write("#define T_DELTA (1/ (double) %d)\n" % t_points)
+        fp.write("#define NEQ %d\n" % neq)
+        fp.write("#define N_REACTIONS %d\n" % n)
+
+        fp.write("\nstatic double kf[N_REACTIONS+1], kr[N_REACTIONS+1];\n")
+        
+        fp.write("\nstatic void erhelper_init(double *x, double *abstol, double *reltol)\n{\n")
+
+        i = 0
+        while i <= neq:
+            fp.write("\tabstol[%d] = 1.0E-7;\n" % i)
+            fp.write("\treltol[%d] = 1.0E-7;\n" % i)
+            fp.write("\tx[%d] = 0;\n" % i)
+            i += 1
+        
+        fp.write("\n\t/* initial conditions */\n")
+        for a in x:
+            if a in initial:
+                i = 1 + x.index(a)
+                fp.write("\t/* %s */\n\tx[%d] = %s ;\n" % (a, i, initial[a]))
+
+        fp.write("\n\t/* forward reaction rates */\n")
+        for a in kf:
+            fp.write("\tkf[%d] = %s ;\n" % (a, kf[a]))
+        fp.write("\n\t/* reverse reaction rates */\n")
+        for a in kr:
+            fp.write("\tkr[%d] = %s ;\n" % (a, kr[a])) 
+                
+        fp.write("\n\n}\n")
+                
+        fp.write("\nstatic void fex(double t, double *x, double *xdot, void *data)\n{\n")
+            
         # FIXME zeros
         i = 0
         for dx in xdot:
-            fp.write("    xdot(%d) = %s ; \n" % (i + 1, xdot[i]))
+            fp.write("    xdot(%d) = %s ; \n" % (i + 1, xdot_raw[i]))
             i += 1
 
         fp.write("\n}\n")
+
+        fp.write("\n#endif\n")
 
     except:
         raise
@@ -451,7 +471,7 @@ def main(fname):
         i += 1
 
     octave_output("erhelper")
-    lsoda_output("erhelper")
+    lsoda_c_output("erhelper")
     
     print("X %s" % x)
     print("EXCESS %s" % excess)

@@ -14,6 +14,7 @@ BINOBJECTS  =
 
 # link to bzsim library
 USEBZSIM=0
+USEMATH=1
 
 # do not remove or comment out the following line
 include ../Makefile
@@ -38,8 +39,18 @@ otest:
 	rm -f erhelper.mat erhelper.m
 	./erhelper.py examples/oregonator.txt
 
+lsoda: lsoda.c erhelper.h
+
+.PHONY: test-lsoda
+test-lsoda:
+	rm -f erhelper.h erhelper.mat
+	./erhelper.py examples/brusselator.txt
+	$(MAKE) lsoda
+	./lsoda > erhelper.mat
+	../tools/xplot.sh erhelper.mat
+
 .PHONY: clean
 clean:
-	$(RM) core *~ *.BAK octave-workspace *.jpg *.mat *.m
+	$(RM) core *~ *.BAK octave-workspace *.jpg *.mat *.m *.h lsoda
 
 #*****
