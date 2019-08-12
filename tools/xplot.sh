@@ -28,9 +28,17 @@ xplot() {
 	rm -f $tmp
 }
 
+maxjobs=$(nproc)
+
+(( maxjobs-- ))
+
 for i in $(seq 2 $NCOLS) ; do
 	j=$(( $i -1 ))
 	xplot $FNAME $i &
+
+	while [ $(jobs -p | wc -l) -gt $maxjobs ] ; do
+		sleep 10
+	done
 done
 
 wait
