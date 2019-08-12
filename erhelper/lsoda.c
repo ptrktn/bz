@@ -2904,6 +2904,9 @@ int main(void)
 	itol = 2;
 	rtol[0] = 0.0;
 	atol[0] = 0.0;
+	/* Provide optional MAX steps argument x*/
+	iopt = 1;
+	iwork6 = 100000;
 	/*
 	rtol[1] = rtol[3] = 1.0E-4;
 	rtol[2] = 1.0E-8;
@@ -2912,8 +2915,17 @@ int main(void)
 	atol[3] = 1.0E-6;*/
 	itask = 1;
 	istate = 1;
-	iopt = 0;
+	/* iopt = 0; */
 	jt = 2;
+
+	/*
+     H0      RWORK(5)   Step size to be attempted on the first step.
+                        The default value is determined by the solver.
+     HMAX    RWORK(6)   Maximum absolute step size allowed.  The
+                        default value is infinite.
+	 */
+	/* rwork5 = 0.00001; */
+	rwork6 = LSODE_HMAX;
 	
 	for (iout = 1; ; iout++) {
 		lsoda(fex, neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,

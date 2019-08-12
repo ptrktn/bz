@@ -294,10 +294,13 @@ def lsoda_c_output(fbase):
             for a in constant:
                 fp.write("#define %s (%s)\n" % (a, constant[a]))
 
-        fp.write("\n#define T_END %d\n" % t_interval)
-        fp.write("#define T_DELTA (1/ (double) %d)\n" % t_points)
-        fp.write("#define NEQ %d\n" % neq)
+        fp.write("\n#define NEQ %d\n" % neq)
         fp.write("#define N_REACTIONS %d\n" % n)
+        fp.write("#define T_END %d\n" % t_interval)
+        fp.write("#define T_DELTA (1/ (double) %d)\n" % t_points)
+        if "MAXIMUM_STEP_SIZE" in simulation:
+            fp.write("#define LSODE_HMAX %s\n" %
+                     simulation["MAXIMUM_STEP_SIZE"])
 
         fp.write("\nstatic double kf[N_REACTIONS+1], kr[N_REACTIONS+1];\n")
         
@@ -305,8 +308,8 @@ def lsoda_c_output(fbase):
 
         i = 0
         while i <= neq:
-            fp.write("\tabstol[%d] = 1.0E-7;\n" % i)
-            fp.write("\treltol[%d] = 1.0E-7;\n" % i)
+            fp.write("\tabstol[%d] = 1.0E-5;\n" % i)
+            fp.write("\treltol[%d] = 1.0E-5;\n" % i)
             fp.write("\tx[%d] = 0;\n" % i)
             i += 1
         
@@ -416,8 +419,8 @@ def octave_output(fbase):
             fp.write("lsode_options(\"maximum step size\", %s) ;\n" %
                      simulation["MAXIMUM_STEP_SIZE"])
 
-        fp.write("lsode_options(\"absolute tolerance\", 1e-7) ;\n")
-        fp.write("lsode_options(\"relative tolerance\", 1e-7) ;\n")
+        fp.write("lsode_options(\"absolute tolerance\", 1e-6) ;\n")
+        fp.write("lsode_options(\"relative tolerance\", 1e-6) ;\n")
         fp.write("\nt_interval = %d ;\n" % t_interval)
         fp.write("t_points = %d ;\n" % t_points)
         fp.write("t = linspace(0, t_interval, t_interval * t_points) ;\n")
