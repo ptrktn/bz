@@ -250,11 +250,11 @@ def lsoda_output(fbase):
                 sx = len(r.text)
 
         sx += 3
-        fmt = "# %%-%ds (R%%d)\n" % sx
+        fmt = " %%-%ds (R%%d)\n" % sx
         for r in rctns:
             fp.write(fmt % (r.text, r.i))
 
-        fp.write("\n*/\n")
+        fp.write("*/\n")
 
         defs="""
 #define x(i) (x[i-1])
@@ -271,18 +271,19 @@ def lsoda_output(fbase):
         fp.write("#define NEQ %d\n\n" % neq)
 
         fp.write("\nstatic void erhelper_init(double *x, double *abstol, double *reltol)\n{\n")
-        fp.write("\n/* initial conditions */\nx[0] = 0;\n")
-
-        for a in x:
-            if a in initial:
-                i = 1 + x.index(a)
-                fp.write("/* %s */\nx[%d] = %s ;\n" % (a, i, initial[a]))        
 
         i = 0
         while i <= neq:
-            fp.write("abstol[%d] = 1.0E-7;\n" % i)
-            fp.write("reltol[%d] = 1.0E-7;\n" % i)
+            fp.write("\tabstol[%d] = 1.0E-7;\n" % i)
+            fp.write("\treltol[%d] = 1.0E-7;\n" % i)
+            fp.write("\tx[%d] = 0;\n" % i)
             i += 1
+        
+        fp.write("\n/* initial conditions */\n")
+        for a in x:
+            if a in initial:
+                i = 1 + x.index(a)
+                fp.write("\t/* %s */\n\tx[%d] = %s ;\n" % (a, i, initial[a]))
 	
         fp.write("\n}\n")
                 
