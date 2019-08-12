@@ -2914,14 +2914,6 @@ int main(void)
 	istate = 1;
 	iopt = 0;
 	jt = 2;
-
-
-	{
-		int i;
-		for (i = 0; i <= neq; i++) {
-			printf("%e %e\n", atol[i], rtol[i]);
-		}
-	}
 	
 	for (iout = 1; ; iout++) {
 		lsoda(fex, neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
