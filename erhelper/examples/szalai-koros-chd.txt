@@ -1,0 +1,75 @@
+# Szalai and Koros, J. Phys. Chem. A 1998, 102, 6892-6897
+# SK model doi:10.1021/jp9832721
+
+EXCESS H H2O
+INITIAL H 1.29
+INITIAL H2O 1
+
+# R1
+Br + HOBr + H <==> Br2 + H2O
+# R2
+Br + HBrO2 + H <==> HOBr + HOBr
+# R3
+Br + BrO3 + H + H <==> HOBr + HBrO2
+# R4
+HBrO2 + H  <==> H2BrO2
+# R5
+HBrO2 + H2BrO2 ==> HOBr + BrO3 + H + H
+# R6
+HBrO2 + BrO3 + H <==> Br2O4 + H2O
+# R7
+Br2O4 <==> BrO2 + BrO2
+# R8
+H2Q + BrO2 ==> HQ + HBrO2
+# R9
+HQ + BrO2 ==> Q + HBrO2 
+# R10
+HQ + HQ ==> H2Q + Q
+# R11
+CHD + H  <==> CHDE + H
+# R12
+CHDE + Br2 ==> BrCHD + H + Br
+# R13
+CHDE + HOBr ==> BrCHD + H2O
+# R14
+BrCHD + H  ==>  CHED + Br + H
+# R15
+CHED + H ==> H2Q + H
+# R16
+H2Q + Br2 ==> Q + Br + Br + H + H
+# R17
+H2Q + BrO3 + H ==> Q + HBrO2 + H2O
+# R18
+H2Q + HOBr ==> Q + Br + H + H2O
+# R19
+CHD + BrO3 + H ==> H2Q + HBrO2 + H2O
+
+RATES 1 8E9 80
+RATES 2 2.5E6 2E-5
+RATES 3 1.2 3.2
+RATES 4 2E6 1E8
+RATES 5 1.7E5
+RATES 6 48 3.2E3
+RATES 7 7.5E4 1.4E9
+RATES 8 8E5
+RATES 9 8E9
+RATES 10 8.8E8 7.7E-4
+RATES 11 2.13E-4 5.2E2
+RATES 12 2.8E9
+RATES 13 2.8E9
+RATES 14 5E-5
+RATES 15 1.94E-4
+RATES 16 3E4
+RATES 17 2E-2
+RATES 18 6E5
+RATES 19 1E-5
+
+INITIAL Br 1E-5
+INITIAL BrO3 0.1
+INITIAL CHD 0.1
+
+SIMULATION T_INTERVAL 45000
+SIMULATION T_POINTS 100
+SIMULATION MAXIMUM_STEP_SIZE 0.001
+
+# ../tools/xplot.sh erhelper.mat 'HOBr Br2 Br HBrO2 BrO3 H2BrO2 Br2O4 BrO2 HQ H2Q Q CHD CHDE BrCHD CHED'
