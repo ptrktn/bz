@@ -19,12 +19,12 @@ ID=$(echo $(basename $FNAME) | sed 's/\..*$//')_$(date +%Y%m%d%H%M)_$(printf "%0
 xplot() {
 	local fname=$1
 	local col=$2
+	local title=$3
 	local j=$(( $col - 1 ))
-	local k=$(( $col - 2 ))
 	local tmp=$(mktemp --tmpdir=/tmp tmp.XXXXX.ps)
 	local f=${ID}_x$(printf "%02d" $j).jpg
 
-	echo "set term postscript ; set output '$tmp' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l title 'x(${j}) ${title[$k]}'" | gnuplot > /dev/null 2>&1 || exit 1
+	echo "set term postscript ; set output '$tmp' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l title 'x(${j}) $title'" | gnuplot > /dev/null 2>&1 || exit 1
 	convert -density 300 $tmp -flatten -background white -resize 1024 -rotate 90 $f
 	rm -f $tmp
 }
@@ -34,9 +34,8 @@ maxjobs=$(nproc)
 (( maxjobs-- ))
 
 for i in $(seq 2 $NCOLS) ; do
-	j=$(( $i -1 ))
-	xplot $FNAME $i &
-	#xplot $FNAME $i 
+	j=$(( $i - 2))
+	xplot $FNAME $i ${title[$j]} &
 	while [ $(jobs -p | wc -l) -gt $maxjobs ] ; do
 		sleep 10
 	done
