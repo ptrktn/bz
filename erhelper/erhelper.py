@@ -272,7 +272,16 @@ def lsoda_c_output(fbase):
         for r in rctns:
             fp.write(fmt % (r.text, r.i))
 
-        fp.write("*/\n")
+        i = 0
+        fp.write("\n")
+        for v in x:
+            fp.write(" x(%d) %s\n" % (1 + i, v))
+            i += 1
+
+        fp.write("\n Plot command:\n\n xplot.sh FILE '%s'"
+                 % " ".join(x))
+            
+        fp.write("\n*/\n")
 
         defs="""
 #define x(i) (x[i-1])
