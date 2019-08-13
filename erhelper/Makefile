@@ -49,6 +49,11 @@ test-lsoda:
 	./lsoda > erhelper.mat
 	../tools/xplot.sh erhelper.mat
 
+.PHONY: lsoda-sim
+lsoda-sim: lsoda
+	rm -f erhelper.mat
+	./lsoda > erhelper.mat
+
 .PHONY: clean
 clean:
 	$(RM) core *~ *.BAK octave-workspace *.jpg *.mat *.m *.h lsoda
