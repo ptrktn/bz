@@ -54,6 +54,14 @@ lsoda-sim: lsoda
 	rm -f erhelper.mat
 	./lsoda > erhelper.mat
 
+.PHONY: lsoda-dat
+lsoda-dat:
+	rm -f ~/sk.zip
+	rm -f *.jpg
+	../tools/xplot.sh erhelper.mat 'HOBr Br2 Br HBrO2 BrO3 H2BrO2 Br2O4 BrO2 H2Q Ox Red CHD CHDE BrCHD CHED'
+	zip -mq ~/sk erhelper*jpg
+	zip -qrj ~/sk lsoda.c erhelper.h erhelper.m examples
+
 .PHONY: clean
 clean:
 	$(RM) core *~ *.BAK octave-workspace *.jpg *.mat *.m *.h lsoda
