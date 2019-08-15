@@ -2904,7 +2904,7 @@ int main(void)
 	itol = 2;
 	rtol[0] = 0.0;
 	atol[0] = 0.0;
-	/* Provide optional MAX steps argument x*/
+	/* Set MAX steps argument */
 	iopt = 1;
 	iwork6 = 100000;
 	/*
