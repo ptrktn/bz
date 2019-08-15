@@ -19,6 +19,8 @@ kf = {}
 kr = {}
 t_interval = 10
 t_points = 10
+lsode_atol = "1E-6"
+lsode_rtol = "1E-6"
 
 class R:
     def __init__(self):
@@ -29,6 +31,8 @@ class R:
         self.rates = [0, 0]
         self.k = ["kf", "kr"]
         self.s = {}
+        self.kf = 1
+        self.kr = 1
 
     def reaction(self, r, n):
         self.i = n
@@ -39,17 +43,25 @@ class R:
         elif " ==> " in r:
             self.rates = [1, 0]
             cs = " ==> "
-        elif " <== " in r:
-            self.rates = [0, 1]
-            cs = " <== "
         else:
-            raise Exception("Type not found: \" <==> \", \" ==> \" or \" <== \" (%d)" % n)
+            raise Exception("Type not found: \" <==> \" or \" ==> \" (%d)" % n)
 
         self.text = " ".join(" ".join(r.split()).split(" "))
         
-        [self.lhs, self.rhs] = r.split(cs)
+        if "|" in r:
+            [rct, rts] = map(string.strip, r.split("|"))
+            if 1 == len(rts.split()):
+                self.kf = rts.split()[0]
+            elif 2 == len(rts.split()):
+                [self.kf, self.kr] = rts.split()
+            else:
+                raise Exception("Malformed rate input: \"%s\" (%d)" % (r, n))
+        else:
+            rct = r.strip()
 
-        for c in r.replace(cs, "+").replace("*", "+").split("+"):
+        [self.lhs, self.rhs] = rct.split(cs)
+
+        for c in rct.replace(cs, "+").replace("*", "+").split("+"):
             c = c.strip()
             for d in c.split():
                 if not(d in constant):
@@ -119,16 +131,6 @@ def read_r(fname):
                     if len(line.split()) > 2:
                         a, val = line.split()[1:3]
                         constant[a] = val
-                    continue
-                elif re.search(r'^RATES\s', line):
-                    vals = line.split()
-                    if 3 == len(vals):
-                        a = int(vals[1])
-                        kf[a] = vals[2]
-                    if 3 < len(vals):
-                        a = int(vals[1])
-                        kf[a] = vals[2]
-                        kr[a] = vals[3]
                     continue
                 elif re.search(r'^SIMULATION\s', line):
                     vals = line.split()
@@ -233,7 +235,7 @@ def proc_r():
 def subst_x(df):
     e = df
 
-    print(" IN: %s" % e)
+    # print(" IN: %s" % e)
     for s in rspcs:
         s1 = "__%s__" % s
         
@@ -247,7 +249,7 @@ def subst_x(df):
         
     e = re.sub(r'__(k[f,r])(\d+)__', r' \1(\2) ', e)
 
-    print("OUT: %s" % e)
+    # print("OUT: %s" % e)
     
     return e
 
@@ -278,13 +280,14 @@ def lsoda_c_output(fbase):
             fp.write(" x(%d) %s\n" % (1 + i, v))
             i += 1
 
-        fp.write("\n Plot command:\n\n xplot.sh FILE '%s'"
+        fp.write("\n Plot command:\n\n xplot.sh erhelper.mat '%s'"
                  % " ".join(x))
             
         fp.write("\n*/\n")
 
         defs="""
 #define x(i) (x[i-1])
+#define x0(i) (x[i])
 #define xdot(i) (xdot[i-1])
 #define kf(i) kf[i]
 #define kr(i) kr[i]
@@ -307,6 +310,8 @@ def lsoda_c_output(fbase):
         fp.write("#define N_REACTIONS %d\n" % n)
         fp.write("#define T_END %d\n" % t_interval)
         fp.write("#define T_DELTA (1/ (double) %d)\n" % t_points)
+        fp.write("#define LSODE_ATOL %s\n" % lsode_atol)
+        fp.write("#define LSODE_RTOL %s\n" % lsode_rtol)
         if "MAXIMUM_STEP_SIZE" in simulation:
             fp.write("#define LSODE_HMAX %s\n" %
                      simulation["MAXIMUM_STEP_SIZE"])
@@ -317,31 +322,34 @@ def lsoda_c_output(fbase):
 
         i = 0
         while i <= neq:
-            fp.write("\tabstol[%d] = 1.0E-5;\n" % i)
-            fp.write("\treltol[%d] = 1.0E-5;\n" % i)
-            fp.write("\tx[%d] = 0;\n" % i)
+            fp.write("\tabstol[%d] = LSODE_ATOL;\n" % i)
+            fp.write("\treltol[%d] = LSODE_RTOL;\n" % i)
+            fp.write("\tx0(%d) = 0;\n" % i)
             i += 1
         
         fp.write("\n\t/* initial conditions */\n")
         for a in x:
             if a in initial:
                 i = 1 + x.index(a)
-                fp.write("\t/* %s */\n\tx[%d] = %s ;\n" % (a, i, initial[a]))
+                fp.write("\t/* %s */\n\tx0(%d) = %s ;\n" % (a, i, initial[a]))
 
         fp.write("\n\t/* forward reaction rates */\n")
-        for a in kf:
-            fp.write("\tkf[%d] = %s ;\n" % (a, kf[a]))
+        for r in rctns:
+            if r.rates[0]:
+                fp.write("\tkf(%d) = %s ;\n" % (r.i, r.kf))
         fp.write("\n\t/* reverse reaction rates */\n")
-        for a in kr:
-            fp.write("\tkr[%d] = %s ;\n" % (a, kr[a])) 
+        for r in rctns:
+            if r.rates[1]:
+                fp.write("\tkr(%d) = %s ;\n" % (r.i, r.kr))
                 
-        fp.write("\n\n}\n")
+        fp.write("\n}\n")
                 
         fp.write("\nstatic void fex(double t, double *x, double *xdot, void *data)\n{\n")
             
         # FIXME zeros
         i = 0
         for dx in xdot:
+            fp.write("    /* %s */\n" % x[i])
             fp.write("    xdot(%d) = %s ; \n" % (i + 1, xdot_raw[i]))
             i += 1
 
@@ -396,11 +404,15 @@ def octave_output(fbase):
                 fp.write("%s = %s ;\n" % (a, constant[a]))
             
         fp.write("\n# forward reaction rates\nkf = zeros(%d, 1) ;\n" % n)
-        for a in kf:
-            fp.write("kf(%d) = %s ;\n" % (a, kf[a])) 
+        for r in rctns:
+            if r.rates[0]:
+                fp.write("kf(%d) = %s ;\n" % (r.i, r.kf))
+
         fp.write("\n# reverse reaction rates\nkr = zeros(%d, 1) ;\n" % n)
-        for a in kr:
-            fp.write("kr(%d) = %s ;\n" % (a, kr[a])) 
+        for r in rctns:
+            if r.rates[1]:
+                fp.write("kr(%d) = %s ;\n" % (r.i, r.kr))
+
         fp.write("\n# initial conditions\nx0 = zeros(%d, 1) ;\n" % len(xdot))
         for a in x:
             if a in initial:
@@ -428,8 +440,8 @@ def octave_output(fbase):
             fp.write("lsode_options(\"maximum step size\", %s) ;\n" %
                      simulation["MAXIMUM_STEP_SIZE"])
 
-        fp.write("lsode_options(\"absolute tolerance\", 1e-6) ;\n")
-        fp.write("lsode_options(\"relative tolerance\", 1e-6) ;\n")
+        fp.write("lsode_options(\"absolute tolerance\", %s) ;\n" % lsode_atol)
+        fp.write("lsode_options(\"relative tolerance\", %s) ;\n" % lsode_rtol)
         fp.write("\nt_interval = %d ;\n" % t_interval)
         fp.write("t_points = %d ;\n" % t_points)
         fp.write("t = linspace(0, t_interval, t_interval * t_points) ;\n")
@@ -464,7 +476,7 @@ def main(fname):
 
     validate_input()
     
-    for r in rctns:
+    for r in []:
         print(r.i)
         print(r.lhs)
         print(r.rhs)
