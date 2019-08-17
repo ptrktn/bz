@@ -50,9 +50,9 @@ class R:
         
         if "|" in r:
             [rct, rts] = map(string.strip, r.split("|"))
-            if 1 == len(rts.split()):
+            if 1 == len(rts.split()) and " ==> " == cs:
                 self.kf = rts.split()[0]
-            elif 2 == len(rts.split()):
+            elif 2 == len(rts.split()) and " <==> " == cs:
                 [self.kf, self.kr] = rts.split()
             else:
                 raise Exception("Malformed rate input: \"%s\" (%d)" % (r, n))
