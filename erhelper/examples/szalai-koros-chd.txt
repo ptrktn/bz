@@ -1,7 +1,7 @@
 # Szalai and Koros, J. Phys. Chem. A 1998, 102, 6892-6897
 # SK model doi:10.1021/jp9832721
 #
-# Simulation similar as in Figure 9 in the above publication
+# Similar simulation as in Figure 9 in the above publication
 
 EXCESS H H2O
 INITIAL H 1.29
