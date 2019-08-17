@@ -33,7 +33,7 @@ install:: $(BINDIR)/skg.m
 .PHONY: clean
 clean:
 	$(RM) $(BINFILE) $(BINFILE2) $(BINOBJECTS) $(BINOBJECTS2) \
-          core *~ *.BAK *.jpg *.png *.pyc \
+          core *~ *.BAK *.jpg *.png *.pyc skceo \
           plot.mat nohup.out octave-core octave-workspace
 	if [ -d ./res ] ; then $(RMDIR) ./res ; fi
 	if [ -d ./index ] ; then $(RMDIR) ./index ; fi
@@ -182,6 +182,17 @@ xtest:
 	$(MAKE) clean
 	$(MAKE) TESTFLAG=1
 	./$(BINFILE)
+
+skceo: lsoda.c skceo.h
+	$(CC) -O3 -DERHELPER_CUSTOM_INCLUDE=\"skceo.h\" -o skceo lsoda.c -lm
+
+.PHONY: skceo-sim
+skceo-sim: skceo
+	rm -f skceo.mat
+	./skceo > skceo.mat
+	../tools/xplot.sh skceo.mat 'HOBr Br2 Br HBrO2 BrO3 H2BrO2 Br2O4 BrO2 H2Q Ox Red CHD CHDE BrCHD CHED'
+
+
 
 sk::
 	rm -f sk.mat
