@@ -54,7 +54,7 @@ proc batcher_init {} {
 	global cfg
 	global timeout
 
-	set timeout 180
+	set timeout 10
 
 	set cfg(inifile) {~/.batcherrc}
 	set cfg(prompt) "\[#>\$\] "
@@ -101,8 +101,17 @@ proc batcher_cmd {args} {
 
 	if {[info exists cfg(gate,$host)]} {
 		send "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o CheckHostIP=no $host2\r"
-		expect {password: }
-		send "$pass2\r"
+		expect {
+			"password: " {
+				send "$pass2\r"
+			}
+			"No route to host" {
+				err "connection from $host1 to $host2 is unsuccessful"
+			}
+			timeout {
+				err "connection from $host1 to $host2 timed out"
+			}
+		}
 		expect $cfg(prompt)
 	}
 
