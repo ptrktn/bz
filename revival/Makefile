@@ -183,8 +183,8 @@ xtest:
 	$(MAKE) TESTFLAG=1
 	./$(BINFILE)
 
-skceo: lsoda.c skceo.h
-	$(CC) -O3 -DERHELPER_CUSTOM_INCLUDE=\"skceo.h\" -o skceo lsoda.c -lm
+skceo: skceo.c skceo.h
+	$(CC) -O3 -DERHELPER_CUSTOM_INCLUDE=\"skceo.h\" -o skceo skceo.c -lm
 
 .PHONY: skceo-sim
 skceo-sim: skceo
