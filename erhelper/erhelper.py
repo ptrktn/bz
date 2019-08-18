@@ -17,8 +17,6 @@ constant = {}
 simulation = {}
 kf = {}
 kr = {}
-t_interval = 10
-t_points = 10
 lsode_atol = "1E-6"
 lsode_rtol = "1E-6"
 
@@ -135,13 +133,17 @@ def read_r(fname):
                 elif re.search(r'^SIMULATION\s', line):
                     vals = line.split()
                     if len(vals) > 2:
-                        global t_interval, t_points
-                        if "T_INTERVAL" == vals[1]:
-                            t_interval = int(vals[2])
+                        if "T_END" == vals[1]:
+                            simulation["T_END"] = vals[2]
                         elif "T_POINTS" == vals[1]:
-                            t_points = int(vals[2])
+                            simulation["T_POINTS"] = vals[2]
                         elif "MAXIMUM_STEP_SIZE" == vals[1]:
                             simulation["MAXIMUM_STEP_SIZE"] = vals[2]
+                        elif "INITIAL_STEP_SIZE" == vals[1]:
+                            simulation["INITIAL_STEP_SIZE"] = vals[2]
+                        else:
+                            raise Exception("Invalid SIMULATION argument: %s"
+                                            % vals[1])
                     continue
 
                 n += 1
@@ -308,13 +310,16 @@ def lsoda_c_output(fbase):
 
         fp.write("\n#define NEQ %d\n" % neq)
         fp.write("#define N_REACTIONS %d\n" % n)
-        fp.write("#define T_END %d\n" % t_interval)
-        fp.write("#define T_DELTA (1/ (double) %d)\n" % t_points)
+        fp.write("#define T_END %s\n" % simulation["T_END"])
+        fp.write("#define T_DELTA (1/ (double) %s)\n" % simulation["T_POINTS"])
         fp.write("#define LSODE_ATOL %s\n" % lsode_atol)
         fp.write("#define LSODE_RTOL %s\n" % lsode_rtol)
         if "MAXIMUM_STEP_SIZE" in simulation:
             fp.write("#define LSODE_HMAX %s\n" %
                      simulation["MAXIMUM_STEP_SIZE"])
+        if "INITIAL_STEP_SIZE" in simulation:
+            fp.write("#define LSODE_H0 %s\n" %
+                     simulation["INITIAL_STEP_SIZE"])
 
         fp.write("\nstatic double kf[N_REACTIONS+1], kr[N_REACTIONS+1];\n")
         
@@ -442,9 +447,9 @@ def octave_output(fbase):
 
         fp.write("lsode_options(\"absolute tolerance\", %s) ;\n" % lsode_atol)
         fp.write("lsode_options(\"relative tolerance\", %s) ;\n" % lsode_rtol)
-        fp.write("\nt_interval = %d ;\n" % t_interval)
-        fp.write("t_points = %d ;\n" % t_points)
-        fp.write("t = linspace(0, t_interval, t_interval * t_points) ;\n")
+        fp.write("\nt_end = %s ;\n" % simulation["T_END"])
+        fp.write("t_points = %s ;\n" % simulation["T_POINTS"])
+        fp.write("t = linspace(0, t_end, t_end * t_points) ;\n")
         fp.write("tstart = cputime ;\n")
         fp.write("  [y, istate, msg] = lsode (\"f\", x0, t) ;\n")
         fp.write("lsode_options\n")
@@ -469,7 +474,12 @@ def validate_input():
     for a in excess:
         if a not in initial:
             raise Exception("Missing initial value for: %s" % a)
-        
+
+    for p in ["T_END", "T_POINTS"]:
+        if p not in simulation:
+            raise Exception("Missing SIMULATIONS parameter: %s" % p)
+
+
 def main(fname):
 
     read_r(fname)

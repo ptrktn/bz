@@ -2925,12 +2925,19 @@ int main(void)
 	/*
      H0      RWORK(5)   Step size to be attempted on the first step.
                         The default value is determined by the solver.
-     HMAX    RWORK(6)   Maximum absolute step size allowed.  The
-                        default value is infinite.
-	 */
-	/* rwork5 = 0.00001; */
+	*/
+#ifdef LSODE_H0
+	rwork5 = LSODE_H0;
+#endif
+
+	/*
+	  HMAX    RWORK(6)   Maximum absolute step size allowed.  The
+	                     default value is infinite.
+	*/
+#ifdef LSODE_HMAX
 	rwork6 = LSODE_HMAX;
-	
+#endif
+
 	for (iout = 1; ; iout++) {
 		lsoda(fex, neq, y, &t, tout, itol, rtol, atol, itask, &istate, iopt, jt,
 		      iwork1, iwork2, iwork5, iwork6, iwork7, iwork8, iwork9,

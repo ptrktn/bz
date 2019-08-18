@@ -1,17 +1,11 @@
 CONSTANT H 0.36
 EXCESS P
 
-A + W ==> U + P
-U + W ==> P + P
-A + U ==> U + U + V + V
-U + U ==> A + P
-B + V ==> W
-
-RATES 1 2.0*H*H
-RATES 2 1000000*H
-RATES 3 40*H
-RATES 4 2000
-RATES 5 0.4
+A + W ==> U + P              | 2.0*H*H
+U + W ==> P + P              | 1000000*H
+A + U ==> U + U + V + V      | 40*H
+U + U ==> A + P              | 2000
+B + V ==> W                  | 0.4
 
 INITIAL P 1
 INITIAL A 0.33
@@ -20,5 +14,5 @@ INITIAL U 0.0000005
 INITIAL V 0.0001
 INITIAL W 0.00003
 
-SIMULATION T_INTERVAL 500
-SIMULATION T_POINTS 25
+SIMULATION T_END 500
+SIMULATION T_POINTS 10
