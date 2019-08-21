@@ -54,7 +54,7 @@ proc batcher_init {} {
 	global cfg
 	global timeout
 
-	set timeout 10
+	set timeout 600
 
 	set cfg(inifile) {~/.batcherrc}
 	set cfg(prompt) "\[#>\$\] "
