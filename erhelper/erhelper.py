@@ -24,8 +24,8 @@ class R:
     def __init__(self):
         self.text = None
         self.i = 0
-        self.lhs = None
-        self.rhs = None
+        self.reactants = None
+        self.products = None
         self.rates = [0, 0]
         self.k = ["kf", "kr"]
         self.s = {}
@@ -57,7 +57,7 @@ class R:
         else:
             rct = r.strip()
 
-        [self.lhs, self.rhs] = rct.split(cs)
+        [self.reactants, self.products] = rct.split(cs)
 
         for c in rct.replace(cs, "+").replace("*", "+").split("+"):
             c = c.strip()
@@ -67,10 +67,10 @@ class R:
 
     def kinet(self, d=True):
         if d:
-            a = self.lhs
+            a = self.reactants
             j = 0
         else:
-            a = self.rhs
+            a = self.products
             j = 1
             
         k = False
@@ -87,9 +87,9 @@ class R:
         c = 0
         
         if d:
-            r = self.lhs
+            r = self.reactants
         else:
-            r = self.rhs
+            r = self.products
         
         for i in map(string.strip, r.split("+")):
             if y == i:
@@ -488,8 +488,8 @@ def main(fname):
     
     for r in []:
         print(r.i)
-        print(r.lhs)
-        print(r.rhs)
+        print(r.reactants)
+        print(r.products)
         print(r.rates)
         print(r.kinet())
         print(r.kinet(False))
