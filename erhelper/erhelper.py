@@ -21,6 +21,7 @@ constant = {}
 simulation = {}
 kf = {}
 kr = {}
+kinet = {}
 lsode_atol = "1E-6"
 lsode_rtol = "1E-6"
 
@@ -203,12 +204,24 @@ def symbols(x):
 
 
 def proc_r():
-    i = 1
 
     for s in rspcs:        
         if s in excess or s in constant:
             continue
         x.append(s)
+
+    for r in rctns:
+        k = r.kinet(True)
+        if k:
+            v = "fkinet%d" % r.i
+            kinet[v] = subst_x(str(symbols2(k)))
+        k = r.kinet(False)
+        if k:
+            v = "rkinet%d" % r.i
+            kinet[v] = subst_x(str(symbols2(k)))
+
+    for k in kinet:
+        dbg("KINET %s = %s" % (k, kinet[k]))
 
     for s in rspcs:
         
@@ -235,13 +248,11 @@ def proc_r():
             if y > 0 and k:
                 a.append("+ %d * %s" % (y, k))
 
-        # print("d%s = %s" % (s, " ".join(a)))        
         b = symbols(" ".join(a))
         exec("df = %s" % b)
         dbg(df)
         xdot.append(subst_x(str(df)))
         xdot_raw.append(subst_x(str(symbols2(" ".join(a)))))
-        i += 1
 
 
 def subst_x(df):
@@ -260,7 +271,7 @@ def subst_x(df):
         
     e = re.sub(r'__(k[f,r])(\d+)__', r' \1(\2) ', e)
 
-    return e
+    return " ".join(e.split())
 
 
 def lsoda_c_output(fbase):
@@ -539,6 +550,7 @@ def main(argv):
     i = 0
     for dx in xdot:
         dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
+        dbg("xdot_raw(%d) = %s ; " % (i + 1, xdot_raw[i]))
         i += 1
 
     octave_output("erhelper")
