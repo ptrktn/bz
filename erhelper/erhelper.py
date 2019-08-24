@@ -5,6 +5,10 @@ import string
 from sympy import *
 import re
 import os
+import getopt
+
+config = {}
+config["verbose"] = 0
 
 rctns = list(())
 x = list(())
@@ -19,6 +23,12 @@ kf = {}
 kr = {}
 lsode_atol = "1E-6"
 lsode_rtol = "1E-6"
+
+
+def dbg(msg):
+    if config["verbose"] > 0:
+        print(str(msg))
+
 
 class R:
     def __init__(self):
@@ -479,21 +489,51 @@ def validate_input():
         if p not in simulation:
             raise Exception("Missing SIMULATIONS parameter: %s" % p)
 
+def usage():
+    if len(sys.argv) > 0:
+        me = sys.argv[0]
+    else:
+        me = "erhelper.py"
 
-def main(fname):
+    print("Usage: %s [OPTIONS] FILE" % me)
 
+
+def main(argv):
+
+    try:
+        opts, args = getopt.getopt(argv, "hv", ["help", "verbose"])
+    except getopt.GetoptError as err:
+        usage()
+        sys.exit(2)
+
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit(0)
+        elif o in ("-v", "--verbose"):
+            config["verbose"] += 1
+        else:
+            assert False, "unhandled option"
+
+    if len(args) > 0:
+        fname = args[0]
+    else:
+        usage()
+        sys.exit(1)
+        
     read_r(fname)
 
     validate_input()
-    
-    for r in []:
-        print(r.i)
-        print(r.reactants)
-        print(r.products)
-        print(r.rates)
-        print(r.kinet())
-        print(r.kinet(False))
-        print(r.species())
+
+    if config["verbose"] > 1:
+        for r in rctns:
+            print(r.i)
+            print(r.reactants)
+            print(r.products)
+            print(r.rates)
+            print(r.kinet())
+            print(r.kinet(False))
+            print(r.species())
         
     proc_rspcs()
 
@@ -507,13 +547,13 @@ def main(fname):
     octave_output("erhelper")
     lsoda_c_output("erhelper")
     
-    print("X %s" % x)
-    print("EXCESS %s" % excess)
-    print("INITIAL %s" % initial)
-    print("CONSTANT %s" % constant)
+    dbg("X %s" % x)
+    dbg("EXCESS %s" % excess)
+    dbg("INITIAL %s" % initial)
+    dbg("CONSTANT %s" % constant)
 
 
 if "__main__" == __name__:
-    main(sys.argv[1])
+    main(sys.argv[1:])
 
    
