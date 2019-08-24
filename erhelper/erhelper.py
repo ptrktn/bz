@@ -22,6 +22,7 @@ simulation = {}
 kf = {}
 kr = {}
 kinet = {}
+kinet_keys = []
 lsode_atol = "1E-6"
 lsode_rtol = "1E-6"
 
@@ -221,10 +222,12 @@ def proc_r():
         if k:
             v = "fkinet%d" % r.i
             kinet[v] = subst_x(str(symbols2(k)))
+            kinet_keys.append(v)
         k = r.kinet(False)
         if k:
             v = "rkinet%d" % r.i
             kinet[v] = subst_x(str(symbols2(k)))
+            kinet_keys.append(v)
 
     for s in rspcs:
         
@@ -381,7 +384,7 @@ def lsoda_c_output(fbase):
                 
         fp.write("\nstatic void fex(double t, double *x, double *xdot, void *data)\n{\n")
 
-        for i in kinet:
+        for i in kinet_keys:
             fp.write("    double %s = %s ;\n" % (i, kinet[i]))
         fp.write("\n")
 
