@@ -36,6 +36,7 @@ class R:
         self.i = 0
         self.reactants = None
         self.products = None
+        # FIXME variable rates need to be renamed
         self.rates = [0, 0]
         self.k = ["kf", "kr"]
         self.s = {}
@@ -209,7 +210,6 @@ def proc_r():
             continue
         x.append(s)
 
-    
     for s in rspcs:
         
         if s in excess or s in constant:
@@ -225,7 +225,7 @@ def proc_r():
             y = r.smc(False, s)
             if y > 0 and k:
                 a.append("+ %d * %s" % (y, k))
-
+                
             # A + B <- C + D
             k = r.kinet(False)
             y = r.smc(False, s)
@@ -238,7 +238,7 @@ def proc_r():
         # print("d%s = %s" % (s, " ".join(a)))        
         b = symbols(" ".join(a))
         exec("df = %s" % b)
-        print(df)
+        dbg(df)
         xdot.append(subst_x(str(df)))
         xdot_raw.append(subst_x(str(symbols2(" ".join(a)))))
         i += 1
@@ -247,7 +247,6 @@ def proc_r():
 def subst_x(df):
     e = df
 
-    # print(" IN: %s" % e)
     for s in rspcs:
         s1 = "__%s__" % s
         
@@ -261,9 +260,8 @@ def subst_x(df):
         
     e = re.sub(r'__(k[f,r])(\d+)__', r' \1(\2) ', e)
 
-    # print("OUT: %s" % e)
-    
     return e
+
 
 def lsoda_c_output(fbase):
     fname = "%s.h" % fbase
@@ -297,13 +295,11 @@ def lsoda_c_output(fbase):
             
         fp.write("\n*/\n")
 
-        defs="""
-#define x(i) (x[i-1])
-#define x0(i) (x[i])
-#define xdot(i) (xdot[i-1])
-#define kf(i) kf[i]
-#define kr(i) kr[i]
-"""
+        defs=("#define x(i) (x[i-1])\n"
+              "#define x0(i) (x[i])\n"
+              "#define xdot(i) (xdot[i-1])\n"
+              "#define kf(i) kf[i]\n"
+              "#define kr(i) kr[i]\n")
         
         fp.write("%s" % defs)
 
@@ -489,6 +485,7 @@ def validate_input():
         if p not in simulation:
             raise Exception("Missing SIMULATIONS parameter: %s" % p)
 
+
 def usage():
     if len(sys.argv) > 0:
         me = sys.argv[0]
@@ -541,7 +538,7 @@ def main(argv):
 
     i = 0
     for dx in xdot:
-        print("xdot(%d) = %s ; " % (i + 1, xdot[i]))
+        dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
         i += 1
 
     octave_output("erhelper")
