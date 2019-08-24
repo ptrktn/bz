@@ -203,6 +203,12 @@ def symbols(x):
     return " ".join(r)
 
 
+def pretty_kinet(s, y, k):
+    if 1 == y:
+        return "%s %s" % (s, k)
+    return "%s %d * %s" % (s, y, k)
+
+
 def proc_r():
 
     for s in rspcs:        
@@ -220,39 +226,46 @@ def proc_r():
             v = "rkinet%d" % r.i
             kinet[v] = subst_x(str(symbols2(k)))
 
-    for k in kinet:
-        dbg("KINET %s = %s" % (k, kinet[k]))
-
     for s in rspcs:
         
         if s in excess or s in constant:
             continue
         
         a = []
+        b = []
         for r in rctns:
             # A + B -> C + D
             k = r.kinet(True)
+            z = "fkinet%d" % r.i
             y = r.smc(True, s)
             if y > 0 and k:
                 a.append("- %d * %s" % (y, k))
+                # b.append("- %d * %s" % (y, z))
+                b.append(pretty_kinet("-", y, z))
             y = r.smc(False, s)
             if y > 0 and k:
                 a.append("+ %d * %s" % (y, k))
+                # b.append("+ %d * %s" % (y, z))
+                b.append(pretty_kinet("+", y, z))
                 
             # A + B <- C + D
             k = r.kinet(False)
+            z = "rkinet%d" % r.i
             y = r.smc(False, s)
             if y > 0 and k:
                 a.append("- %d * %s" % (y, k))
+                # b.append("- %d * %s" % (y, z))
+                b.append(pretty_kinet("-", y, z))
             y = r.smc(True, s)
             if y > 0 and k:
                 a.append("+ %d * %s" % (y, k))
+                # b.append("+ %d * %s" % (y, z))
+                b.append(pretty_kinet("+", y, z))
 
-        b = symbols(" ".join(a))
-        exec("df = %s" % b)
+        exec("df = %s" % symbols(" ".join(a)))
         dbg(df)
         xdot.append(subst_x(str(df)))
-        xdot_raw.append(subst_x(str(symbols2(" ".join(a)))))
+        xdot_raw.append(" ".join(b))
 
 
 def subst_x(df):
@@ -306,11 +319,11 @@ def lsoda_c_output(fbase):
             
         fp.write("\n*/\n")
 
-        defs=("#define x(i) (x[i-1])\n"
-              "#define x0(i) (x[i])\n"
-              "#define xdot(i) (xdot[i-1])\n"
-              "#define kf(i) kf[i]\n"
-              "#define kr(i) kr[i]\n")
+        defs = ("\n#define x(i) (x[i-1])\n"
+                "#define x0(i) (x[i])\n"
+                "#define xdot(i) (xdot[i-1])\n"
+                "#define kf(i) kf[i]\n"
+                "#define kr(i) kr[i]\n")
         
         fp.write("%s" % defs)
 
@@ -367,7 +380,11 @@ def lsoda_c_output(fbase):
         fp.write("\n}\n")
                 
         fp.write("\nstatic void fex(double t, double *x, double *xdot, void *data)\n{\n")
-            
+
+        for i in kinet:
+            fp.write("    double %s = %s ;\n" % (i, kinet[i]))
+        fp.write("\n")
+
         # FIXME zeros
         i = 0
         for dx in xdot:
@@ -546,6 +563,9 @@ def main(argv):
     proc_rspcs()
 
     proc_r()
+
+    for k in kinet:
+        dbg("KINET %s = %s" % (k, kinet[k]))
 
     i = 0
     for dx in xdot:
