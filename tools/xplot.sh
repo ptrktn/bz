@@ -1,9 +1,42 @@
 #!/bin/bash
 
-test -x "$(command -v convert)" || {
-	echo "ERROR: ImageMagick convert is required"
-	exit 1
+GNUPLOTBIN=${GNUPLOT-gnuplot}
+HAVE_GS=0
+HAVE_IM=0
+HAVE_JPEG_TERM=0
+
+preflight() {
+
+	# gnuplot is mandatory
+	test -x "$(command -v $GNUPLOTBIN)"
+	if [ 0 -ne $? ] ; then
+		echo "ERROR: gnuplot is required"
+		exit 1
+	fi
+
+	echo "set term" | $GNUPLOTBIN 2>&1 | grep -wq jpeg
+	if [ 0 -eq $? ] ; then
+		HAVE_JPEG_TERM=1
+	fi
+
+	test -x "$(command -v gs)"
+	if [ 0 -eq $? ] ; then
+		HAVE_GS=1
+	fi
+
+	test -x "$(command -v convert)"
+	if [ 0 -eq $? ] ; then
+		HAVE_IM=1
+	fi
+
+	if [ $HAVE_JPEG_TERM -eq 0 -a $HAVE_GS -eq 0 -a $HAVE_IM -eq 0 ] ; then
+		echo "ERROR: Ghostscript or ImageMagik is required"
+		exit 1
+	fi
+
 }
+
+preflight
 
 FNAME="$1"
 TITLE="$2"
@@ -21,12 +54,23 @@ xplot() {
 	local col=$2
 	local title=$3
 	local j=$(( $col - 1 ))
-	local tmp=$(mktemp --tmpdir=/tmp tmp.XXXXX.ps)
 	local f=${ID}_x$(printf "%02d" $j).jpg
 
-	echo "set term postscript ; set output '$tmp' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l title 'x(${j}) $title'" | gnuplot > /dev/null 2>&1 || exit 1
-	convert -density 300 $tmp -flatten -background white -resize 1024 -rotate 90 $f
-	rm -f $tmp
+	if [ $HAVE_JPEG_TERM -eq 0 ] ; then
+		local tmp=$(mktemp --tmpdir=/tmp tmp.XXXXX.ps)
+		echo "set term postscript ; set output '$tmp' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
+		if [ $HAVE_GS -ne 0 ] ; then
+			gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 \
+			   -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dMaxStripSize=8192 \
+			   -sOutputFile=$f -dAutoRotatePages=/None \
+			   -c '<</Orientation 3>> setpagedevice' -f $tmp || exit 1
+		else
+			convert -density 300 $tmp -flatten -background white -resize 1024 -rotate 90 $f || exit 1
+		fi
+		rm -f $tmp
+	else
+		echo "set term jpeg size 1280,960 ; set output '$f' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l ls 1 title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
+	fi
 }
 
 maxjobs=$(nproc)
