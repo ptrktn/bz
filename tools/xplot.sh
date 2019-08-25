@@ -55,10 +55,11 @@ xplot() {
 	local title=$3
 	local j=$(( $col - 1 ))
 	local f=${ID}_x$(printf "%02d" $j).jpg
+	local ptitle=$(echo $ID | sed 's:_: :g')
 
 	if [ $HAVE_JPEG_TERM -eq 0 ] ; then
 		local tmp=$(mktemp --tmpdir=/tmp tmp.XXXXX.ps)
-		echo "set term postscript ; set output '$tmp' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
+		echo "set term postscript ; set output '$tmp' ; set title '$ptitle' ; plot '$fname' u 1:$col w l title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
 		if [ $HAVE_GS -ne 0 ] ; then
 			gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=jpeg -r300 \
 			   -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -dMaxStripSize=8192 \
@@ -69,7 +70,7 @@ xplot() {
 		fi
 		rm -f $tmp
 	else
-		echo "set term jpeg size 1280,960 ; set output '$f' ; set title '$(echo $ID | sed s:_:\\\\_:g)' ; plot '$fname' u 1:$col w l ls 1 title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
+		echo "set term jpeg size 1280,960 ; set output '$f' ; set title '$ptitle' ; plot '$fname' u 1:$col w l ls 1 title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
 	fi
 }
 
