@@ -5,6 +5,8 @@ HAVE_GS=0
 HAVE_IM=0
 HAVE_JPEG_TERM=0
 
+sopt=0
+
 preflight() {
 
 	# gnuplot is mandatory
@@ -39,19 +41,28 @@ preflight() {
 usage() {
 	local me=$(basename $0)
 	echo "Usage: $me [OPTIONS] FILE"
+	echo "Options:"
+	echo "    -h          Show help"
+	echo "    -s          Sequential processing"
+	echo "    -t 'TITLE'  Space-separated variable names"
 }
 
 preflight
 
-while getopts "ht:" o; do
+while getopts "c:hst:" o; do
     case "${o}" in
-        t)
-            TITLE=${OPTARG}
-			declare -a title=( $TITLE )
+        c)
+			declare -a cols=( ${OPTARG} )
             ;;
         h)
             usage
 			exit 0
+            ;;
+        s)
+            sopt=1
+            ;;
+        t)
+			declare -a title=( ${OPTARG} )
             ;;
         *)
             usage
@@ -98,16 +109,36 @@ xplot() {
 	fi
 }
 
-maxjobs=$(nproc)
-
-(( maxjobs-- ))
+if [ 0 -eq $sopt ] ; then
+	maxjobs=$(nproc)
+	(( maxjobs-- ))
+else
+	maxjobs=1
+fi
 
 for i in $(seq 2 $NCOLS) ; do
 	j=$(( $i - 2))
-	xplot $FNAME $i ${title[$j]} &
-	while [ $(jobs -p | wc -l) -gt $maxjobs ] ; do
-		sleep 10
-	done
+	c=$(( $i - 1))
+
+	if [ 0 -eq ${#cols[@]} ] ; then
+		plot=1
+	else
+		plot=0
+		for k in ${cols[@]} ; do
+			if [ $c -eq $k ] ; then
+				plot=1
+				break
+			fi
+		done
+	fi
+
+	if [ 1 -eq $plot ] ; then
+		xplot $FNAME $i ${title[$j]} &
+		while [ $(jobs -r | wc -l) -ge $maxjobs ] ; do
+			sleep 10
+		done
+	fi
+
 done
 
 wait
