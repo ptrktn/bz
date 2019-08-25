@@ -307,17 +307,17 @@ def lsoda_c_output(fbase):
                 sx = len(r.text)
 
         sx += 3
-        fmt = " %%-%ds (R%%d)\n" % sx
+        fmt = "  %%-%ds (R%%d)\n" % sx
         for r in rctns:
             fp.write(fmt % (r.text, r.i))
 
         i = 0
         fp.write("\n")
         for v in x:
-            fp.write(" x(%d) %s\n" % (1 + i, v))
+            fp.write("  x(%d) %s\n" % (1 + i, v))
             i += 1
 
-        fp.write("\n Plot command:\n\n xplot.sh erhelper.mat '%s'"
+        fp.write("\n  Plot command:\n\n xplot.sh -t '%s' FILE"
                  % " ".join(x))
             
         fp.write("\n*/\n")
