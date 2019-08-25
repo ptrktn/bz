@@ -36,14 +36,38 @@ preflight() {
 
 }
 
+usage() {
+	local me=$(basename $0)
+	echo "Usage: $me [OPTIONS] FILE"
+}
+
 preflight
 
+while getopts "ht:" o; do
+    case "${o}" in
+        t)
+            TITLE=${OPTARG}
+			declare -a title=( $TITLE )
+            ;;
+        h)
+            usage
+			exit 0
+            ;;
+        *)
+            usage
+			exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
 FNAME="$1"
-TITLE="$2"
 
-declare -a title=( $TITLE )
-
-test -f "$FNAME" || exit 1
+test -f "$FNAME" || {
+	usage
+	exit 1
+}
 
 NCOLS=$(egrep -v '^#' $FNAME | head -1 | awk '{ print NF }')
 
