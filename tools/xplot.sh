@@ -57,7 +57,9 @@ xplot() {
 	local f=${ID}_x$(printf "%02d" $j).jpg
 	local ptitle=$(echo $ID | sed 's:_: :g')
 
-	if [ $HAVE_JPEG_TERM -eq 0 ] ; then
+	if [ $HAVE_JPEG_TERM -ne 0 ] ; then
+		echo "set term jpeg size 1280,960 ; set output '$f' ; set title '$ptitle' ; plot '$fname' u 1:$col w l ls 1 title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
+	else
 		local tmp=$(mktemp --tmpdir=/tmp tmp.XXXXX.ps)
 		echo "set term postscript ; set output '$tmp' ; set title '$ptitle' ; plot '$fname' u 1:$col w l title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
 		if [ $HAVE_GS -ne 0 ] ; then
@@ -69,8 +71,6 @@ xplot() {
 			convert -density 300 $tmp -flatten -background white -resize 1024 -rotate 90 $f || exit 1
 		fi
 		rm -f $tmp
-	else
-		echo "set term jpeg size 1280,960 ; set output '$f' ; set title '$ptitle' ; plot '$fname' u 1:$col w l ls 1 title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
 	fi
 }
 
