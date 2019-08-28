@@ -38,6 +38,8 @@ class R:
         self.i = 0
         self.reactants = None
         self.products = None
+        self.frate = None
+        self.rrate = None
         # FIXME variable rates need to be renamed
         self.rates = [0, 0]
         self.k = ["kf", "kr"]
@@ -58,15 +60,24 @@ class R:
             raise Exception("Type not found: \" <==> \" or \" ==> \" (%d)" % n)
 
         self.text = " ".join(" ".join(r.split()).split(" "))
-        
-        if "|" in r:
+
+        if "@" in r:
+            [rct, rts] = map(string.strip, r.split("@"))
+            if 1 == len(rts.split()) and " ==> " == cs:
+                self.frate = rts.split()[0]
+            elif 2 == len(rts.split()) and " <==> " == cs:
+                [self.frate, self.rrate] = rts.split()
+            else:
+                raise Exception("Malformed rate input: \"%s\" (%d)" % (r, n))
+        elif "|" in r:
             [rct, rts] = map(string.strip, r.split("|"))
             if 1 == len(rts.split()) and " ==> " == cs:
                 self.kf = rts.split()[0]
             elif 2 == len(rts.split()) and " <==> " == cs:
                 [self.kf, self.kr] = rts.split()
             else:
-                raise Exception("Malformed rate input: \"%s\" (%d)" % (r, n))
+                raise Exception("Malformed constant rate input: \"%s\" (%d)"
+                                % (r, n))
         else:
             rct = r.strip()
 
@@ -81,17 +92,22 @@ class R:
     def kinet(self, d=True):
         if d:
             a = self.reactants
+            b = self.frate
             j = 0
         else:
             a = self.products
+            b = self.rrate
             j = 1
             
-        k = False
+        v = False
         
         if self.rates[j] > 0:
-            k = self.k[j] + str(self.i) + " * " + " * ".join(a.split("+"))
+            if b:
+                v = " * ".join(b.split("*"))
+            else:
+                v = self.k[j] + str(self.i) + " * " + " * ".join(a.split("+"))
 
-        return k
+        return v
     
     def species(self):
         return self.s
@@ -212,7 +228,7 @@ def pretty_kinet(s, y, k):
 
 def proc_r():
 
-    for s in rspcs:        
+    for s in rspcs:
         if s in excess or s in constant:
             continue
         x.append(s)
@@ -271,13 +287,13 @@ def proc_r():
         xdot_raw.append(" ".join(b))
 
 
-def subst_x(df):
-    e = df
-
-    for s in rspcs:
+def subst_x(e):
+    c = constant.keys()
+    
+    for s in rspcs + c:
         s1 = "__%s__" % s
         
-        if s in excess or s in constant:
+        if s in excess or s in c:
             s2 = " %s " % s
         else:
             i = 1 + x.index(s)
