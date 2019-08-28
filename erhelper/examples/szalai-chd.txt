@@ -2,7 +2,6 @@
 # doi:10.1021/jp0360523
 #
 # ATTENTION: There are exceptions in mass action kinetics
-#            which are manually modified in skceo.h
 
 EXCESS H H2O Q
 INITIAL H 1.29
