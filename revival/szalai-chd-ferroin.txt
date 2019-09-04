@@ -1,5 +1,5 @@
-# Szalai et al, J. Phys. Chem. A 2003, 107, 10074-10081
-# doi:10.1021/jp0360523
+# Szalai et al, Phys. Chem. Chem. Phys., 2002, 4, 1271-1275
+# doi:10.1039/b109388f
 #
 # ATTENTION: There are exceptions in mass action kinetics
 
@@ -9,7 +9,7 @@ INITIAL H2O 1
 INITIAL Q 1
 
 CONSTANT K6a 2E6
-CONSTANT K16 0.11
+CONSTANT K16 0.14
 CONSTANT K17 0.051
 CONSTANT K18 6E3
 CONSTANT K19 0.02
@@ -19,11 +19,11 @@ Br + HOBr + H <==> Br2 + H2O | 8E9 80
 # R2
 Br + HBrO2 + H <==> HOBr + HOBr | 2.5E6 2E-5
 # R3
-Br + BrO3 + H + H <==> HOBr + HBrO2 | 1.2 3.2
+Br + BrO3 + H + H <==> HOBr + HOBr + HBrO2 | 1.2 3.2
 # R4a
 HBrO2 + H  <==> H2BrO2 | 2E6 1E8
 # R4b
-HBrO2 + H2BrO2 ==> BrO3 + HOBr + H + H | 1.7E5
+HBrO2 + H2BrO2 ==> BrO3 + HOBr + H | 1.7E5
 # R5a
 HBrO2 + BrO3 + H <==> Br2O4 + H2O | 48 3.2E3
 # R5b
@@ -51,7 +51,7 @@ H2Q + HOBr ==> Q + Br + H + H2O | 6E5
 # R15
 H2Q + Br2 ==> Q + Br + Br + H + H | 1E4
 # R16
-Ox + Ox + CHD ==> Red + Red + H2Q + H + H @ K16*Ox*CHD
+Ox + Ox + CHD ==> Red + Red + H2Q + H + H @ (K16/H)*Ox*CHD
 # R17
 Ox + Ox + BrCHD ==> Q + Br + H + H + H + Red + Red @ K17*Ox*BrCHD
 # R18
@@ -64,6 +64,6 @@ INITIAL BrO3 0.1
 INITIAL CHD 0.1
 #INITIAL Ox 3E-4
 
-SIMULATION T_END 30000
+SIMULATION T_END 20000
 SIMULATION T_POINTS 33
 SIMULATION MAXIMUM_STEP_SIZE 0.001
