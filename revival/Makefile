@@ -207,4 +207,11 @@ sk_jac.m: sk.m m2p.sh jac.py
 		| sed -E 's/x([0-9]{1,2})/x\(\1\)/g' > sk_jac.m
 	rm -f tmp.dat tmp.py
 
+.PHONY: szalai-chd-ferroin-sim
+szalai-chd-ferroin-sim:
+	rm -f erhelper.h
+	../erhelper/erhelper.py szalai-chd-ferroin.txt
+	test -f erhelper.h
+	qjob.sh startmeup.sh erhelper.h ../tools/xplot.sh ../erhelper/lsoda.c szalai-chd-ferroin.txt
+
 #*****
