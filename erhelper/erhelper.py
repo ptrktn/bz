@@ -2,7 +2,10 @@
 
 import sys
 import string
+
+# SymPy will be needed for Jac
 from sympy import *
+
 import re
 import os
 import getopt
@@ -192,12 +195,13 @@ def proc_rspcs():
 
 def symbols2(x):
     r = []
+    a = "+-*"
 
     for i in " ".join(x.split()).split(" "):
         i = i.strip()
         if i is None:
             pass
-        elif i.isdigit() or "+" == i or "-" == i or "*" == i:
+        elif i.isdigit() or i in a:
             r.append(i)
         else:
             r.append("__%s__" % i)
