@@ -3,8 +3,8 @@
 import sys
 import string
 
-# SymPy will be needed for Jac
-from sympy import *
+# FIXME SymPy will be needed for deriving Jacobian
+# from sympy import *
 
 import re
 import os
@@ -285,9 +285,9 @@ def proc_r():
                 # b.append("+ %d * %s" % (y, z))
                 b.append(pretty_kinet("+", y, z))
 
-        exec("df = %s" % symbols(" ".join(a)))
-        dbg(df)
-        xdot.append(subst_x(str(df)))
+        # exec("df = %s" % symbols(" ".join(a)))
+        # dbg(df)
+        # xdot.append(subst_x(str(df)))
         xdot_raw.append(" ".join(b))
 
 
@@ -314,7 +314,7 @@ def lsoda_c_output(fbase):
     fname = "%s.h" % fbase
     mname = "%s.mat" % fbase
     n = len(rctns)
-    neq = len(xdot)
+    neq = len(xdot_raw)
     
     try:
         fp = open(fname, "w")
@@ -405,14 +405,14 @@ def lsoda_c_output(fbase):
         fp.write("\nstatic void fex(double t, double *x, double *xdot, void *data)\n{\n")
 
         for i in kinet_keys:
-            fp.write("    double %s = %s ;\n" % (i, kinet[i]))
+            fp.write("\tdouble %s = %s ;\n" % (i, kinet[i]))
         fp.write("\n")
 
         # FIXME zeros
         i = 0
-        for dx in xdot:
-            fp.write("    /* %s */\n" % x[i])
-            fp.write("    xdot(%d) = %s ; \n" % (i + 1, xdot_raw[i]))
+        for dx in xdot_raw:
+            fp.write("\t/* %s */\n" % x[i])
+            fp.write("\txdot(%d) = %s ; \n" % (i + 1, xdot_raw[i]))
             i += 1
 
         fp.write("\n}\n")
@@ -434,6 +434,9 @@ def octave_output(fbase):
     fname = "%s.m" % fbase
     mname = "%s.mat" % fbase
     n = len(rctns)
+
+    # FIXME
+    return
     
     try:
         fp = open(fname, "w")
@@ -591,8 +594,8 @@ def main(argv):
         dbg("KINET %s = %s" % (k, kinet[k]))
 
     i = 0
-    for dx in xdot:
-        dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
+    for dx in xdot_raw:
+        # dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
         dbg("xdot_raw(%d) = %s ; " % (i + 1, xdot_raw[i]))
         i += 1
 
