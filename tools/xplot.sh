@@ -49,7 +49,7 @@ usage() {
 
 preflight
 
-while getopts "c:hst:" o; do
+while getopts "c:hst:T:" o; do
     case "${o}" in
         c)
 			declare -a cols=( ${OPTARG} )
@@ -64,6 +64,9 @@ while getopts "c:hst:" o; do
         t)
 			declare -a title=( ${OPTARG} )
             ;;
+		T)
+			TITLE="${OPTARG}"
+			;;
         *)
             usage
 			exit 1
@@ -91,6 +94,8 @@ xplot() {
 	local j=$(( $col - 1 ))
 	local f=${ID}_x$(printf "%02d" $j).jpg
 	local ptitle=$(echo $ID | sed 's:_: :g')
+
+	[ -z "$TITLE" ] || ptitle="$TITLE"
 
 	if [ $HAVE_JPEG_TERM -ne 0 ] ; then
 		echo "set term jpeg size 1280,960 ; set output '$f' ; set title '$ptitle' ; plot '$fname' u 1:$col w l ls 1 title 'x(${j}) $title'" | $GNUPLOTBIN > /dev/null 2>&1 || exit 1
