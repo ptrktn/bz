@@ -4,12 +4,12 @@
 # ATTENTION: There are exceptions in mass action kinetics
 
 EXCESS H H2O Q
-INITIAL H 1.29
+INITIAL H 1.6
 INITIAL H2O 1
 INITIAL Q 1
 
 CONSTANT K6a 2E6
-CONSTANT K16 0.14
+CONSTANT K16 0.14/H
 CONSTANT K17 0.051
 CONSTANT K18 6E3
 CONSTANT K19 0.02
@@ -20,6 +20,7 @@ Br + HOBr + H <==> Br2 + H2O | 8E9 80
 Br + HBrO2 + H <==> HOBr + HOBr | 2.5E6 2E-5
 # R3
 Br + BrO3 + H + H <==> HOBr + HOBr + HBrO2 | 1.2 3.2
+#Br + BrO3 + H + H <==> HOBr + HBrO2 | 1.2 3.2
 # R4a
 HBrO2 + H  <==> H2BrO2 | 2E6 1E8
 # R4b
@@ -51,7 +52,7 @@ H2Q + HOBr ==> Q + Br + H + H2O | 6E5
 # R15
 H2Q + Br2 ==> Q + Br + Br + H + H | 1E4
 # R16
-Ox + Ox + CHD ==> Red + Red + H2Q + H + H @ (K16/H)*Ox*CHD
+Ox + Ox + CHD ==> Red + Red + H2Q + H + H @ K16*Ox*CHD
 # R17
 Ox + Ox + BrCHD ==> Q + Br + H + H + H + Red + Red @ K17*Ox*BrCHD
 # R18
@@ -59,11 +60,11 @@ Ox + Ox + H2Q ==> Red + Red + Q + H + H @ K18*Ox*H2Q
 # R19
 Red + Red + BrO3  + H + H + H ==> Ox + Ox + HBrO2 + H2O @ K19*Red*BrO3*H*H
 
-INITIAL Br 1E-5
+INITIAL Br 5E-3
 INITIAL BrO3 0.1
-INITIAL CHD 0.1
-#INITIAL Ox 3E-4
+INITIAL CHD 0.15
+INITIAL Red 1E-5
 
-SIMULATION T_END 20000
+SIMULATION T_END 30000
 SIMULATION T_POINTS 33
 SIMULATION MAXIMUM_STEP_SIZE 0.001
