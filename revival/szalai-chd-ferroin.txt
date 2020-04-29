@@ -4,7 +4,7 @@
 # ATTENTION: There are exceptions in mass action kinetics
 
 EXCESS H H2O Q
-INITIAL H 1.6
+INITIAL H 1.29
 INITIAL H2O 1
 INITIAL Q 1
 
@@ -62,9 +62,23 @@ Red + Red + BrO3  + H + H + H ==> Ox + Ox + HBrO2 + H2O @ K19*Red*BrO3*H*H
 
 INITIAL Br 5E-3
 INITIAL BrO3 0.1
-INITIAL CHD 0.15
+INITIAL CHD 0.1
 INITIAL Red 1E-5
 
 SIMULATION T_END 30000
 SIMULATION T_POINTS 33
 SIMULATION MAXIMUM_STEP_SIZE 0.001
+
+LATEX Br Br$^{-}$
+LATEX H H$^{+}$
+LATEX Br2 Br$_{2}$
+LATEX H2O H$_{2}$O
+LATEX HBrO2 HBrO$_{2}$
+LATEX H2BrO2 H$_{2}$BrO$_{2}$
+LATEX BrO3 BrO$_{3}^{\bullet}$
+LATEX Br2O4 Br$_{2}$O$_{4}$
+LATEX BrO2 BrO$_{2}^{\bullet}$
+LATEX HQ HQ$^{.}$
+LATEX H2Q H$_{2}$Q
+# LATEX Red Fe(phen)$_{3}^{2+}$
+# LATEX Ox Fe(phen)$_{3}^{3+}$

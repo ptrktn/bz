@@ -1,1 +1,10 @@
 - function for 3D periodic boundary conditions
+
+@misc{odespy,
+  title = {{Odespy} Software Package},
+  author = {H. P. Langtangen and L. Wang},
+  url = {https://github.com/hplgit/odespy},
+  key = {odespy},
+  note = {\url{https://github.com/hplgit/odespy}},
+  year = {2015},
+}
