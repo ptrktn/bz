@@ -14,6 +14,9 @@ config = {}
 config["verbose"] = 0
 config["use_sympy"] = False
 config["opt_latex"] = False
+config["title"] = None
+config["author"] = None
+config["bibitem"] = []
 
 rctns = list(())
 x = list(())
@@ -183,6 +186,21 @@ def read_r(fname):
                     vals = line.split()
                     if len(vals) > 2:
                         latex[vals[1]] = vals[2]
+                    continue
+                elif re.search(r'^AUTHOR\s', line):
+                    vals = line.split()
+                    if len(vals) > 2:
+                        config["author"] = " ".join(line.split()[1:])
+                    continue
+                elif re.search(r'^TITLE\s', line):
+                    vals = line.split()
+                    if len(vals) > 2:
+                        config["title"] = " ".join(line.split()[1:])
+                    continue
+                elif re.search(r'^BIBITEM\s', line):
+                    vals = line.split()
+                    if len(vals) > 2:
+                        config["bibitem"].append(" ".join(line.split()[1:]))
                     continue
 
                 n += 1
@@ -442,10 +460,10 @@ def latex_output(fbase, src):
              "\\usepackage{graphicx}\n"
              "\\usepackage[margin=0.75in]{geometry}\n"
              "\\begin{document}\n"
-             "\\title{erhelper template manuscript}\n"
+             "\\title{%s}\n"
              "\\date{\\today}\n"
-             "\\author{N.N.}\n"
-             "\\maketitle\n\n")
+             "\\author{%s}\n"
+             "\\maketitle\n\n" % (config["title"], config["author"]))
              
     fp.write("\\section{Abstract}\n"
              "Results from simulations of a %d-reaction, %d-species\n"
@@ -549,8 +567,11 @@ def latex_output(fbase, src):
  
 
     fp.write("\\begin{thebibliography}{99}\n"
-             "\\bibitem{lsoda} A.C. Hindmarsh, ODEPACK, A Systematized Collection of {ODE} Solvers, (Ed. R. Stepleman), Scientific Computing. Applications of Mathematics and Computing to the Physical Sciences, North--Holland, Amsterdam, 1983, pp. 55-64.\n"
-             "\\end{thebibliography}\n\n")
+             "\\bibitem{lsoda} A.C. Hindmarsh, ODEPACK, A Systematized Collection of {ODE} Solvers, (Ed. R. Stepleman), Scientific Computing. Applications of Mathematics and Computing to the Physical Sciences, North--Holland, Amsterdam, 1983, pp. 55-64.\n")
+    for i in config["bibitem"]:
+        fp.write("\\bibitem{%s} %s\n"
+                 % (i.split()[0], " ".join(i.split()[1:])))
+    fp.write("\\end{thebibliography}\n\n")
 
     fp.write("\\end{document}\n")
     

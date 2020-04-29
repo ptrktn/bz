@@ -82,3 +82,6 @@ LATEX HQ HQ$^{.}$
 LATEX H2Q H$_{2}$Q
 # LATEX Red Fe(phen)$_{3}^{2+}$
 # LATEX Ox Fe(phen)$_{3}^{3+}$
+TITLE Simulations of revival oscillations in the Belousov--Zhabotinsky reaction
+AUTHOR Revival Oscillations Collaboration
+BIBITEM szalai2002 I. Szalai, K. Kurin-Cs\"orgei and M. Orb\'an, Mechanistic studies on the bromate-1{,}4-cyclohexanedione-ferroin oscillatory system, Phys. Chem. Chem. Phys., 2002, 4(8), pp. 1271-1275.
