@@ -90,6 +90,8 @@ LATEX K19 k_{22}
 
 TITLE Simulations of revival oscillations in the Belousov--Zhabotinsky reaction
 AUTHOR Revival Oscillations Collaboration
+KEYWORD Nonequilibrium processes
+KEYWORD Computational chemistry
 
 # Mechanistic studies on the bromate-1,4-cyclohexanedione-ferroin
 # oscillatory system

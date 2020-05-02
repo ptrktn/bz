@@ -24,6 +24,7 @@ config["opt_latex"] = False
 config["title"] = None
 config["author"] = None
 config["bibitem"] = []
+config["keywords"] = []
 
 rctns = list(())
 x = list(())
@@ -203,6 +204,11 @@ def read_r(fname):
                     vals = line.split()
                     if len(vals) > 2:
                         config["title"] = " ".join(line.split()[1:])
+                    continue
+                elif re.search(r'^KEYWORD\s', line):
+                    vals = line.split()
+                    if len(vals) > 2:
+                        config["keywords"].append(" ".join(line.split()[1:]))
                     continue
                 elif re.search(r'^BIBITEM\s', line):
                     vals = line.split()
@@ -604,6 +610,8 @@ def latex_output(fbase, src):
     fp.write("\\section{Acknowledgment}\n\n")
 
     fp.write("\\section{Keywords}\n\n")
+    if len(config["keywords"]):
+        fp.write(", ".join(config["keywords"]))
 
     fp.write("\\begin{thebibliography}{99}\n"
              "\\bibitem{lsoda} A.C. Hindmarsh, {\\em ODEPACK, A Systematized Collection of ODE Solvers}, in {\\em Scientific Computing}, R.S. Stepleman et al. (Eds.), North--Holland, Amsterdam, {\\bf 1983}, pp. 55-64.\n")
