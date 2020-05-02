@@ -3,16 +3,23 @@
 import sys
 import string
 
-# FIXME SymPy will be needed for deriving Jacobian
-from sympy import *
+# FIXME SymPy will be needed for deriving Jacobian (implementation pending)
+# LaTeX output requires sympy
+# For some reason (?) 'sympy' needs to be imported before 're'
+
+config = {}
+config["has_sympy"] = True
+
+try:
+    from sympy import *
+except ImportError:
+    config["has_sympy"] = False
 
 import re
 import os
 import getopt
 
-config = {}
 config["verbose"] = 0
-config["use_sympy"] = False
 config["opt_latex"] = False
 config["title"] = None
 config["author"] = None
@@ -37,7 +44,7 @@ lsode_rtol = "1E-6"
 
 def dbg(msg):
     if config["verbose"] > 0:
-        print(str(msg))
+        print("DEBUG: %s" % str(msg))
 
 
 class R:
@@ -312,7 +319,7 @@ def proc_r():
 
         xdot_raw.append(" ".join(b))
 
-        if config["use_sympy"]:
+        if config["has_sympy"]:
             exec("df = %s" % symbols(" ".join(a)))
             dbg(df)
             # xdot.append(subst_x(str(df)))
@@ -339,40 +346,45 @@ def subst_x(e):
     return " ".join(e.split())
 
 
+def latex_sub(s, eq=True):
+    for j in latex:
+        if s == j:
+            if eq:
+                return latex[j]
+            else:
+                return "$" + latex[j] + "$"
+
+    return s
+
+
 def latex_sub2(s):
     # FIXME constants, excess
     x = s
-    
     x = re.sub(r'\*\*(\d{1,})', r'^{\1}', s)
     x = re.sub(r'(__kf)(\d{1,})(__)', r'k_{\2}', x)
     x = re.sub(r'(__kr)(\d{1,})(__)', r'k_{-\2}', x)
     x = re.sub(r'(__)([a-zA-Z0-9]{1,})(__)', r'[\\mathrm{\2}]', x)
     x = re.sub(r'(\d{1,})(\*)', r'\1', x)
     x = re.sub(r'\*', r'', x)
-    dbg("XXX %s" % x)
 
     if len(constant):
         for a in constant:
-            x = x.replace("[\\mathrm{" + a + "}]", "\\mathrm{%s}" % a)
+            if a in latex:
+                x = x.replace("[\\mathrm{" + a + "}]", latex_sub(a))
+            else:
+                x = x.replace("[\\mathrm{" + a + "}]", "\\mathrm{%s}" % a)
 
     for a in latex:
-        l = "{[\\mathrm{" + latex[a].replace("$", "") + "}]}"
+        l = "{[\\mathrm{%s}]}" % latex[a]
         x = x.replace("[\\mathrm{" + a + "}]", l)
-            
+
     return x
 
-def latex_sub(s):
-    for j in latex:
-        if s == j:
-            return latex[j].replace("$", "")
 
-    return s
-
-
-def latex_fmt(s):
+def latex_reaction_fmt(s):
     res = []
     seen = {}
-
+    
     for i in s.split():
         x = i
 
@@ -398,7 +410,7 @@ def latex_fmt(s):
                 
         for j in latex:
             if i == j:
-                x = latex[j]
+                x = "$\\mathrm{%s}$" % latex[j]
                 if n > 1:
                     res.append(str(n) + " " + x)
                 else:
@@ -411,8 +423,10 @@ def latex_fmt(s):
 def chembi(i):
     return "$\\mathop{\\kern0pt \\rightleftharpoons}\\limits^{k_{%d}}_{k_{-%d}}$" % (i, i)
 
+
 def chemuni(i):
     return "$\\mathop{\\kern0pt \\rightarrow}\\limits^{k_{%d}}$" % i
+
 
 def eqnarray_rhs(s, label):
     m = 3
@@ -427,7 +441,6 @@ def eqnarray_rhs(s, label):
             n += 1
         r.append(i)
         if n == m and c < len(a):
-            dbg("GGG %d %d" % (c, len(a)))
             r.append("\\nonumber \\\\\n")
             r.append(" & & ")
             n = 0
@@ -435,7 +448,29 @@ def eqnarray_rhs(s, label):
     r.append("\\label{rate:%s}" % label)
 
     return " ".join(r)
-        
+
+# FIXME unit to separate function
+# Reaction rate coefficient formatter
+def latex_rc(s, a):
+    notcounted = ["H2O"]
+    # FIXME add contants to notcounted
+    n = 0
+
+    for i in a.split():
+        if "+" != i and i not in notcounted:
+            n += 1
+    
+    x = re.sub(r'E([\+\-.]*\d{1,})', r' $\\times 10^{\1}$ ', s)
+
+    if 0 == n:
+        # FIXME Better croak here?
+        print("WARNING: Suspicious values latex_rc(%s, %s)" % (s, a))
+        return x
+    elif 1 == n:
+        return "%s $s^{-1}$" % x
+    
+    return "%s mol$^{-%d}$dm$^{%d}$s$^{-1}$" % (x, (n - 1), (3 * (n - 1)))
+
 
 def latex_output(fbase, src):
     fname = "%s.tex" % fbase
@@ -457,6 +492,8 @@ def latex_output(fbase, src):
 
     fp.write("\n")
     fp.write("\\documentclass[12pt,epsf,a4]{article}\n"
+             "\\usepackage{tabularx}\n"
+             "\\usepackage{adjustbox}\n"
              "\\usepackage{graphicx}\n"
              "\\usepackage[margin=0.75in]{geometry}\n"
              "\\begin{document}\n"
@@ -466,7 +503,7 @@ def latex_output(fbase, src):
              "\\maketitle\n\n" % (config["title"], config["author"]))
              
     fp.write("\\section{Abstract}\n"
-             "Results from simulations of a %d-reaction, %d-species\n"
+             "Results from simulations of a %d--reaction, %d--species\n"
              "chemical reaction system model are reported.\n\n"
              % (n, neq))
 
@@ -481,7 +518,8 @@ def latex_output(fbase, src):
 
     # Elementary reaction table
     fp.write("\\begin{table}\n"
-             "\\begin{tabular}{l rclll}\n")
+             "\\begin{adjustbox}{width=\\textwidth}\n"
+             "\\begin{tabular}{lrclll}\n")
 
     fp.write(" & \multicolumn{3}{c}{Reactions} & $k_{forward}$ & $k_{reverse}$\\\\\n\\hline\n")
     sx += 3
@@ -495,52 +533,65 @@ def latex_output(fbase, src):
         fp.write("%%")
         fp.write(fmt % (r.text, r.i))
         fp.write("(R%d) & " % r.i)
-        fp.write("%s & " % latex_fmt(r.reactants))
+        fp.write("%s & " % latex_reaction_fmt(r.reactants))
 
         if [1, 0] == r.rates:
             fp.write("%s & " % chemuni(r.i))
         else:
             fp.write("%s & " % chembi(r.i))
         
-        fp.write("%s " % latex_fmt(r.products))
+        fp.write("%s " % latex_reaction_fmt(r.products))
 
+        # Forward reaction rates (or exceptions)
         fp.write(" & ")
         if r.rates[0] and not(r.frate):
-            fp.write("%s" % r.kf)
+            fp.write("%s" % latex_rc(r.kf, r.reactants))
         elif r.rates[0] and r.frate:
             ne += 1
-            nekinet.append("$v_{%d}$ = %s" % (r.i, r.frate))
+            nekinet.append("$v_{%d}$ = %s" % (r.i, r.frate))            
+            # FIXME dbg("NEKINET %s" % latex_sub(r.frate))
             fp.write(" ($v_{%d}$) " % r.i)
 
+        # Reverse reactions rates (or exceptions)
         fp.write(" & ")
         if r.rates[1] and not(r.rrate):
-            fp.write(" %s " % r.kr)
+            fp.write(" %s " % latex_rc(r.kr, r.products))
         elif r.rates[1] and r.rrate:
-            fp.write("%s" % r.rrate)
+            ne += 1
+            nekinet.append("$v_{-%d}$ = %s" % (r.i, r.rrate))
+            fp.write(" ($v_{-%d}$) " % r.i)
 
-        
         fp.write("\\\\\n")
     
-
     fp.write("\n")
         
     fp.write("\\end{tabular}\n"
+             "\\end{adjustbox}\n"
              "\\caption{Elementary reactions and rate constants of the model system.\n")
 
     if len(nekinet):
         fp.write("Exceptions in mass action kinetic model: %s.\n"
                  % ", ".join(nekinet))
 
+    if len(constant):
+        c = []
+        for a in constant:
+            c.append("%s = %s" % (latex_sub(a, False), constant[a]))
+        fp.write("Constants: %s." % ", ".join(c))
+        
     fp.write("}\n"
              "\\label{tab1e:reactions}\n"
              "\\end{table}\n\n")
 
     fp.write("\\begin{eqnarray}\n")
+
     i = 0
     for dx in xdot:
+        dx = latex_sub2(xdot[i])
+        dx = eqnarray_rhs(dx, x[i])
         fp.write("%% /* %s */\n" % x[i])
         fp.write("\\frac{d [\\mathrm{%s}]}{dt} & = & %s" %
-                 (latex_sub(x[i]), eqnarray_rhs(latex_sub2(xdot[i]), x[i])))
+                 (latex_sub(x[i]), dx))
         if i != (neq - 1):
             fp.write("\\\\")
         fp.write("\n")
@@ -554,20 +605,8 @@ def latex_output(fbase, src):
 
     fp.write("\\section{Keywords}\n\n")
 
-
-#    %% @InCollection{Hindmarsh1983,
-# %%   author =        {Hindmarsh, A. C.},
-# %%   title =         {ODEPACK, A Systematized Collection of {ODE} Solvers},
-# %%   booktitle =     {Scientific Computing. Applications of Mathematics and Computing to the Physical Sciences},
-# %%   publisher =     {IMACS / North-Holland},
-# %%   year =          {1983},
-# %%   editor =        {Stepleman, R.},
-# %%   pages =         {55--64},
-# %%   address =       {Amsterdam}
- 
-
     fp.write("\\begin{thebibliography}{99}\n"
-             "\\bibitem{lsoda} A.C. Hindmarsh, ODEPACK, A Systematized Collection of {ODE} Solvers, (Ed. R. Stepleman), Scientific Computing. Applications of Mathematics and Computing to the Physical Sciences, North--Holland, Amsterdam, 1983, pp. 55-64.\n")
+             "\\bibitem{lsoda} A.C. Hindmarsh, {\\em ODEPACK, A Systematized Collection of ODE Solvers}, in {\\em Scientific Computing}, R.S. Stepleman et al. (Eds.), North--Holland, Amsterdam, {\\bf 1983}, pp. 55-64.\n")
     for i in config["bibitem"]:
         fp.write("\\bibitem{%s} %s\n"
                  % (i.split()[0], " ".join(i.split()[1:])))
@@ -589,12 +628,6 @@ def latex_output(fbase, src):
         for a in excess:
             if initial.has_key(a):
                 fp.write("%%%% #define %s (%s)\n" % (a, initial[a]))
-        fp.write("\n")
-
-    if len(constant):
-        fp.write("%%%% Constants: %s\n" % " ".join(constant))
-        for a in constant:
-            fp.write("%%%% #define %s (%s)\n" % (a, constant[a]))
         fp.write("\n")
 
     if False:
@@ -909,10 +942,13 @@ def main(argv):
         elif o in ("-v", "--verbose"):
             config["verbose"] += 1
         elif o in ("-l", "--latex"):
-            config["use_sympy"] = True
-            config["option_latex"] = True
+            if config["has_sympy"]:
+                config["opt_latex"] = True
+            else:
+                print("ERROR: sympy is not available")
+                sys.exit(1)
         else:
-            raise("unhandled option")
+            raise("Unhandled option")
 
     if len(args) > 0:
         fname = args[0]
@@ -943,14 +979,17 @@ def main(argv):
 
     i = 0
     for dx in xdot_raw:
-        dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
+        if config["has_sympy"]:
+            dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
         dbg("xdot_raw(%d) = %s ; " % (i + 1, xdot_raw[i]))
         i += 1
         
     octave_output("erhelper")
     lsoda_c_output("erhelper")
-    latex_output("erhelper", fname)
-    
+
+    if config["opt_latex"]:
+        latex_output("erhelper", fname)
+
     dbg("X %s" % x)
     dbg("EXCESS %s" % excess)
     dbg("INITIAL %s" % initial)
@@ -962,5 +1001,3 @@ def main(argv):
 
 if "__main__" == __name__:
     main(sys.argv[1:])
-
-   

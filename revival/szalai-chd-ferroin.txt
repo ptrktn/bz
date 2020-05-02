@@ -69,19 +69,28 @@ SIMULATION T_END 30000
 SIMULATION T_POINTS 33
 SIMULATION MAXIMUM_STEP_SIZE 0.001
 
-LATEX Br Br$^{-}$
-LATEX H H$^{+}$
-LATEX Br2 Br$_{2}$
-LATEX H2O H$_{2}$O
-LATEX HBrO2 HBrO$_{2}$
-LATEX H2BrO2 H$_{2}$BrO$_{2}$
-LATEX BrO3 BrO$_{3}^{\bullet}$
-LATEX Br2O4 Br$_{2}$O$_{4}$
-LATEX BrO2 BrO$_{2}^{\bullet}$
-LATEX HQ HQ$^{.}$
-LATEX H2Q H$_{2}$Q
-# LATEX Red Fe(phen)$_{3}^{2+}$
-# LATEX Ox Fe(phen)$_{3}^{3+}$
+LATEX Br Br^{-}
+LATEX H H^{+}
+LATEX Br2 Br_{2}
+LATEX H2O H_{2}O
+LATEX HBrO2 HBrO_{2}
+LATEX H2BrO2 H_{2}BrO_{2}
+LATEX BrO3 BrO_{3}^{\bullet}
+LATEX Br2O4 Br_{2}O_{4}
+LATEX BrO2 BrO_{2}^{\bullet}
+LATEX HQ HQ^{.}
+LATEX H2Q H_{2}Q
+LATEX K6a k_{8}
+LATEX K16 k_{19}
+LATEX K17 k_{20}
+LATEX K18 k_{21}
+LATEX K19 k_{22}
+# LATEX Red Fe(phen)_{3}^{2+}
+# LATEX Ox Fe(phen)_{3}^{3+}
+
 TITLE Simulations of revival oscillations in the Belousov--Zhabotinsky reaction
 AUTHOR Revival Oscillations Collaboration
-BIBITEM szalai2002 I. Szalai, K. Kurin-Cs\"orgei and M. Orb\'an, Mechanistic studies on the bromate-1{,}4-cyclohexanedione-ferroin oscillatory system, Phys. Chem. Chem. Phys., 2002, 4(8), pp. 1271-1275.
+
+# Mechanistic studies on the bromate-1,4-cyclohexanedione-ferroin
+# oscillatory system
+BIBITEM szalai2002 I. Szalai, K. Kurin--Cs\"orgei, M. Orb\'an, {\em Phys. Chem. Chem. Phys.}, {\bf 2002}, {\em 4(8)}, pp. 1271-1275.
