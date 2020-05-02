@@ -478,6 +478,13 @@ def latex_rc(s, a):
     return "%s mol$^{-%d}$dm$^{%d}$s$^{-1}$" % (x, (n - 1), (3 * (n - 1)))
 
 
+def latex_vrate(v):
+    exec("r = str(%s)" % symbols(" * ".join(v.split("*"))))
+    dbg("VRATE = %s" % r)
+    r = latex_sub2(r)
+    return r
+
+
 def latex_output(fbase, src):
     fname = "%s.tex" % fbase
     n = len(rctns)
@@ -554,8 +561,7 @@ def latex_output(fbase, src):
             fp.write("%s" % latex_rc(r.kf, r.reactants))
         elif r.rates[0] and r.frate:
             ne += 1
-            nekinet.append("$v_{%d}$ = %s" % (r.i, r.frate))            
-            # FIXME dbg("NEKINET %s" % latex_sub(r.frate))
+            nekinet.append("$v_{%d} = %s$" % (r.i, latex_vrate(r.frate)))
             fp.write(" ($v_{%d}$) " % r.i)
 
         # Reverse reactions rates (or exceptions)
