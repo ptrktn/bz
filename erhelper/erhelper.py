@@ -478,9 +478,30 @@ def latex_rc(s, a):
     return "%s mol$^{-%d}$dm$^{%d}$s$^{-1}$" % (x, (n - 1), (3 * (n - 1)))
 
 
+def cmp_k(a, b):
+    isa = bool(re.match(r'__k\d{1,}__', a.lower()))
+    isb = bool(re.match(r'__k\d{1,}__', b.lower()))
+
+    if isa and isb:
+        r = cmp(a, b)
+    elif isa:
+        r = -1
+    else:
+        r = 1
+
+    return r
+
+
+def rate_sorted(v):
+    r = v.split("*")
+    r.sort(cmp_k)
+    return "*".join(r)
+
+
 def latex_vrate(v):
     exec("r = str(%s)" % symbols(" * ".join(v.split("*"))))
     dbg("VRATE = %s" % r)
+    r = rate_sorted(r)
     r = latex_sub2(r)
     return r
 
