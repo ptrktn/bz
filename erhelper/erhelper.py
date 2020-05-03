@@ -20,6 +20,7 @@ import os
 import getopt
 
 config["verbose"] = 0
+config["opt_octave"] = False
 config["opt_latex"] = False
 config["title"] = None
 config["author"] = None
@@ -328,8 +329,10 @@ def proc_r():
         if config["has_sympy"]:
             exec("df = %s" % symbols(" ".join(a)))
             dbg(df)
-            # xdot.append(subst_x(str(df)))
-            xdot.append(str(df))
+            if config["opt_octave"]:
+                xdot.append(subst_x(str(df)))
+            if config["opt_latex"]:
+                xdot.append(str(df))
 
 
 
@@ -892,9 +895,6 @@ def octave_output(fbase):
     mname = "%s.mat" % fbase
     n = len(rctns)
 
-    # FIXME
-    return
-    
     try:
         fp = open(fname, "w")
 
@@ -1009,7 +1009,8 @@ def usage():
 def main(argv):
 
     try:
-        opts, args = getopt.getopt(argv, "hvl", ["help", "verbose", "latex"])
+        opts, args = getopt.getopt(argv, "hvl",
+                                   ["help", "verbose", "latex", "octave"])
     except getopt.GetoptError as err:
         usage()
         sys.exit(2)
@@ -1023,6 +1024,12 @@ def main(argv):
         elif o in ("-l", "--latex"):
             if config["has_sympy"]:
                 config["opt_latex"] = True
+            else:
+                print("ERROR: sympy is not available")
+                sys.exit(1)
+        elif o in ("--octave"):
+            if config["has_sympy"]:
+                config["opt_octave"] = True
             else:
                 print("ERROR: sympy is not available")
                 sys.exit(1)
@@ -1062,9 +1069,11 @@ def main(argv):
             dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
         dbg("xdot_raw(%d) = %s ; " % (i + 1, xdot_raw[i]))
         i += 1
-        
-    octave_output("erhelper")
+
     lsoda_c_output("erhelper")
+
+    if config["opt_octave"]:
+        octave_output("erhelper")
 
     if config["opt_latex"]:
         latex_output("erhelper", fname)

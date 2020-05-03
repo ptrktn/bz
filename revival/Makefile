@@ -214,6 +214,13 @@ szalai-chd-ferroin-sim:
 	test -f erhelper.h
 	qjob.sh startmeup.sh erhelper.h ../tools/xplot.sh ../erhelper/lsoda.c szalai-chd-ferroin.txt
 
+.PHONY: szalai-chd-ferroin-revival-sim
+szalai-chd-ferroin-revival-sim:
+	rm -f erhelper.h
+	../erhelper/erhelper.py szalai-chd-ferroin-revival.txt
+	test -f erhelper.h
+	qjob.sh startmeup.sh erhelper.h ../tools/xplot.sh ../erhelper/lsoda.c szalai-chd-ferroin-revival.txt
+
 .PHONY: szalai-huh-sim
 szalai-huh-sim:
 	rm -f erhelper.h
