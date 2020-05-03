@@ -478,9 +478,32 @@ def latex_rc(s, a):
     return "%s mol$^{-%d}$dm$^{%d}$s$^{-1}$" % (x, (n - 1), (3 * (n - 1)))
 
 
-def cmp_k(a, b):
+def cmp_rate(a, b):
     isa = bool(re.match(r'__k\d{1,}__', a.lower()))
     isb = bool(re.match(r'__k\d{1,}__', b.lower()))
+
+    if isa and isb:
+        r = cmp(a, b)
+    elif isa:
+        r = -1
+    else:
+        r = 1
+
+    return r
+
+def cmp_dx(a, b):
+    # Numeric values
+    isa = bool(re.match(r'\d{1,}', a.lower()))
+    isb = bool(re.match(r'\d{1,}', b.lower()))
+
+    if isa:
+        return -1
+    elif isb:
+        return 1
+
+    # kf/kr
+    isa = bool(re.match(r'__k(f|r)*\d{1,}__', a.lower()))
+    isb = bool(re.match(r'__k(f|r)*\d{1,}__', b.lower()))
 
     if isa and isb:
         r = cmp(a, b)
@@ -494,8 +517,28 @@ def cmp_k(a, b):
 
 def rate_sorted(v):
     r = v.split("*")
-    r.sort(cmp_k)
+    r.sort(cmp_rate)
     return "*".join(r)
+
+
+def dx_sorted(v):
+    r = []
+
+    # Defensive hacks to ensure expected formatting
+    v = re.sub(r'^-', r'- ', v)
+    v = re.sub(r'^\+', r'+ ', v)
+
+    for i in v.split():
+        if "+" == i or "-" == i:
+            r.append(i)
+        else:
+            # Hack to preserve '**2'
+            i = i.replace("**2", "^2")
+            t = i.split("*")
+            t.sort(cmp_dx)
+            r.append("*".join(t).replace("^2", "**2"))
+
+    return " ".join(r)
 
 
 def latex_vrate(v):
@@ -620,7 +663,8 @@ def latex_output(fbase, src):
 
     i = 0
     for dx in xdot:
-        dx = latex_sub2(xdot[i])
+        dx = dx_sorted(dx)
+        dx = latex_sub2(dx)
         dx = eqnarray_rhs(dx, x[i])
         fp.write("%% /* %s */\n" % x[i])
         fp.write("\\frac{d [\\mathrm{%s}]}{dt} & = & %s" %
