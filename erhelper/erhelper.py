@@ -1065,7 +1065,7 @@ def main(argv):
 
     i = 0
     for dx in xdot_raw:
-        if config["has_sympy"]:
+        if config["opt_latex"] or config["opt_octave"]:
             dbg("xdot(%d) = %s ; " % (i + 1, xdot[i]))
         dbg("xdot_raw(%d) = %s ; " % (i + 1, xdot_raw[i]))
         i += 1
