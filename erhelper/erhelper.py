@@ -583,13 +583,18 @@ def latex_output(fbase, src):
              "\\maketitle\n\n" % (config["title"], config["author"]))
              
     fp.write("\\section{Abstract}\n"
+             "\\IfFileExists{abstract.tex}{\n\\include{abstract.tex}\n}{\n"
              "Results from simulations of a %d--reaction, %d--species\n"
-             "chemical reaction system model are reported.\n\n"
+             "chemical reaction system model are reported.\n}\n\n"
              % (n, neq))
 
-    fp.write("\\section{Introduction}\n\n")
+    fp.write("\\section{Introduction}\n\n"
+             "\\IfFileExists{introduction.tex}{\n\\include{introduction.tex}"
+             "\n}{\n%%%% Tabula rasa\n}\n\n")
 
-    fp.write("\\section{Results}\n\n")
+    fp.write("\\section{Results}\n\n"
+             "\\IfFileExists{results.tex}{\n\\include{results.tex}"
+             "\n}{\n%%%% Tabula rasa\n}\n\n")
     
     sx = 0
     for r in rctns:
@@ -679,9 +684,13 @@ def latex_output(fbase, src):
     
     fp.write("\\end{eqnarray}\n\n")
     
-    fp.write("\\section{Conclusions}\n\n")
+    fp.write("\\section{Conclusions}\n\n"
+             "\\IfFileExists{conclusions.tex}{\n\\include{conclusions.tex}"
+             "\n}{\n%%%% Tabula rasa\n}\n\n")
 
-    fp.write("\\section{Acknowledgment}\n\n")
+    fp.write("\\section{Acknowledgments}\n\n"
+             "\\IfFileExists{acknowledgments.tex}{\n\\include{acknowledgments.tex}"
+             "\n}{\n%%%% Tabula rasa\n}\n\n")
 
     fp.write("\\section{Keywords}\n\n")
     if len(config["keywords"]):
