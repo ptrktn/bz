@@ -3,16 +3,14 @@
 #
 # ATTENTION: There are exceptions in mass action kinetics
 
-EXCESS H H2O Q
-INITIAL H 1.6
-INITIAL H2O 1
-INITIAL Q 1
+TITLE Study of revival oscillations dynamics in the Belousov--Zhabotinsky reaction
+AUTHOR Revival Oscillations Collaboration
+KEYWORD Nonequilibrium processes
+KEYWORD Computational chemistry
 
-CONSTANT K6 2E6
-CONSTANT K16 0.5*0.14/H
-CONSTANT K17 0.051
-CONSTANT K18 6E3
-CONSTANT K19 0.02
+#
+# Elementary reactions
+#
 
 # R1
 Br + HOBr + H <==> Br2 + H2O | 8E9 80
@@ -60,10 +58,21 @@ Ox + Ox + H2Q ==> Red + Red + Q + H + H @ K18*Ox*H2Q
 # R19
 Red + Red + BrO3  + H + H + H ==> Ox + Ox + HBrO2 + H2O @ K19*Red*BrO3*H*H
 
+EXCESS H H2O Q
+
+INITIAL H 1.6
+INITIAL H2O 1
+INITIAL Q 1
 INITIAL Br 5E-3
 INITIAL BrO3 0.1
 INITIAL CHD 0.15
 INITIAL Red 1E-5
+
+CONSTANT K6 2E6
+CONSTANT K16 0.5*0.14/H
+CONSTANT K17 0.051
+CONSTANT K18 6E3
+CONSTANT K19 0.02
 
 SIMULATION T_END 30000
 SIMULATION T_POINTS 33
@@ -77,3 +86,25 @@ INITIAL CHD 0.15
 INITIAL Red 5E-4
 SIMULATION T_END 7000
 
+LATEX Br Br^{-}
+LATEX H H^{+}
+LATEX Br2 Br_{2}
+LATEX H2O H_{2}O
+LATEX HBrO2 HBrO_{2}
+LATEX H2BrO2 H_{2}BrO_{2}
+LATEX BrO3 BrO_{3}^{\bullet}
+LATEX Br2O4 Br_{2}O_{4}
+LATEX BrO2 BrO_{2}^{\bullet}
+LATEX HQ HQ^{.}
+LATEX H2Q H_{2}Q
+LATEX K6 k_{8}
+LATEX K16 k_{19}
+LATEX K17 k_{20}
+LATEX K18 k_{21}
+LATEX K19 k_{22}
+# LATEX Red Fe(phen)_{3}^{2+}
+# LATEX Ox Fe(phen)_{3}^{3+}
+
+# Mechanistic studies on the bromate-1,4-cyclohexanedione-ferroin
+# oscillatory system
+BIBITEM szalai2002 I. Szalai, K. Kurin--Cs\"orgei, M. Orb\'an, {\em Phys. Chem. Chem. Phys.}, {\bf 2002}, {\em 4(8)}, pp. 1271-1275.
