@@ -150,7 +150,7 @@ x0 = [x1; x2; x3];
 #t = linspace (0, 1, 10000);
 #t = linspace (0, 5, 10000);
 t = linspace (0, 25, 10000);
-#t = linspace (0, 1, 1000);
+#t = linspace (0, 0.5, 5);
 
 y = lsode ("f", x0, t);
 
@@ -170,6 +170,7 @@ title(cstrcat(
 legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
 
 print -djpg skg4.jpg
+print skg4.pdf
 #quit();
 
 newplot();
@@ -197,10 +198,16 @@ title(cstrcat(
 legend("[BrO_3^-]", "[BrCHD]");
 
 print -djpg skg4x.jpg
+print skg4x.pdf
 
-#d = [rot90(t, -1), y, rot90(null_x, -1), rot90(null_z, -1)];
+# d = [rot90(t, -1), y, rot90(null_x, -1), rot90(null_z, -1)];
+d = [rot90(t, -1), y] ;
 
-#save plot.mat d;
+save skg4.mat d;
+
+d = [rot90(t, -1), rot90(axz(t), -1), rot90(bxz(t), -1)] ;
+
+save skg4x.mat d ;
 
 
 quit(0);

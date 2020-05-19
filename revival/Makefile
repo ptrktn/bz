@@ -138,15 +138,28 @@ skg4plot:
 #	echo ./skg4.m 0.2 0.022 0.0796 0.0084
 #	echo xdg-open skg4.jpg &
 
+.PHONY: skg4revivalplot
+skg4revivalplot:
+	rm -f skg4.mat skg4x.mat skg4_revival.pdf skg4_revival_x.pdf
+	./skg4.m 0.2 0.022 0.1 0.3
+	gnuplot skg4plots
+	test -f skg4_revival.pdf
+	test -f skg4_revival_x.pdf
 
 .PHONY: skg4summary
 skg4summary:
 	./skg4.m 0.2 0.022 0 0 
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_LC1.jpg
+	mv -f skg4.pdf $(XDATE)_LC1.pdf
+	mv -f skg4x.pdf $(XDATE)_x_LC1.pdf
 	./skg4.m 0.04 0.001 0 0
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_LC2.jpg
+	mv -f skg4.pdf $(XDATE)_LC2.pdf
+	mv -f skg4x.pdf $(XDATE)_x_LC2.pdf
 	./skg4.m 0.2 0.022 0.1 0.3
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_RV1.jpg
+	mv -f skg4.pdf $(XDATE)_RV1.pdf
+	mv -f skg4x.pdf $(XDATE)_x_RV1.pdf
 	montage $(XDATE)_LC1.jpg $(XDATE)_LC2.jpg $(XDATE)_RV1.jpg  -tile 3x1 -geometry +1+1 $(XDATE)_summary.jpg
 
 skg4test:
