@@ -594,7 +594,16 @@ def latex_output(fbase, src):
 
     fp.write("\\section{Results}\n\n"
              "\\IfFileExists{results.tex}{\n\\input{results}"
-             "\n}{\n%%%% Tabula rasa\n}\n\n")
+             "\n}{\n"
+             "The %d reaction system model in Table~\\ref{tab1e:reactions}\n"
+             "was converted to ordinary differential equations programmatically.\n"
+             "Then the resulting %d ordinary differention equations were\n"
+             "integrated by LSODA, which can handle both non--stiff\n"
+             "and stiff initial value problems~\\cite{lsoda}.\n"
+             "Numerical parameters were: relative tolerance %s,\n"
+             "absolute tolerance %s and maximum allowed time step %s.\n"
+             "\n}\n\n" % (n, neq, lsode_rtol, lsode_atol,
+                          simulation["MAXIMUM_STEP_SIZE"]))
     
     sx = 0
     for r in rctns:
@@ -695,6 +704,7 @@ def latex_output(fbase, src):
     fp.write("\\section{Keywords}\n\n")
     if len(config["keywords"]):
         fp.write(", ".join(config["keywords"]))
+    fp.write("\\n\\n")
 
     fp.write("\\begin{thebibliography}{99}\n"
              "\\bibitem{lsoda} A.C. Hindmarsh, {\\em ODEPACK, A Systematized Collection of ODE Solvers}, in {\\em Scientific Computing}, R.S. Stepleman et al. (Eds.), North--Holland, Amsterdam, {\\bf 1983}, pp. 55-64.\n")
