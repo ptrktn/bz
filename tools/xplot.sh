@@ -4,8 +4,8 @@ GNUPLOTBIN=${GNUPLOT-gnuplot}
 HAVE_GS=0
 HAVE_IM=0
 HAVE_JPEG_TERM=0
-
 sopt=0
+NAME=""
 
 preflight() {
 
@@ -43,13 +43,14 @@ usage() {
 	echo "Usage: $me [OPTIONS] FILE"
 	echo "Options:"
 	echo "    -h          Show help"
+	echo "    -N          Specify output file base name"
 	echo "    -s          Sequential processing"
 	echo "    -t 'TITLE'  Space-separated variable names"
 }
 
 preflight
 
-while getopts "c:hst:T:" o; do
+while getopts "c:hN:st:T:" o; do
     case "${o}" in
         c)
 			declare -a cols=( ${OPTARG} )
@@ -58,6 +59,9 @@ while getopts "c:hst:T:" o; do
             usage
 			exit 0
             ;;
+		N)
+			NAME="${OPTARG}"
+			;;
         s)
             sopt=1
             ;;
@@ -85,7 +89,9 @@ test -f "$FNAME" || {
 
 NCOLS=$(egrep -v '^#' $FNAME | head -1 | awk '{ print NF }')
 
-ID=$(echo $(basename $FNAME) | sed 's/\..*$//')_$(date +%Y%m%d%H%M)_$(printf "%05d" $RANDOM)
+ID=$(echo $(basename $FNAME) | sed 's/\..*$//')_$(date +%Y%m%d%H%M%S)_$(printf "%05d" $RANDOM)
+
+[ -z "$NAME" ] || ID=$NAME
 
 xplot() {
 	local fname=$1
