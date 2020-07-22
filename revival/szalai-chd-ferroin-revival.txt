@@ -92,7 +92,7 @@ LATEX Br2 Br_{2}
 LATEX H2O H_{2}O
 LATEX HBrO2 HBrO_{2}
 LATEX H2BrO2 H_{2}BrO_{2}
-LATEX BrO3 BrO_{3}^{\bullet}
+LATEX BrO3 BrO_{3}
 LATEX Br2O4 Br_{2}O_{4}
 LATEX BrO2 BrO_{2}^{\bullet}
 LATEX HQ HQ^{.}
