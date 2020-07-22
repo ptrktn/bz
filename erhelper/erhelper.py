@@ -158,7 +158,12 @@ def read_r(fname):
         nr = 1
         r = R()
         for l in f:
+            n +=1
             line = l.strip()
+
+            if config["verbose"] > 1:
+                dbg("LINE %05d: %s" % (n, line))
+
             if len(line) > 0 and '#' != line[0]:
                 if re.search(r'^EXCESS\s', line):
                     if len(line.split()) > 1:
@@ -217,7 +222,6 @@ def read_r(fname):
                         config["bibitem"].append(" ".join(line.split()[1:]))
                     continue
 
-                n += 1
                 r.reaction(line, nr)
                 rctns.append(r)
                 r = R()
