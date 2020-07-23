@@ -599,7 +599,7 @@ def latex_output(fbase, src):
     fp.write("\\section{Results}\n\n"
              "\\IfFileExists{results.tex}{\n\\input{results}"
              "\n}{\n"
-             "The %d reaction system model in Table~\\ref{tab1e:reactions}\n"
+             "The %d reaction system model in Table~\\ref{table:reactions}\n"
              "was converted to ordinary differential equations programmatically.\n"
              "Then the resulting %d ordinary differention equations were\n"
              "integrated by LSODA, which can handle both non--stiff\n"
