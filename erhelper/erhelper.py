@@ -567,7 +567,8 @@ def latex_output(fbase, src):
         raise
 
     fp.write("%%%% START SRC %s\n" % os.path.basename(src))
-    
+    dbg("LaTeX FILE %s" % fname)
+
     with open(src) as f:
         for l in f:
             fp.write("%%%% %s" % l)
@@ -708,7 +709,7 @@ def latex_output(fbase, src):
     fp.write("\\section{Keywords}\n\n")
     if len(config["keywords"]):
         fp.write(", ".join(config["keywords"]))
-    fp.write("\\n\\n")
+    fp.write("\n\n")
 
     fp.write("\\begin{thebibliography}{99}\n"
              "\\bibitem{lsoda} A.C. Hindmarsh, {\\em ODEPACK, A Systematized Collection of ODE Solvers}, in {\\em Scientific Computing}, R.S. Stepleman et al. (Eds.), North--Holland, Amsterdam, {\\bf 1983}, pp. 55-64.\n")
