@@ -34,7 +34,7 @@ test: test-lv
 .PHONY: test-lv
 test-lv:
 	rm -f erhelper.mat erhelper.m
-	./erhelper.py examples/lotka-volterra.txt
+	./erhelper.py --octave examples/lotka-volterra.txt
 	$(OCTAVE) erhelper.m
 	../tools/xplot.sh erhelper.mat
 
