@@ -1,11 +1,10 @@
 #! /usr/bin/octave -qf
 # -*-octave-*-
-# SKG model DOI: 10.1021/jp9832721
+# SKG model (DOI: 10.1021/jp983272l).
+#
 # Based on Eqs E6-E8 and simulate the dynamics by varying initial [BrO3-]
 # and [BrCHD], both of which decay as a function of time.
 #
-# Additionally this implementation includes linear decay of [BrO3-].
-# [BrO3-] = [BrO3-]_0 - T * t;
 
 global galpha = 1000000;
 global gbeta = 77.4;
@@ -63,8 +62,8 @@ function xdot = f (x, t)
   global kBrCHD;
   global H;
 
-  BrO3 = axz(t); #BrO30 - kBrO3 * t;
-  BrCHD = bxz(t); #BrCHD0 - kBrCHD * t;
+  BrO3 = 0.001 + BrO30 * exp(-kBrO3 * x);
+  BrCHD = 0.001 + BrCHD0 * exp(-kBrCHD * x);
 
   xdot = zeros(3, 1);
 
@@ -73,65 +72,9 @@ function xdot = f (x, t)
   ggamma = kdp * realsqrt(k14) * realsqrt(BrCHD) / (realpow(k17, 3/2) * realsqrt(H) * BrO3);
   gdelta = 2 * k5 * k4 * k14 * BrCHD / (k4r * k17 * k17 * BrO3 * BrO3);
 
-  # printf("a = %f\n", galpha);
-  # printf("b = %f\n", gbeta);
-  # printf("g = %f\n", ggamma);
-  # printf("d = %f\n", gdelta);
-
   xdot(1) = x(2) * (gbeta - galpha * x(1)) + x(3) * (ggamma * realsqrt(x(1)) + 1.0) - gdelta * x(1) * x(1);
   xdot(2) = 1.0 - x(2) * (gbeta + galpha * x(1));
   xdot(3) = gf - x(3) * (ggamma * realsqrt(x(1)) + 1.0); 
-
-endfunction
-
-function r = axz(x)
-  global BrO30 kBrO3;
-
-  #r = BrO30 - kBrO3 * x;
-
-  #if r < 0.04
-	#r = 0.04;
-  #endif
-
-  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
-  # exponentially: C(t) =C(0)*EXP(-0.2*t).
-
-  #r = 0.001 + BrO30 * exp(-0.2 * x);
-  r = 0.001 + BrO30 * exp(-kBrO3 * x);
-  #r = 0.04;
-endfunction
-
-function r = bxz(x)
-  global BrCHD0 kBrCHD;
-
-  #r = BrCHD0 - kBrCHD * x; 
-
-   #if r < 0.001
-   #	r = 0.001;
-   #endif
-
-  #  (a) [BrCHD] = 0.022 (constant)
-  # r = 0.022;
-  # (b) [BrCHD] = 0 
-  # r = 0.001;
-  # (c) (or constant to be 0.0022).
-  # r = 0.0022;
-
-  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
-  # exponentially: C(t) =C(0)*EXP(-0.2*t).
-
-  #r = 0.001 + BrCHD0 * exp(-0.6 * x);
-  r = 0.001 + BrCHD0 * exp(-kBrCHD * x);
-
-# 3) Same as 2) but [BrCHD] is set constant as 1). 
-
-  #  (a) [BrCHD] = 0.022 (constant)
-  #r = 0.022;
-  # (b) [BrCHD] = 0 
-  #r = 0.001;
-  # (c) (or constant to be 0.0022).
-  #r = 0.0022;
-
 
 endfunction
 
@@ -146,12 +89,7 @@ x3 = 0.03193424249332828 ;
 
 x0 = [x1; x2; x3];
 
-# time = kf*t
-#t = linspace (0, 1, 10000);
-#t = linspace (0, 5, 10000);
 t = linspace (0, 25, 10000);
-#t = linspace (0, 0.5, 5);
-
 y = lsode ("f", x0, t);
 
 plot (t, y);
@@ -209,8 +147,5 @@ d = [rot90(t, -1), rot90(axz(t), -1), rot90(bxz(t), -1)] ;
 
 save skg4x.mat d ;
 
-
 quit(0);
-
-
 
