@@ -5,6 +5,8 @@
 # Based on Eqs E6-E8 and simulate the dynamics by varying initial [BrO3-]
 # and [BrCHD], both of which decay as a function of time.
 #
+# Source: https://github.com/ptrktn/bz/blob/main/revival/skg4.m
+#
 
 global galpha = 1000000;
 global gbeta = 77.4;
@@ -119,8 +121,7 @@ title(cstrcat(
 legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
 
 print -djpg skg4.jpg
-print skg4.pdf
-#quit();
+print -dpdfcrop skg4.pdf
 
 newplot();
 
@@ -147,7 +148,7 @@ title(cstrcat(
 legend("[BrO_3^-]", "[BrCHD]");
 
 print -djpg skg4x.jpg
-print skg4x.pdf
+print -dpdfcrop skg4x.pdf
 
 # d = [rot90(t, -1), y, rot90(null_x, -1), rot90(null_z, -1)];
 d = [rot90(t, -1), y] ;
@@ -159,4 +160,3 @@ d = [rot90(t, -1), rot90(axz(t), -1), rot90(bxz(t), -1)] ;
 save skg4x.mat d ;
 
 quit(0);
-
