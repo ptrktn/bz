@@ -62,8 +62,8 @@ function xdot = f (x, t)
   global kBrCHD;
   global H;
 
-  BrO3 = 0.001 + BrO30 * exp(-kBrO3 * x);
-  BrCHD = 0.001 + BrCHD0 * exp(-kBrCHD * x);
+  BrO3 = axz(t);
+  BrCHD = bxz(t);
 
   xdot = zeros(3, 1);
 
@@ -78,6 +78,17 @@ function xdot = f (x, t)
 
 endfunction
 
+function r = axz(x)
+  global BrO30 kBrO3;
+
+  r = 0.001 + BrO30 * exp(-kBrO3 * x);
+endfunction
+
+function r = bxz(x)
+  global BrCHD0 kBrCHD;
+
+  r = 0.001 + BrCHD0 * exp(-kBrCHD * x);
+endfunction
 
 # Initial conditions
 #1 HBrO2
