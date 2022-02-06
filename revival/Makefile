@@ -146,6 +146,11 @@ skg4revivalplot:
 	test -f skg4_revival.pdf
 	test -f skg4_revival_x.pdf
 
+.PHONY: skg4revival
+skg4revival:
+	./skg4.m 0.2 0.022 0.1 0.3 2500
+	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_RV1.jpg
+
 .PHONY: skg4summary
 skg4summary:
 	./skg4.m 0.2 0.022 0 0 
@@ -240,5 +245,10 @@ szalai-huh-sim:
 	../erhelper/erhelper.py szalai-huh.txt
 	test -f erhelper.h
 	qjob.sh startmeup.sh erhelper.h ../tools/xplot.sh ../erhelper/lsoda.c szalai-huh.txt
+
+.PHONY: sim-revival
+sim-revival:
+	../erhelper/erhelper.py --latex -v szalai-chd-ferroin3.txt
+
 
 #*****

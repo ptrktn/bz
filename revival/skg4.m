@@ -29,13 +29,19 @@ global H = 1.29;
 arg_list = argv();
 
 # Command-line arguments are mandatory
-if (4 == nargin)
+if (nargin > 3)
   BrO30 = str2num(arg_list{1});
   BrCHD0 = str2num(arg_list{2});
   kBrO3 = str2num(arg_list{3});
   kBrCHD = str2num(arg_list{4});
 else
   quit(1);
+endif
+
+if (5 == nargin)
+  t_end = str2num(arg_list{5});
+else
+  t_end = 25;
 endif
 
 printf("BrO30 = %f, BrCHD0 = %f, kBrO3 = %f, kBrCHD = %f\n",
@@ -146,11 +152,7 @@ x3 = 0.03193424249332828 ;
 
 x0 = [x1; x2; x3];
 
-# time = kf*t
-#t = linspace (0, 1, 10000);
-#t = linspace (0, 5, 10000);
-t = linspace (0, 25, 10000);
-#t = linspace (0, 0.5, 5);
+t = linspace (0, t_end, 10000);
 
 y = lsode ("f", x0, t);
 
