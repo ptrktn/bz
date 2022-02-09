@@ -1,12 +1,11 @@
 #! /usr/bin/octave -qf
 # -*-octave-*-
-# SKG model (DOI: 10.1021/jp983272l).
-#
+# SKG model DOI: 10.1021/jp9832721
 # Based on Eqs E6-E8 and simulate the dynamics by varying initial [BrO3-]
 # and [BrCHD], both of which decay as a function of time.
 #
-# Source: https://github.com/ptrktn/bz/blob/main/revival/skg4.m
-#
+# Additionally this implementation includes linear decay of [BrO3-].
+# [BrO3-] = [BrO3-]_0 - T * t;
 
 global galpha = 1000000;
 global gbeta = 77.4;
@@ -30,13 +29,19 @@ global H = 1.29;
 arg_list = argv();
 
 # Command-line arguments are mandatory
-if (4 == nargin)
+if (nargin > 3)
   BrO30 = str2num(arg_list{1});
   BrCHD0 = str2num(arg_list{2});
   kBrO3 = str2num(arg_list{3});
   kBrCHD = str2num(arg_list{4});
 else
   quit(1);
+endif
+
+if (5 == nargin)
+  t_end = str2num(arg_list{5});
+else
+  t_end = 25;
 endif
 
 printf("BrO30 = %f, BrCHD0 = %f, kBrO3 = %f, kBrCHD = %f\n",
@@ -64,8 +69,8 @@ function xdot = f (x, t)
   global kBrCHD;
   global H;
 
-  BrO3 = axz(t);
-  BrCHD = bxz(t);
+  BrO3 = axz(t); #BrO30 - kBrO3 * t;
+  BrCHD = bxz(t); #BrCHD0 - kBrCHD * t;
 
   xdot = zeros(3, 1);
 
@@ -73,6 +78,11 @@ function xdot = f (x, t)
   # beta has no dependency on [BrO3-] or [BrCHD]
   ggamma = kdp * realsqrt(k14) * realsqrt(BrCHD) / (realpow(k17, 3/2) * realsqrt(H) * BrO3);
   gdelta = 2 * k5 * k4 * k14 * BrCHD / (k4r * k17 * k17 * BrO3 * BrO3);
+
+  # printf("a = %f\n", galpha);
+  # printf("b = %f\n", gbeta);
+  # printf("g = %f\n", ggamma);
+  # printf("d = %f\n", gdelta);
 
   xdot(1) = x(2) * (gbeta - galpha * x(1)) + x(3) * (ggamma * realsqrt(x(1)) + 1.0) - gdelta * x(1) * x(1);
   xdot(2) = 1.0 - x(2) * (gbeta + galpha * x(1));
@@ -83,14 +93,54 @@ endfunction
 function r = axz(x)
   global BrO30 kBrO3;
 
+  #r = BrO30 - kBrO3 * x;
+
+  #if r < 0.04
+	#r = 0.04;
+  #endif
+
+  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
+  # exponentially: C(t) =C(0)*EXP(-0.2*t).
+
+  #r = 0.001 + BrO30 * exp(-0.2 * x);
   r = 0.001 + BrO30 * exp(-kBrO3 * x);
+  #r = 0.04;
 endfunction
 
 function r = bxz(x)
   global BrCHD0 kBrCHD;
 
+  #r = BrCHD0 - kBrCHD * x; 
+
+   #if r < 0.001
+   #	r = 0.001;
+   #endif
+
+  #  (a) [BrCHD] = 0.022 (constant)
+  # r = 0.022;
+  # (b) [BrCHD] = 0 
+  # r = 0.001;
+  # (c) (or constant to be 0.0022).
+  # r = 0.0022;
+
+  # 2) Same as 0181121_skg4.jpg  but both [BrO3-] and [BrCHD] decay 
+  # exponentially: C(t) =C(0)*EXP(-0.2*t).
+
+  #r = 0.001 + BrCHD0 * exp(-0.6 * x);
   r = 0.001 + BrCHD0 * exp(-kBrCHD * x);
+
+# 3) Same as 2) but [BrCHD] is set constant as 1). 
+
+  #  (a) [BrCHD] = 0.022 (constant)
+  #r = 0.022;
+  # (b) [BrCHD] = 0 
+  #r = 0.001;
+  # (c) (or constant to be 0.0022).
+  #r = 0.0022;
+
+
 endfunction
+
 
 # Initial conditions
 #1 HBrO2
@@ -101,8 +151,13 @@ x2 = 0.001422769822454512 ;
 x3 = 0.03193424249332828 ;
 
 x0 = [x1; x2; x3];
+ 
+t = linspace (0, t_end, t_end*20);
 
-t = linspace (0, 25, 10000);
+lsode_options("absolute tolerance", 1e-9);
+lsode_options("relative tolerance", 1e-9);
+lsode_options("maximum step size", 0.0001);
+
 y = lsode ("f", x0, t);
 
 plot (t, y);
@@ -122,6 +177,7 @@ legend("[HBrO_2]", "[Br^-]", "[H_2Q]");
 
 print -djpg skg4.jpg
 print -dpdfcrop skg4.pdf
+#quit();
 
 newplot();
 
@@ -159,4 +215,8 @@ d = [rot90(t, -1), rot90(axz(t), -1), rot90(bxz(t), -1)] ;
 
 save skg4x.mat d ;
 
+
 quit(0);
+
+
+

@@ -146,6 +146,11 @@ skg4revivalplot:
 	test -f skg4_revival.pdf
 	test -f skg4_revival_x.pdf
 
+.PHONY: skg4revival
+skg4revival:
+	./skg4.m 0.2 0.022 0.1 0.3 25000
+	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_RV1.jpg
+
 .PHONY: skg4summary
 skg4summary:
 	./skg4.m 0.2 0.022 0 0 
