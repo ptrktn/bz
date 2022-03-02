@@ -151,6 +151,12 @@ skg4revival:
 	./skg4.m 0.2 0.022 0.1 0.3 25000
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_RV1.jpg
 
+.PHONY: skg4_normal_long
+skg4_normal_long:
+	./skg4.m 0.2 0.022 0 0 25000
+	mv -f skg4.pdf $(XDATE)_normal_long.pdf
+	mv -f skg4x.pdf $(XDATE)_x_normal_long.pdf
+
 .PHONY: skg4summary
 skg4summary:
 	./skg4.m 0.2 0.022 0 0 
