@@ -163,14 +163,21 @@ skg4summary:
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_LC1.jpg
 	mv -f skg4.pdf $(XDATE)_LC1.pdf
 	mv -f skg4x.pdf $(XDATE)_x_LC1.pdf
+	mv -f skg4.mat $(XDATE)_LC1.mat
+	mv -f skg4x.mat $(XDATE)_x_LC1.mat
 	./skg4.m 0.04 0.001 0 0
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_LC2.jpg
 	mv -f skg4.pdf $(XDATE)_LC2.pdf
 	mv -f skg4x.pdf $(XDATE)_x_LC2.pdf
+	mv -f skg4.mat $(XDATE)_LC2.mat
+	mv -f skg4x.mat $(XDATE)_x_LC2.mat
 	./skg4.m 0.2 0.022 0.1 0.3
 	montage skg4.jpg skg4x.jpg -tile 1x2 -geometry +1+1 $(XDATE)_RV1.jpg
 	mv -f skg4.pdf $(XDATE)_RV1.pdf
 	mv -f skg4x.pdf $(XDATE)_x_RV1.pdf
+	mv -f skg4.mat $(XDATE)_RV1.mat
+	mv -f skg4x.mat $(XDATE)_x_RV1.mat
+	zip -m -9 $(XDATE)_data.zip *.mat
 	montage $(XDATE)_LC1.jpg $(XDATE)_LC2.jpg $(XDATE)_RV1.jpg  -tile 3x1 -geometry +1+1 $(XDATE)_summary.jpg
 
 skg4test:
